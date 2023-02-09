@@ -94,3 +94,41 @@ TEST_CASE( "sint encoding" ) {
         CHECK_THAT(out, Equals("\xF8\xEF\x94"));
     }
 }
+
+TEST_CASE( "float encoding" ) {
+    SECTION("floatp big-endian") {
+        std::string out;
+        okser::serialize<okser::bundle<okser::floatp<4, okser::end::be>>>(
+                okser::out::stdstring{out},
+                392.0853
+                );
+        CHECK_THAT(out, Equals("\x43\xC4\x0A\xEB"));
+    }
+
+    SECTION("floatp little-endian") {
+        std::string out;
+        okser::serialize<okser::bundle<okser::floatp<4, okser::end::le>>>(
+                okser::out::stdstring{out},
+                392.0853
+                );
+        CHECK_THAT(out, Equals("\xEB\x0A\xC4\x43"));
+    }
+
+    SECTION("doublep big-endian") {
+        std::string out;
+        okser::serialize<okser::bundle<okser::floatp<8, okser::end::be>>>(
+                okser::out::stdstring{out},
+                -1.9e158
+                );
+        CHECK_THAT(out, Equals("\xE0\xCB\xAD\x6C\x77\x40\x7F\x22"));
+    }
+
+    SECTION("doublep little-endian") {
+        std::string out;
+        okser::serialize<okser::bundle<okser::floatp<8, okser::end::le>>>(
+                okser::out::stdstring{out},
+                -1.9e158
+                );
+        CHECK_THAT(out, Equals("\x22\x7F\x40\x77\x6C\xAD\xCB\xE0"));
+    }
+}

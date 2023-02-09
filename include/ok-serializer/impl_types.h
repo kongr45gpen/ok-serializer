@@ -45,4 +45,22 @@ namespace okser {
             uint<Bytes, Endianness>::serialize(u, o);
         }
     };
+
+    template<int Bytes = 4, end Endianness = end::be>
+    requires (Bytes == 4 || Bytes == 8)
+    struct floatp : public internal::type {
+        template<typename V, class Output>
+        requires (std::is_floating_point_v<V>)
+        static void serialize(const V &v, Output&& o) {
+            using Float = std::conditional_t<Bytes == 4, float, double>;
+            using Unsigned = std::conditional_t<Bytes == 4, uint32_t, uint64_t>;
+
+            Unsigned u = std::bit_cast<Unsigned>(static_cast<Float>(v));
+
+            uint<Bytes, Endianness>::serialize(u, o);
+        }
+    };
+
+    template<end Endianness = end::be>
+    using doublep = floatp<8, Endianness>;
 }
