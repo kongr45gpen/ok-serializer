@@ -21,5 +21,6 @@ function(add_example NAME)
 endfunction()
 
 add_example(empty_example)
+add_example(zpp_bits)
 
 add_folders(Example)
