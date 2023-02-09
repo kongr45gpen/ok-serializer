@@ -15,33 +15,28 @@ namespace okser {
     };
 
     namespace internal {
-        template<class Pair>
-        std::string serialize_one(Pair p) {
-            return Pair::SerializerType::serialize(p.value);
+        template<class Pair, class Output>
+        void serialize_one(Pair p, Output&& o) {
+            Pair::SerializerType::serialize(p.value, o);
         }
     }
 
     template<class... Types>
     class bundle {
     public:
-        template<typename... Values>
-        static std::string serialize(Values... values) {
-            std::string result = "";
-
+        template<class Output, typename... Values>
+        static void serialize(Output&& output, Values... values) {
             std::tuple<mypair<Types, Values>...> typeValues{values...};
 
-            std::apply([&result](auto &&... v) {
-//                ((result += std::to_string(v.value)), ...);
-                ((result += internal::serialize_one(v)), ...);
+            std::apply([&output](auto &&... v) {
+                ((internal::serialize_one(v, output)), ...);
             }, typeValues);
-
-            return result;
         }
     };
 
-    template<class Bundle, typename... Values>
-    std::string serialize(Values... values) {
-        return Bundle::serialize(values...);
+    template<class Bundle, class Output, typename... Values>
+    void serialize(Output&& output, Values... values) {
+        return Bundle::serialize(output, values...);
     }
 
 }

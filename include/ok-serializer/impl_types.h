@@ -1,5 +1,8 @@
 #pragma once
 
+#include <bit>
+#include <cstdint>
+
 namespace okser {
     /**
      * Enum to represent endianness
@@ -12,30 +15,34 @@ namespace okser {
     namespace internal {
         class type {
             template<typename Value>
-            static std::string serialize(const Value &v) = delete;
+            static void serialize(const Value &v) = delete;
         };
     }
 
     template<int Bytes, end Endianness = end::be>
-    struct sint : public internal::type {
-        static std::string serialize(const uint32_t &v) {
-            std::array<char, Bytes> arr;
-            for (int i = 0; i < Bytes; i++) {
-                arr[i] = (v >> (8 * i)) & 0xFFU;
+    requires (Bytes > 0 && Bytes <= 8)
+    struct uint : public internal::type {
+        template<typename V, class Output>
+        static void serialize(const V &v, Output&& o) {
+            if constexpr (Endianness == end::le) {
+                for (size_t i = 0; i < Bytes; i++) {
+                    o.add(static_cast<uint8_t>((v >> (8 * i)) & 0xFFU));
+                }
+            } else {
+                for (size_t i = 0; i < Bytes; i++) {
+                    o.add(static_cast<uint8_t>((v >> (8 * (Bytes - i - 1))) & 0xFFU));
+                }
             }
-            return std::string(arr.data(), Bytes);
         }
     };
 
     template<int Bytes, end Endianness = end::be>
-    struct uint : public internal::type {
-        static std::string serialize(const uint32_t &v) {
-            std::array<char, Bytes> arr;
-            for (int i = 0; i < Bytes; i++) {
-                arr[i] = (v >> (8 * i)) & 0xFFU;
-            }
-            return std::string(arr.data(), Bytes);
+    struct sint : public internal::type {
+        template<typename V, class Output>
+        static void serialize(const uint32_t &v, Output&& o) {
+            using Unsigned = std::make_unsigned_t<V>;
+            Unsigned u = std::bit_cast<Unsigned>(v);
+            uint<Bytes, Endianness>::serialize(u, o);
         }
     };
-
 }
