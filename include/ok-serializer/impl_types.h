@@ -63,4 +63,14 @@ namespace okser {
 
     template<end Endianness = end::be>
     using doublep = floatp<8, Endianness>;
+
+    template<typename Enum, int Bytes = sizeof(std::underlying_type<Enum>), end Endianness = end::be>
+    requires (Bytes > 0 && Bytes <= 8 && std::is_enum_v<Enum>)
+    struct enumv : public internal::type {
+        template<class Output>
+        static void serialize(const Enum &e, Output&& o) {
+            using Underlying = std::underlying_type_t<Enum>;
+            uint<Bytes, Endianness>::serialize(static_cast<Underlying>(e), o);
+        }
+    };
 }

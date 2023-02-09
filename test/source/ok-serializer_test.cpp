@@ -132,3 +132,31 @@ TEST_CASE( "float encoding" ) {
         CHECK_THAT(out, Equals("\x22\x7F\x40\x77\x6C\xAD\xCB\xE0"));
     }
 }
+
+TEST_CASE( "enum encoding" ) {
+    enum class TestEnum : uint8_t {
+        A = 0x01,
+        B = 0x02,
+        C = 0x03,
+    };
+
+    SECTION("8-bit enum to 8-bit value") {
+        std::string out;
+        okser::serialize<okser::bundle<okser::enumv<TestEnum>>>(
+                okser::out::stdstring{out},
+                TestEnum::A
+                );
+        CHECK_THAT(out, Equals("\x01"));
+    }
+
+    SECTION("8-bit enum to 16-bit value") {
+        std::string out;
+        okser::serialize<okser::bundle<okser::enumv<TestEnum, 2>>>(
+                okser::out::stdstring{out},
+                TestEnum::B
+        );
+        CHECK(out[0] == 0x00);
+        CHECK(out[1] == 0x02);
+    }
+
+}
