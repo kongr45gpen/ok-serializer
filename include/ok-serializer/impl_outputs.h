@@ -22,15 +22,18 @@ namespace okser {
         class cstring {
         public:
             char *buf;
+            size_t size = 0;
 
             void add(char value) {
                 *buf = value;
                 buf++;
+                size++;
             }
 
             void add(uint8_t value) {
                 *buf = value;
                 buf++;
+                size++;
             }
         };
     }
