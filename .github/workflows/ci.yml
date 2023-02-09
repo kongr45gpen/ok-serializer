@@ -101,7 +101,7 @@ jobs:
     - name: Install static analyzers
       if: matrix.os == 'ubuntu-22.04'
       run: >-
-        sudo apt-get install clang-tidy-14 cppcheck -y -q
+        sudo apt-get install clang-tidy-14 cppcheck g++ -y -q
 
         sudo update-alternatives --install
         /usr/bin/clang-tidy clang-tidy
