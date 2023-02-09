@@ -8,9 +8,14 @@ namespace okser {
 
             template<typename T>
             void add(const T &value) {
-                str += value;
+                str.get().append(value);
             }
         };
+
+        template<>
+        void stdstring::add(const unsigned char &value) {
+            str.get().push_back(value);
+        }
 
         class cstring {
         public:

@@ -39,7 +39,7 @@ namespace okser {
     template<int Bytes, end Endianness = end::be>
     struct sint : public internal::type {
         template<typename V, class Output>
-        static void serialize(const uint32_t &v, Output&& o) {
+        static void serialize(const V &v, Output&& o) {
             using Unsigned = std::make_unsigned_t<V>;
             Unsigned u = std::bit_cast<Unsigned>(v);
             uint<Bytes, Endianness>::serialize(u, o);

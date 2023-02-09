@@ -8,18 +8,13 @@ include(../cmake/windows-set-path.cmake)
 
 # ---- Dependencies ----
 
-if(PROJECT_IS_TOP_LEVEL)
-  find_package(ok-serializer REQUIRED)
-  enable_testing()
-endif()
+find_package(Catch2 REQUIRED)
 
 # ---- Tests ----
 
 add_executable(ok-serializer_test source/ok-serializer_test.cpp)
-target_link_libraries(ok-serializer_test PRIVATE ok-serializer::ok-serializer)
-target_compile_features(ok-serializer_test PRIVATE cxx_std_20)
-
-add_test(NAME ok-serializer_test COMMAND ok-serializer_test)
+target_link_libraries(ok-serializer_test PRIVATE ok-serializer::ok-serializer Catch2::Catch2WithMain)
+target_compile_features(ok-serializer_test PRIVATE cxx_std_23)
 
 # ---- End-of-file commands ----
 
