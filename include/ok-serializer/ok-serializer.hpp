@@ -1,6 +1,5 @@
 #pragma once
 
-#include <string>
 #include <tuple>
 
 #include "impl_types.h"
@@ -16,7 +15,7 @@ namespace okser {
 
     namespace internal {
         template<class Pair, class Output>
-        void serialize_one(Pair p, Output&& o) {
+        constexpr void serialize_one(Pair p, Output&& o) {
             Pair::SerializerType::serialize(p.value, o);
         }
     }
@@ -25,7 +24,7 @@ namespace okser {
     class bundle {
     public:
         template<class Output, typename... Values>
-        static void serialize(Output&& output, Values... values) {
+        constexpr static void serialize(Output&& output, Values... values) {
             std::tuple<mypair<Types, Values>...> typeValues{values...};
 
             std::apply([&output](auto &&... v) {
@@ -35,7 +34,7 @@ namespace okser {
     };
 
     template<class Bundle, class Output, typename... Values>
-    void serialize(Output&& output, Values... values) {
+    constexpr void serialize(Output&& output, Values... values) {
         return Bundle::serialize(output, values...);
     }
 

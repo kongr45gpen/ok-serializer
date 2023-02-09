@@ -15,7 +15,7 @@ namespace okser {
     namespace internal {
         class type {
             template<typename Value>
-            static void serialize(const Value &v) = delete;
+            constexpr static void serialize(const Value &v) = delete;
         };
     }
 
@@ -23,13 +23,13 @@ namespace okser {
     requires (Bytes > 0 && Bytes <= 8)
     struct uint : public internal::type {
         template<typename V, class Output>
-        static void serialize(const V &v, Output&& o) {
+        constexpr static void serialize(const V &v, Output&& o) {
             if constexpr (Endianness == end::le) {
-                for (size_t i = 0; i < Bytes; i++) {
+                for (std::size_t i = 0; i < Bytes; i++) {
                     o.add(static_cast<uint8_t>((v >> (8 * i)) & 0xFFU));
                 }
             } else {
-                for (size_t i = 0; i < Bytes; i++) {
+                for (std::size_t i = 0; i < Bytes; i++) {
                     o.add(static_cast<uint8_t>((v >> (8 * (Bytes - i - 1))) & 0xFFU));
                 }
             }

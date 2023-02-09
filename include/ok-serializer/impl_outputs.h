@@ -1,5 +1,7 @@
 #pragma once
 
+#include <string>
+
 namespace okser {
     namespace out {
         class stdstring {
@@ -13,7 +15,7 @@ namespace okser {
         };
 
         template<>
-        void stdstring::add(const unsigned char &value) {
+        inline void stdstring::add(const unsigned char &value) {
             str.get().push_back(value);
         }
 
