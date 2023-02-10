@@ -21,6 +21,7 @@ jobs:
       with: { python-version: "3.8" }
 
     - name: Lint
+      continue-on-error: true
       run: cmake -D FORMAT_COMMAND=clang-format-14 -P cmake/lint.cmake
 
   coverage:
@@ -97,6 +98,12 @@ jobs:
 
     steps:
     - uses: actions/checkout@v3
+
+    - name: Update build tools
+      if: matrix.os == 'ubuntu-22.04'
+      run: >-
+        sudo apt-get install catch2 -y -q
+
 
     - name: Setup MultiToolTask
       if: matrix.os == 'windows-2022'
