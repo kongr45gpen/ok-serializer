@@ -140,11 +140,8 @@ jobs:
     #    git commit --allow-empty -m "Initial commit"
     #    git push -u origin gh-pages
     #
-    # Edit the <name> placeholder below to your GitHub name, so this action
-    # runs only in your repository and no one else's fork. After these, delete
-    # this comment and the last line in the conditional below.
-    # If you do not wish to use GitHub Pages for deploying documentation, then
-    # simply delete this job similarly to the coverage one.
+    # Make sure to provide "Read and write permissions" in your Repository Actions
+    # settings.
     if: (github.ref == 'refs/heads/master' || github.ref == 'refs/heads/ci') 
       && github.event_name == 'push'
       && github.repository_owner == 'kongr45gpen'
