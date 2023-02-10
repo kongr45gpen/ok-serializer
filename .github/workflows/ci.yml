@@ -126,7 +126,7 @@ jobs:
 
     - name: Test
       working-directory: build
-      run: ./build/test/ok-serializer_test
+      run: ./test/ok-serializer_test
 
   docs:
     # Deploy docs only when builds succeed
