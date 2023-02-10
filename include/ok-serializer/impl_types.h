@@ -25,11 +25,11 @@ namespace okser {
         template<typename V, class Output>
         constexpr static void serialize(const V &v, Output&& o) {
             if constexpr (Endianness == end::le) {
-                for (std::size_t i = 0; i < Bytes; i++) {
+                for (uint8_t i = 0; i < Bytes; i++) {
                     o.add(static_cast<uint8_t>((v >> (8 * i)) & 0xFFU));
                 }
             } else {
-                for (std::size_t i = 0; i < Bytes; i++) {
+                for (uint8_t i = 0; i < Bytes; i++) {
                     o.add(static_cast<uint8_t>((v >> (8 * (Bytes - i - 1))) & 0xFFU));
                 }
             }
