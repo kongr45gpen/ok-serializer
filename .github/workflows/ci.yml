@@ -130,7 +130,7 @@ jobs:
 
   docs:
     # Deploy docs only when builds succeed
-    needs: [sanitize, test]
+    needs: [test]
 
     runs-on: ubuntu-22.04
 
