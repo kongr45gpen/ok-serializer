@@ -101,11 +101,15 @@ jobs:
     - name: Install static analyzers
       if: matrix.os == 'ubuntu-22.04'
       run: >-
-        sudo apt-get install clang-tidy-14 cppcheck g++ -y -q
+        wget -O - https://apt.llvm.org/llvm-snapshot.gpg.key | sudo apt-key add -
+        
+        sudo add-apt-repository 'deb http://apt.llvm.org/jammy/ llvm-toolchain-jammy main'
+        
+        sudo apt-get install clang-tidy-17 cppcheck g++ -y -q
 
         sudo update-alternatives --install
         /usr/bin/clang-tidy clang-tidy
-        /usr/bin/clang-tidy-14 140
+        /usr/bin/clang-tidy-17 170
 
     - name: Setup MultiToolTask
       if: matrix.os == 'windows-2022'
