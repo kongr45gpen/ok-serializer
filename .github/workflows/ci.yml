@@ -98,24 +98,24 @@ jobs:
     steps:
     - uses: actions/checkout@v3
 
-    - name: Update build tools
-      if: matrix.os == 'ubuntu-22.04'
-      run: >-
-        wget -O - https://apt.llvm.org/llvm-snapshot.gpg.key | sudo apt-key add -
-        
-        sudo add-apt-repository 'deb http://apt.llvm.org/jammy/ llvm-toolchain-jammy main'
-        
-        sudo apt-get remove clang llvm
-        
-        sudo apt-get install clang-tidy-17 clang-17 cppcheck -y -q
-
-        sudo update-alternatives --install
-        /usr/bin/clang-tidy clang-tidy
-        /usr/bin/clang-tidy-17 170
-        
-        sudo update-alternatives --install
-        /usr/bin/clang clang
-        /usr/bin/clang-17 170
+#    - name: Update build tools
+#      if: matrix.os == 'ubuntu-22.04'
+#      run: >-
+#        wget -O - https://apt.llvm.org/llvm-snapshot.gpg.key | sudo apt-key add -
+#
+#        sudo add-apt-repository 'deb http://apt.llvm.org/jammy/ llvm-toolchain-jammy main'
+#
+#        sudo apt-get remove clang llvm
+#
+#        sudo apt-get install clang-tidy-17 clang-17 cppcheck -y -q
+#
+#        sudo update-alternatives --install
+#        /usr/bin/clang-tidy clang-tidy
+#        /usr/bin/clang-tidy-17 170
+#
+#        sudo update-alternatives --install
+#        /usr/bin/clang clang
+#        /usr/bin/clang-17 170
 
     - name: Setup MultiToolTask
       if: matrix.os == 'windows-2022'

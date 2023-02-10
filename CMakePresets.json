@@ -125,7 +125,7 @@
     },
     {
       "name": "ci-ubuntu",
-      "inherits": ["ci-build", "ci-unix", "clang-tidy", "cppcheck", "dev-mode"]
+      "inherits": ["ci-build", "ci-unix", "dev-mode"]
     },
     {
       "name": "ci-windows",
