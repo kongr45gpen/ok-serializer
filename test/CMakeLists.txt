@@ -12,8 +12,8 @@ find_package(Catch2 REQUIRED)
 
 # ---- Tests ----
 
-add_executable(ok-serializer_test source/ok-serializer_test.cpp)
-target_link_libraries(ok-serializer_test PRIVATE ok-serializer::ok-serializer Catch2::Catch2WithMain)
+add_executable(ok-serializer_test source/ok-serializer_test.cpp source/main.cpp)
+target_link_libraries(ok-serializer_test PRIVATE ok-serializer::ok-serializer Catch2::Catch2)
 target_compile_features(ok-serializer_test PRIVATE cxx_std_23)
 
 # ---- End-of-file commands ----

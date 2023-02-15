@@ -10,6 +10,8 @@ template <typename T1, typename T2> struct mypair {
   using SerializerType = T1;
   using ValueType = T2;
   T2 value;
+
+  constexpr mypair(const T2& v) : value(v) {}
 };
 
 namespace internal {

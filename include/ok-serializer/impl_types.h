@@ -19,6 +19,11 @@ namespace okser {
         };
     }
 
+    /**
+     * Unsigned integer type
+     * @tparam Bytes Number of bytes used for the representation
+     * @tparam Endianness Choose between big-endian and little-endian
+     */
     template<int Bytes, end Endianness = end::be>
     requires (Bytes > 0 && Bytes <= 8)
     struct uint : public internal::type {
@@ -36,6 +41,11 @@ namespace okser {
         }
     };
 
+    /**
+     * Signed integer type
+     * @tparam Bytes Number of bytes used for the representation
+     * @tparam Endianness Choose between big-endian and little-endian
+     */
     template<int Bytes, end Endianness = end::be>
     struct sint : public internal::type {
         template<typename V, class Output>
