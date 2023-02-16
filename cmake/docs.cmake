@@ -8,8 +8,8 @@ endif()
 include(FetchContent)
 FetchContent_Declare(
     mcss URL
-    https://github.com/friendlyanon/m.css/releases/download/release-1/mcss.zip
-    URL_MD5 00cd2757ebafb9bcba7f5d399b3bec7f
+    https://codeload.github.com/marzer/m.css/zip/860c3cbfe755f25aa855e68949e0c8044327bbde
+    URL_MD5 BE29AC56FAFFF19A8E8B9FCF5ECA6FD1
     SOURCE_DIR "${PROJECT_BINARY_DIR}/mcss"
     UPDATE_DISCONNECTED YES
     ${extract_timestamps}

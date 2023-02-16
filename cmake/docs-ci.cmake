@@ -15,10 +15,10 @@ if(NOT IS_DIRECTORY "${mcss_SOURCE_DIR}")
   file(MAKE_DIRECTORY "${mcss_SOURCE_DIR}")
   file(
       DOWNLOAD
-      https://github.com/friendlyanon/m.css/releases/download/release-1/mcss.zip
+      https://codeload.github.com/marzer/m.css/zip/860c3cbfe755f25aa855e68949e0c8044327bbde
       "${mcss_SOURCE_DIR}/mcss.zip"
       STATUS status
-      EXPECTED_MD5 00cd2757ebafb9bcba7f5d399b3bec7f
+      EXPECTED_MD5 BE29AC56FAFFF19A8E8B9FCF5ECA6FD1
   )
   if(NOT status MATCHES "^0;")
     message(FATAL_ERROR "Download failed with ${status}")
@@ -33,6 +33,8 @@ if(NOT IS_DIRECTORY "${mcss_SOURCE_DIR}")
   endif()
   file(REMOVE "${mcss_SOURCE_DIR}/mcss.zip")
 endif()
+
+set(mcss_SOURCE_DIR "${bin}/docs/.ci/m.css-860c3cbfe755f25aa855e68949e0c8044327bbde")
 
 find_program(Python3_EXECUTABLE NAMES python3 python)
 if(NOT Python3_EXECUTABLE)
