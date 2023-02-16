@@ -50,12 +50,12 @@
       <div class="m-col-l-10 m-push-l-1">
         <h1>
           <span class="m-breadcrumb"><a href="namespaceokser.html">okser</a>::<wbr/></span><span class="m-breadcrumb"><a href="namespaceokser_1_1out.html">out</a>::<wbr/></span>stdstring <span class="m-thin">class</span>
-          <div class="m-doc-include m-code m-inverted m-text-right"><span class="cp">#include</span> <a class="cpf" href="impl__outputs_8h.html">&lt;impl_outputs.h&gt;</a></div>
+          <div class="m-doc-include m-code m-inverted m-text-right"><span class="cp">#include</span> <a class="cpf" href="impl__outputs_8h.html">&lt;ok-serializer/impl_outputs.h&gt;</a></div>
         </h1>
-        <p><span></span></p>
-        <div class="m-block m-default">
+        <nav class="m-block m-default">
           <h3>Contents</h3>
           <ul>
+            <li><a href="#autotoc_md4">Example</a></li>
             <li>
               Reference
               <ul>
@@ -64,7 +64,13 @@
               </ul>
             </li>
           </ul>
-        </div>
+        </nav>
+<p>A simple output to a C++ std::string</p><section id="autotoc_md4"><h3><a href="#autotoc_md4">Example</a></h3><pre class="m-code"><span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="w"> </span><span class="n">result</span><span class="p">;</span>
+<span class="k">auto</span><span class="w"> </span><span class="n">output</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">okser</span><span class="o">::</span><span class="n">out</span><span class="o">::</span><span class="n">stdstring</span><span class="p">{</span><span class="n">result</span><span class="p">};</span>
+
+<span class="c1">// ...</span>
+
+<span class="n">okser</span><span class="o">::</span><span class="n">serialize</span><span class="o">&lt;</span><span class="n">bundle</span><span class="o">&gt;</span><span class="p">(</span><span class="n">output</span><span class="p">,</span><span class="w"> </span><span class="mi">100</span><span class="p">,</span><span class="w"> </span><span class="mi">200</span><span class="p">,</span><span class="w"> </span><span class="mi">300</span><span class="p">);</span></pre></section>
         <section id="pub-methods">
           <h2><a href="#pub-methods">Public functions</a></h2>
           <dl class="m-doc">
@@ -127,8 +133,8 @@
     </div>
   </div>
 </div>
-<script src="search-v1.js"></script>
-<script src="searchdata-v1.js" async="async"></script>
+<script src="search-v2.js"></script>
+<script src="searchdata-v2.js" async="async"></script>
 <footer><nav>
   <div class="m-container">
     <div class="m-row">

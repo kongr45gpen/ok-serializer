@@ -49,14 +49,14 @@
     <div class="m-row">
       <div class="m-col-l-10 m-push-l-1">
         <h1>
-          <div class="m-doc-include m-code m-inverted m-right-m m-text-right"><span class="cp">#include</span> <a class="cpf" href="ok-serializer_8hpp.html">&lt;ok-serializer.hpp&gt;</a></div>
-          <div class="m-doc-template">template&lt;class... Types&gt;</div>
+          <div class="m-doc-include m-code m-inverted m-right-m m-text-right"><span class="cp">#include</span> <a class="cpf" href="ok-serializer_8hpp.html">&lt;ok-serializer/ok-serializer.hpp&gt;</a></div>
+          <div class="m-doc-template">template&lt;Serializer... Types&gt;</div>
           <span class="m-breadcrumb"><a href="namespaceokser.html">okser</a>::<wbr/></span>bundle <span class="m-thin">class</span>
         </h1>
-        <p><span></span></p>
-        <div class="m-block m-default">
+        <nav class="m-block m-default">
           <h3>Contents</h3>
           <ul>
+            <li><a href="#autotoc_md6">Example</a></li>
             <li>
               Reference
               <ul>
@@ -64,7 +64,8 @@
               </ul>
             </li>
           </ul>
-        </div>
+        </nav>
+<p>An array of types to be serialized. Bundle objects describe the binary format of the serialized output, and are a required input of the serializer.</p><section id="autotoc_md6"><h3><a href="#autotoc_md6">Example</a></h3><pre class="m-code"><span class="k">using</span><span class="w"> </span><span class="n">MyBundle</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">okser</span><span class="o">::</span><span class="n">bundle</span><span class="o">&lt;</span><span class="n">okser</span><span class="o">::</span><span class="n">uint</span><span class="o">&lt;</span><span class="mi">4</span><span class="o">&gt;</span><span class="p">,</span><span class="w"> </span><span class="n">okser</span><span class="o">::</span><span class="n">sint</span><span class="o">&lt;</span><span class="mi">2</span><span class="o">&gt;</span><span class="p">,</span><span class="w"> </span><span class="n">okser</span><span class="o">::</span><span class="n">floatp</span><span class="o">&gt;</span><span class="p">;</span></pre></section>
         <section id="pub-static-methods">
           <h2><a href="#pub-static-methods">Public static functions</a></h2>
           <dl class="m-doc">
@@ -114,8 +115,8 @@
     </div>
   </div>
 </div>
-<script src="search-v1.js"></script>
-<script src="searchdata-v1.js" async="async"></script>
+<script src="search-v2.js"></script>
+<script src="searchdata-v2.js" async="async"></script>
 <footer><nav>
   <div class="m-container">
     <div class="m-row">

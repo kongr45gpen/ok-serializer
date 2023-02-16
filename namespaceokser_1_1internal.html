@@ -52,7 +52,7 @@
           <span class="m-breadcrumb"><a href="namespaceokser.html">okser</a>::<wbr/></span>internal <span class="m-thin">namespace</span>
         </h1>
         <p><span></span></p>
-        <div class="m-block m-default">
+        <nav class="m-block m-default">
           <h3>Contents</h3>
           <ul>
             <li>
@@ -60,17 +60,18 @@
               <ul>
                 <li><a href="#nested-classes">Classes</a></li>
                 <li><a href="#func-members">Functions</a></li>
+                <li><a href="#var-members">Variables</a></li>
               </ul>
             </li>
           </ul>
-        </div>
+        </nav>
         <section id="nested-classes">
           <h2><a href="#nested-classes">Classes</a></h2>
           <dl class="m-doc">
             <dt>
               class <a href="classokser_1_1internal_1_1type.html" class="m-doc">type</a>
             </dt>
-            <dd><span></span></dd>
+            <dd></dd>
           </dl>
         </section>
         <section id="func-members">
@@ -81,21 +82,87 @@
               <span class="m-doc-wrap-bumper">void <a href="#a68f824658dc69c160ec135d22510e09e" class="m-doc">serialize_one</a>(</span><span class="m-doc-wrap">Pair p,
               Output&amp;&amp; o) <span class="m-label m-flat m-primary">constexpr</span></span>
             </dt>
-            <dd><span></span></dd>
+            <dd></dd>
+          </dl>
+        </section>
+        <section id="var-members">
+          <h2><a href="#var-members">Variables</a></h2>
+          <dl class="m-doc">
+            <dt>
+              <div class="m-doc-template">template&lt;class T&gt;</div>
+              bool <a href="#a54f0766594b6384c99138a1e82f9a12c" class="m-doc">is_serializer</a> <span class="m-label m-flat m-primary">constexpr</span>
+            </dt>
+            <dd></dd>
+            <dt>
+              <div class="m-doc-template">template&lt;class T&gt;</div>
+              requires constexpr std::derived_from&lt;T, <a href="classokser_1_1internal_1_1type.html" class="m-doc">type</a>&gt; bool <a href="#a993181d9202881ed4966672fc4c52843" class="m-doc">is_serializer< T ></a> <span class="m-label m-flat m-primary">constexpr</span>
+            </dt>
+            <dd></dd>
           </dl>
         </section>
         <section>
           <h2>Function documentation</h2>
           <section class="m-doc-details" id="a68f824658dc69c160ec135d22510e09e"><div>
             <h3>
-              <div class="m-doc-include m-code m-inverted m-right-m m-text-right"><span class="cp">#include</span> <a class="cpf" href="ok-serializer_8hpp.html">&lt;ok-serializer/ok-serializer.hpp&gt;</a></div>
+              <div class="m-doc-include m-code m-inverted m-right-m m-text-right"><span class="cp">#include</span> <a class="cpf" href="impl__utils_8h.html">&lt;ok-serializer/impl_utils.h&gt;</a></div>
               <div class="m-doc-template">
                 template&lt;class Pair, class Output&gt;
               </div>
               <span class="m-doc-wrap-bumper">void okser::<wbr />internal::<wbr /></span><span class="m-doc-wrap"><span class="m-doc-wrap-bumper"><a href="#a68f824658dc69c160ec135d22510e09e" class="m-doc-self">serialize_one</a>(</span><span class="m-doc-wrap">Pair p,
               Output&amp;&amp; o) <span class="m-label m-primary">constexpr</span></span></span>
             </h3>
-            <p><span></span></p>
+            <table class="m-table m-fullwidth m-flat">
+              <thead>
+                <tr><th colspan="2">Template parameters</th></tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td style="width: 1%">Pair</td>
+                  <td>The <a href="structokser_1_1serializable__value.html" class="m-doc">serializable_<wbr />value</a> type</td>
+                </tr>
+                <tr>
+                  <td>Output</td>
+                  <td>The output type</td>
+                </tr>
+              </tbody>
+              <thead>
+                <tr><th colspan="2">Parameters</th></tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>p</td>
+                  <td>The <a href="structokser_1_1serializable__value.html" class="m-doc">serializable_<wbr />value</a></td>
+                </tr>
+                <tr>
+                  <td>o</td>
+                  <td>The output</td>
+                </tr>
+              </tbody>
+            </table>
+<p>Append a single <a href="structokser_1_1serializable__value.html" class="m-doc">serializable_<wbr />value</a> to an output.</p>
+          </div></section>
+        </section>
+        <section>
+          <h2>Variable documentation</h2>
+          <section class="m-doc-details" id="a54f0766594b6384c99138a1e82f9a12c"><div>
+            <h3>
+              <div class="m-doc-include m-code m-inverted m-right-m m-text-right"><span class="cp">#include</span> <a class="cpf" href="impl__types_8h.html">&lt;ok-serializer/impl_types.h&gt;</a></div>
+              <div class="m-doc-template">
+                template&lt;class T&gt;
+              </div>
+              bool okser::<wbr />internal::<wbr /><a href="#a54f0766594b6384c99138a1e82f9a12c" class="m-doc-self">is_serializer</a> <span class="m-label m-primary">constexpr</span>
+            </h3>
+<p>A concept to check if a class is a serializer.</p>
+          </div></section>
+          <section class="m-doc-details" id="a993181d9202881ed4966672fc4c52843"><div>
+            <h3>
+              <div class="m-doc-include m-code m-inverted m-right-m m-text-right"><span class="cp">#include</span> <a class="cpf" href="impl__types_8h.html">&lt;ok-serializer/impl_types.h&gt;</a></div>
+              <div class="m-doc-template">
+                template&lt;class T&gt;
+              </div>
+              requires constexpr std::derived_from&lt;T, <a href="classokser_1_1internal_1_1type.html" class="m-doc">type</a>&gt; bool okser::<wbr />internal::<wbr /><a href="#a993181d9202881ed4966672fc4c52843" class="m-doc-self">is_serializer< T ></a> <span class="m-label m-primary">constexpr</span>
+            </h3>
+<p>Specialization to consider all children of <a href="classokser_1_1internal_1_1type.html" class="m-doc">okser::<wbr />internal::<wbr />type</a> as serializers.</p>
           </div></section>
         </section>
       </div>
@@ -136,8 +203,8 @@
     </div>
   </div>
 </div>
-<script src="search-v1.js"></script>
-<script src="searchdata-v1.js" async="async"></script>
+<script src="search-v2.js"></script>
+<script src="searchdata-v2.js" async="async"></script>
 <footer><nav>
   <div class="m-container">
     <div class="m-row">

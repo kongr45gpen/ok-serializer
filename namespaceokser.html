@@ -52,7 +52,7 @@
           okser <span class="m-thin">namespace</span>
         </h1>
         <p><span></span></p>
-        <div class="m-block m-default">
+        <nav class="m-block m-default">
           <h3>Contents</h3>
           <ul>
             <li>
@@ -63,17 +63,18 @@
                 <li><a href="#enum-members">Enums</a></li>
                 <li><a href="#typedef-members">Typedefs</a></li>
                 <li><a href="#func-members">Functions</a></li>
+                <li><a href="#var-members">Variables</a></li>
               </ul>
             </li>
           </ul>
-        </div>
+        </nav>
         <section id="namespaces">
           <h2><a href="#namespaces">Namespaces</a></h2>
           <dl class="m-doc">
             <dt>namespace <a href="namespaceokser_1_1internal.html" class="m-doc">internal</a></dt>
             <dd><span></span></dd>
             <dt>namespace <a href="namespaceokser_1_1out.html" class="m-doc">out</a></dt>
-            <dd><span></span></dd>
+            <dd></dd>
           </dl>
         </section>
         <section id="nested-classes">
@@ -83,17 +84,17 @@
               <div class="m-doc-template">template&lt;int Bytes, <a href="namespaceokser.html#ab272111dc4c26c5bbaf99f22698b46bc" class="m-doc">end</a> Endianness = <a href="namespaceokser.html#ab272111dc4c26c5bbaf99f22698b46bca910955a907e739b81ec8855763108a29" class="m-doc">end::<wbr />be</a>&gt;</div>
               struct <a href="structokser_1_1sint.html" class="m-doc">sint</a>
             </dt>
-            <dd><span></span></dd>
+            <dd></dd>
             <dt>
-              <div class="m-doc-template">template&lt;typename T1, typename T2&gt;</div>
-              struct <a href="structokser_1_1mypair.html" class="m-doc">mypair</a>
+              <div class="m-doc-template">template&lt;<a href="namespaceokser.html#adc601784f0401396bf0b794f6c57dd9f" class="m-doc">Serializer</a> S, typename V&gt;</div>
+              struct <a href="structokser_1_1serializable__value.html" class="m-doc">serializable_value</a>
             </dt>
-            <dd><span></span></dd>
+            <dd></dd>
             <dt>
-              <div class="m-doc-template">template&lt;class... Types&gt;</div>
+              <div class="m-doc-template">template&lt;Serializer... Types&gt;</div>
               class <a href="classokser_1_1bundle.html" class="m-doc">bundle</a>
             </dt>
-            <dd><span></span></dd>
+            <dd></dd>
           </dl>
         </section>
         <section id="enum-members">
@@ -113,7 +114,7 @@
               <div class="m-doc-template">template&lt;end Endianness = end::be&gt;</div>
               using <a href="#a22d8f7c146fcad60498127cd7c49d638" class="m-doc">doublep</a> = (Bytes==4||Bytes==8) struct floatp floatp&lt;8, Endianness&gt;
             </dt>
-            <dd><span></span></dd>
+            <dd></dd>
           </dl>
         </section>
         <section id="func-members">
@@ -124,7 +125,17 @@
               <span class="m-doc-wrap-bumper">void <a href="#a154f01d85971ef65217ed87e97524dc4" class="m-doc">serialize</a>(</span><span class="m-doc-wrap">Output&amp;&amp; output,
               Values... values) <span class="m-label m-flat m-primary">constexpr</span></span>
             </dt>
-            <dd><span></span></dd>
+            <dd></dd>
+          </dl>
+        </section>
+        <section id="var-members">
+          <h2><a href="#var-members">Variables</a></h2>
+          <dl class="m-doc">
+            <dt>
+              <div class="m-doc-template">template&lt;typename T&gt;</div>
+              concept <a href="#adc601784f0401396bf0b794f6c57dd9f" class="m-doc">Serializer</a>
+            </dt>
+            <dd></dd>
           </dl>
         </section>
         <section>
@@ -134,7 +145,7 @@
               enum class okser::<wbr /><a href="#ab272111dc4c26c5bbaf99f22698b46bc" class="m-doc-self">end</a>
               <div class="m-doc-include m-code m-inverted m-text-right"><span class="cp">#include</span> <a class="cpf" href="impl__types_8h.html">&lt;ok-serializer/impl_types.h&gt;</a></div>
             </h3>
-<p>Enum to represent endianness</p>
+<p>Enum to represent endianness</p><aside class="m-note m-info"><h4>Note</h4><p>This library does not depend on the endianness of the compiler or target system. Any output should be interchangeable between different systems.</p></aside><p>However, the user can specify the endianness of the serialized data at compile-time. Big endianness is used conventionally by default.</p><aside class="m-note m-default"><h4>See also</h4><p><a href="https://en.wikipedia.org/wiki/Endianness">https:/<wbr />/<wbr />en.wikipedia.org/<wbr />wiki/<wbr />Endianness</a></p></aside><aside class="m-note m-dim"><h4><a href="todo.html#_todo000001" class="m-doc">Todo</a></h4><p>Use standard library definition, <a href="https://en.cppreference.com/w/cpp/types/endian">https:/<wbr />/<wbr />en.cppreference.com/<wbr />w/<wbr />cpp/<wbr />types/<wbr />endian</a></p></aside>
             <table class="m-table m-fullwidth m-flat m-doc">
               <thead><tr><th style="width: 1%">Enumerators</th><th></th></tr></thead>
               <tbody>
@@ -164,7 +175,18 @@
               </div>
               using okser::<wbr /><a href="#a22d8f7c146fcad60498127cd7c49d638" class="m-doc-self">doublep</a> = (Bytes==4||Bytes==8) struct floatp floatp&lt;8, Endianness&gt;
             </h3>
-            <p><span></span></p>
+            <table class="m-table m-fullwidth m-flat">
+              <thead>
+                <tr><th colspan="2">Template parameters</th></tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td style="width: 1%">Endianness</td>
+                  <td>Shortcut to a double-precision floating point number</td>
+                </tr>
+              </tbody>
+            </table>
+<p>IEEE 754 floating point number</p>
           </div></section>
         </section>
         <section>
@@ -178,7 +200,53 @@
               <span class="m-doc-wrap-bumper">void okser::<wbr /></span><span class="m-doc-wrap"><span class="m-doc-wrap-bumper"><a href="#a154f01d85971ef65217ed87e97524dc4" class="m-doc-self">serialize</a>(</span><span class="m-doc-wrap">Output&amp;&amp; output,
               Values... values) <span class="m-label m-primary">constexpr</span></span></span>
             </h3>
-            <p><span></span></p>
+            <table class="m-table m-fullwidth m-flat">
+              <thead>
+                <tr><th colspan="2">Template parameters</th></tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td style="width: 1%">Bundle</td>
+                  <td>The bundle containing each element of the serialized structure.</td>
+                </tr>
+                <tr>
+                  <td>Output</td>
+                  <td>The type of the output.</td>
+                </tr>
+                <tr>
+                  <td>Values</td>
+                  <td>The types of the values to serialize. These do not need to match the Bundle.</td>
+                </tr>
+              </tbody>
+              <thead>
+                <tr><th colspan="2">Parameters</th></tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>output</td>
+                  <td>The output to append to at runtime.</td>
+                </tr>
+                <tr>
+                  <td>values</td>
+                  <td>The values to serialize. This needs to match the number and order of <code>Values</code>.</td>
+                </tr>
+              </tbody>
+            </table>
+<p>Take some <code>values</code>, serialize them using a <code>bundle</code>, and append them to an <code>output</code></p>
+          </div></section>
+        </section>
+        <section>
+          <h2>Variable documentation</h2>
+          <section class="m-doc-details" id="adc601784f0401396bf0b794f6c57dd9f"><div>
+            <h3>
+              <div class="m-doc-include m-code m-inverted m-right-m m-text-right"><span class="cp">#include</span> <a class="cpf" href="ok-serializer_8hpp.html">&lt;ok-serializer/ok-serializer.hpp&gt;</a></div>
+              <div class="m-doc-template">
+                template&lt;typename T&gt;
+              </div>
+              concept okser::<wbr /><a href="#adc601784f0401396bf0b794f6c57dd9f" class="m-doc-self">Serializer</a>
+            </h3>
+<p>A concept to check if a class can be used as an okser serializer and serialise values to binaries.</p><p>By default, every child of the <a href="classokser_1_1internal_1_1type.html" class="m-doc">okser::<wbr />internal::<wbr />type</a> class satisfies this concept. For any custom user-provided serializable types, you can derive your type from <a href="classokser_1_1internal_1_1type.html" class="m-doc">okser::<wbr />internal::<wbr />type</a>, or use a template specialization as follows:</p><pre class="m-code"><span class="k">template</span><span class="o">&lt;&gt;</span>
+<span class="k">constexpr</span><span class="w"> </span><span class="kr">inline</span><span class="w"> </span><span class="kt">bool</span><span class="w"> </span><span class="n">is_serializer</span><span class="o">&lt;</span><span class="n">MySerializer</span><span class="o">&gt;</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">true</span><span class="p">;</span></pre>
           </div></section>
         </section>
       </div>
@@ -219,8 +287,8 @@
     </div>
   </div>
 </div>
-<script src="search-v1.js"></script>
-<script src="searchdata-v1.js" async="async"></script>
+<script src="search-v2.js"></script>
+<script src="searchdata-v2.js" async="async"></script>
 <footer><nav>
   <div class="m-container">
     <div class="m-row">
