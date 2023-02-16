@@ -44,6 +44,13 @@ public:
 
 /**
  * Take some @p values, serialize them using a @p bundle, and append them to an @p output
+ *
+ * ## Example
+ * \code
+ * using bundle = okser::bundle<okser::sint<1>, okser::uint<2>>;
+ * okser::serialize<bundle>(output, 100, 50000);
+ * \endcode
+ *
  * @tparam Bundle The bundle containing each element of the serialized structure.
  * @tparam Output The type of the output.
  * @tparam Values The types of the values to serialize. These do not need to match the Bundle.
@@ -53,6 +60,40 @@ public:
 template <class Bundle, Output Out, typename... Values>
 constexpr void serialize(Out &&output, Values... values) {
   return Bundle::serialize(output, values...);
+}
+
+/**
+ * Shortcut to okser::serialize without the need to declare a bundle.
+ *
+ * ## Example
+ * \code
+ * okser::serialize<okser::sint<1>, okser::uint<2>>(output, 100, 50000);
+ * \endcode
+ *
+ * @tparam Types The serializer types of the "bundle"
+ * @todo See if this can be combined with the above function through deduction
+ */
+template <Serializer... Types, Output Out, typename... Values>
+constexpr void serialize(Out &&output, Values... values) {
+    return bundle<Types...>::serialize(output, values...);
+}
+
+/**
+ * Shortcut to okser::serialize that directly produces an std::string.
+ *
+ * ## Example
+ * \code
+ * std::string out = okser::simple_serialize<
+ *     okser::sint<1>,
+ *     okser::uint<2>
+ * >(-5, 15);
+ * \endcode
+ */
+template <Serializer... Types, typename... Values>
+constexpr std::string simple_serialize(Values... values) {
+    std::string output;
+    bundle<Types...>::serialize(out::stdstring{output}, values...);
+    return output;
 }
 
 } // namespace okser
