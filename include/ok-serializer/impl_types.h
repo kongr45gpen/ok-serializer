@@ -50,8 +50,8 @@ namespace okser {
     template<int Bytes, end Endianness = end::be>
     requires (Bytes > 0 && Bytes <= 8)
     struct uint : public internal::type {
-        template<typename V, class Output>
-        constexpr static void serialize(const V &v, Output&& o) {
+        template<typename V, Output Out>
+        constexpr static void serialize(const V &v, Out&& o) {
             if constexpr (Endianness == end::le) {
                 for (uint8_t i = 0; i < Bytes; i++) {
                     o.add(static_cast<uint8_t>((v >> (8 * i)) & 0xFFU));
@@ -74,8 +74,8 @@ namespace okser {
      */
     template<int Bytes, end Endianness = end::be>
     struct sint : public internal::type {
-        template<typename V, class Output>
-        static void serialize(const V &v, Output&& o) {
+        template<typename V, Output Out>
+        static void serialize(const V &v, Out&& o) {
             using Unsigned = std::make_unsigned_t<V>;
             Unsigned u = std::bit_cast<Unsigned>(v);
             uint<Bytes, Endianness>::serialize(u, o);
@@ -92,9 +92,9 @@ namespace okser {
     template<int Bytes = 4, end Endianness = end::be>
     requires (Bytes == 4 || Bytes == 8)
     struct floatp : public internal::type {
-        template<typename V, class Output>
+        template<typename V, Output Out>
         requires (std::is_floating_point_v<V>)
-        static void serialize(const V &v, Output&& o) {
+        static void serialize(const V &v, Out&& o) {
             using Float = std::conditional_t<Bytes == 4, float, double>;
             using Unsigned = std::conditional_t<Bytes == 4, uint32_t, uint64_t>;
 
@@ -130,8 +130,8 @@ namespace okser {
     template<typename Enum, int Bytes = sizeof(std::underlying_type<Enum>), end Endianness = end::be>
     requires (Bytes > 0 && Bytes <= 8 && std::is_enum_v<Enum>)
     struct enumv : public internal::type {
-        template<class Output>
-        static void serialize(const Enum &e, Output&& o) {
+        template<Output Out>
+        static void serialize(const Enum &e, Out&& o) {
             using Underlying = std::underlying_type_t<Enum>;
             uint<Bytes, Endianness>::serialize(static_cast<Underlying>(e), o);
         }

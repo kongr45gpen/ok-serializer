@@ -5,6 +5,15 @@
 
 namespace okser {
     /**
+    * A concept to check if a class can be used as an okser output.
+    */
+    template<typename T>
+    concept Output = requires(T t, uint8_t byte)
+    {
+        { t.add(byte) };
+    };
+
+    /**
      * Useful output classes for serialized results
      */
     namespace out {

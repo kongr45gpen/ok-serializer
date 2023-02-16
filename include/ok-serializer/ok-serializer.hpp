@@ -9,23 +9,6 @@
 namespace okser {
 
 /**
- * A concept to check if a class can be used as an okser serializer and serialise values to binaries.
- *
- * By default, every child of the okser::internal::type class satisfies this concept. For any custom user-provided
- * serializable types, you can derive your type from okser::internal::type, or use a template specialization as follows:
- * \code
- * template<>
- * constexpr inline bool is_serializer<MySerializer> = true;
- * \endcode
- */
-template<typename T>
-concept Serializer = requires()
-{
-    requires internal::is_serializer<T>;
-};
-
-
-/**
  * A container for a serializable value, which includes static information about the serializer used for this value.
  * @tparam S The serializer type
  * @tparam V The value type
@@ -49,8 +32,8 @@ template <Serializer S, typename V> struct serializable_value {
  */
 template <Serializer... Types> class bundle {
 public:
-  template <class Output, typename... Values>
-  constexpr static void serialize(Output &&output, Values... values) {
+  template <Output Out, typename... Values>
+  constexpr static void serialize(Out &&output, Values... values) {
     std::tuple<serializable_value<Types, Values>...> typeValues{values...};
 
     std::apply(
@@ -67,8 +50,8 @@ public:
  * @param output The output to append to at runtime.
  * @param values The values to serialize. This needs to match the number and order of @p Values.
  */
-template <class Bundle, class Output, typename... Values>
-constexpr void serialize(Output &&output, Values... values) {
+template <class Bundle, Output Out, typename... Values>
+constexpr void serialize(Out &&output, Values... values) {
   return Bundle::serialize(output, values...);
 }
 
