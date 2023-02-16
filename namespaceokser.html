@@ -121,8 +121,8 @@
           <h2><a href="#func-members">Functions</a></h2>
           <dl class="m-doc">
             <dt>
-              <div class="m-doc-template">template&lt;class Bundle, class Output, typename... Values&gt;</div>
-              <span class="m-doc-wrap-bumper">void <a href="#a154f01d85971ef65217ed87e97524dc4" class="m-doc">serialize</a>(</span><span class="m-doc-wrap">Output&amp;&amp; output,
+              <div class="m-doc-template">template&lt;class Bundle, Output Out, typename... Values&gt;</div>
+              <span class="m-doc-wrap-bumper">void <a href="#afe7c55dfd5bebb741ffe7bc4c262cbea" class="m-doc">serialize</a>(</span><span class="m-doc-wrap">Out&amp;&amp; output,
               Values... values) <span class="m-label m-flat m-primary">constexpr</span></span>
             </dt>
             <dd></dd>
@@ -131,6 +131,11 @@
         <section id="var-members">
           <h2><a href="#var-members">Variables</a></h2>
           <dl class="m-doc">
+            <dt>
+              <div class="m-doc-template">template&lt;typename T&gt;</div>
+              concept <a href="#ad303c76375992471999a8a2b3567abf2" class="m-doc">Output</a>
+            </dt>
+            <dd></dd>
             <dt>
               <div class="m-doc-template">template&lt;typename T&gt;</div>
               concept <a href="#adc601784f0401396bf0b794f6c57dd9f" class="m-doc">Serializer</a>
@@ -191,13 +196,13 @@
         </section>
         <section>
           <h2>Function documentation</h2>
-          <section class="m-doc-details" id="a154f01d85971ef65217ed87e97524dc4"><div>
+          <section class="m-doc-details" id="afe7c55dfd5bebb741ffe7bc4c262cbea"><div>
             <h3>
               <div class="m-doc-include m-code m-inverted m-right-m m-text-right"><span class="cp">#include</span> <a class="cpf" href="ok-serializer_8hpp.html">&lt;ok-serializer/ok-serializer.hpp&gt;</a></div>
               <div class="m-doc-template">
-                template&lt;class Bundle, class Output, typename... Values&gt;
+                template&lt;class Bundle, Output Out, typename... Values&gt;
               </div>
-              <span class="m-doc-wrap-bumper">void okser::<wbr /></span><span class="m-doc-wrap"><span class="m-doc-wrap-bumper"><a href="#a154f01d85971ef65217ed87e97524dc4" class="m-doc-self">serialize</a>(</span><span class="m-doc-wrap">Output&amp;&amp; output,
+              <span class="m-doc-wrap-bumper">void okser::<wbr /></span><span class="m-doc-wrap"><span class="m-doc-wrap-bumper"><a href="#afe7c55dfd5bebb741ffe7bc4c262cbea" class="m-doc-self">serialize</a>(</span><span class="m-doc-wrap">Out&amp;&amp; output,
               Values... values) <span class="m-label m-primary">constexpr</span></span></span>
             </h3>
             <table class="m-table m-fullwidth m-flat">
@@ -210,8 +215,8 @@
                   <td>The bundle containing each element of the serialized structure.</td>
                 </tr>
                 <tr>
-                  <td>Output</td>
-                  <td>The type of the output.</td>
+                  <td>Out</td>
+                  <td></td>
                 </tr>
                 <tr>
                   <td>Values</td>
@@ -237,9 +242,19 @@
         </section>
         <section>
           <h2>Variable documentation</h2>
+          <section class="m-doc-details" id="ad303c76375992471999a8a2b3567abf2"><div>
+            <h3>
+              <div class="m-doc-include m-code m-inverted m-right-m m-text-right"><span class="cp">#include</span> <a class="cpf" href="impl__outputs_8h.html">&lt;ok-serializer/impl_outputs.h&gt;</a></div>
+              <div class="m-doc-template">
+                template&lt;typename T&gt;
+              </div>
+              concept okser::<wbr /><a href="#ad303c76375992471999a8a2b3567abf2" class="m-doc-self">Output</a>
+            </h3>
+<p>A concept to check if a class can be used as an okser output.</p>
+          </div></section>
           <section class="m-doc-details" id="adc601784f0401396bf0b794f6c57dd9f"><div>
             <h3>
-              <div class="m-doc-include m-code m-inverted m-right-m m-text-right"><span class="cp">#include</span> <a class="cpf" href="ok-serializer_8hpp.html">&lt;ok-serializer/ok-serializer.hpp&gt;</a></div>
+              <div class="m-doc-include m-code m-inverted m-right-m m-text-right"><span class="cp">#include</span> <a class="cpf" href="impl__utils_8h.html">&lt;ok-serializer/impl_utils.h&gt;</a></div>
               <div class="m-doc-template">
                 template&lt;typename T&gt;
               </div>
