@@ -51,7 +51,18 @@
         <h1>
           ok-serializer
         </h1>
-<p><a name="md_README"></a> This is the ok-serializer project.</p><section id="autotoc_md1"><h2><a href="#autotoc_md1">Building and installing</a></h2><p>See the BUILDING document.</p></section><section id="autotoc_md2"><h2><a href="#autotoc_md2">Contributing</a></h2><p>See the CONTRIBUTING document.</p></section><section id="autotoc_md3"><h2><a href="#autotoc_md3">Licensing</a></h2></section>
+<p><a name="md_README"></a> A binary data serializer and deserializer (or marshaller and unmarshaller, if you prefer) for C++, that&#x27;s quite OK.</p><p>The purpose of this library is not to provide an advanced framework to serialize and parse well-defined objects, but to allow <strong>working with binary data of all kinds</strong> and different source.</p><section id="autotoc_md1"><h2><a href="#autotoc_md1">Features</a></h2><ul><li><strong>Header-only</strong> library</li><li>Built from the ground up using <strong>C++23</strong>.</li><li><strong>Compile-time</strong> type definitions for minimal overhead.</li><li>Optional support for the C++ <strong>reflection</strong> technical specification.</li></ul></section><section id="autotoc_md2"><h2><a href="#autotoc_md2">Example code</a></h2><pre class="m-code"><span class="k">using</span><span class="w"> </span><span class="k">namespace</span><span class="w"> </span><span class="nn">okser</span><span class="p">;</span>
+
+<span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="w"> </span><span class="n">data</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">simple_serialize</span><span class="o">&lt;</span><span class="n">sint</span><span class="o">&lt;</span><span class="mi">1</span><span class="o">&gt;</span><span class="p">,</span><span class="w"> </span><span class="n">floatp</span><span class="o">&gt;</span><span class="p">(</span><span class="mi">63</span><span class="p">,</span><span class="w"> </span><span class="mf">3.14f</span><span class="p">);</span>
+
+<span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="w"> </span><span class="n">result</span><span class="p">;</span>
+
+<span class="c1">// A &quot;bundle&quot; defines the structure that needs to be serialised</span>
+<span class="k">using</span><span class="w"> </span><span class="n">MyBundle</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">bundle</span><span class="o">&lt;</span><span class="n">sint</span><span class="o">&lt;</span><span class="mi">1</span><span class="o">&gt;</span><span class="p">,</span><span class="w"> </span><span class="n">floatp</span><span class="o">&gt;</span><span class="p">;</span>
+<span class="c1">// An &quot;output&quot; defines where the data is going to be stored, a file, a string, a socket etc.</span>
+<span class="k">auto</span><span class="w"> </span><span class="n">output</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">out</span><span class="o">::</span><span class="n">stdstring</span><span class="p">{</span><span class="n">result</span><span class="p">};</span>
+
+<span class="n">serialize</span><span class="o">&lt;</span><span class="n">MyBundle</span><span class="o">&gt;</span><span class="p">(</span><span class="n">output</span><span class="p">,</span><span class="w"> </span><span class="mi">63</span><span class="p">,</span><span class="w"> </span><span class="mf">3.14f</span><span class="p">);</span></pre></section><section id="autotoc_md3"><h2><a href="#autotoc_md3">Getting started</a></h2></section><section id="autotoc_md4"><h2><a href="#autotoc_md4">Contributing</a></h2><p>See the CONTRIBUTING document.</p></section><section id="autotoc_md5"><h2><a href="#autotoc_md5">Licensing</a></h2><p>Licensed under MIT. See [LICENSE](LICENSE) for details.</p></section>
       </div>
     </div>
   </div>
