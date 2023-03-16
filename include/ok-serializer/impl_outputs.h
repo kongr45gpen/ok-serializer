@@ -41,15 +41,28 @@ namespace okser {
             }
         };
 
-        /**
-         * An output to a C++ range container
-         * @param value
-         */
         template<>
         inline void stdstring::add(const unsigned char &value) {
             str.get().push_back(value);
         }
 
+        /**
+         * An output to a pre-allocated C++ range, such as an std::array
+         *
+         * ## Example
+         * \code
+         * std::array<uint8_t, 3> result;
+         * auto output = okser::out::fixed_container{result};
+         *
+         * // ...
+         *
+         * okser::serialize<bundle>(output, 100, 200, 300);
+         * \endcode
+         *
+         * @note This only works with containers that have a certain number of elements preallocated. For example,
+         * an empty vector with 0 elements will thrown an error, while a vector with N elements will have those elements
+         * replaced.
+         */
         template<std::ranges::output_range<uint8_t> C>
         class fixed_container {
             private:
