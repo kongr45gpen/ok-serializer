@@ -2,6 +2,7 @@
 
 #include <functional>
 #include <string>
+#include <ranges>
 
 namespace okser {
     /**
@@ -40,10 +41,32 @@ namespace okser {
             }
         };
 
+        /**
+         * An output to a C++ range container
+         * @param value
+         */
         template<>
         inline void stdstring::add(const unsigned char &value) {
             str.get().push_back(value);
         }
+
+        template<std::ranges::output_range<uint8_t> C>
+        class fixed_container {
+            private:
+                C::iterator current;
+                C::const_iterator last;
+            public:
+                explicit fixed_container(C& container) : current(container.begin()), last(container.end()) {}
+
+                template<typename T>
+                void add(const T &value) {
+                    if (current == last) {
+                        throw std::out_of_range("okser::out::fixed_container: container is full");
+                    }
+                    *current = value;
+                    current++;
+                }
+        };
 
         /**
          * A simple output to a C-style char buffer
