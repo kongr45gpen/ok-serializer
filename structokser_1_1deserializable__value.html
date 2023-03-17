@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <title>okser::sint struct | ok-serializer</title>
+  <title>okser::deserializable_value struct | ok-serializer</title>
   <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:400,400i,600,600i%7CSource+Code+Pro:400,400i,600" />
   <link rel="stylesheet" href="m-dark+documentation.compiled.css" />
   <link rel="icon" href="favicon-dark.png" type="image/png" />
@@ -49,60 +49,31 @@
     <div class="m-row">
       <div class="m-col-l-10 m-push-l-1">
         <h1>
-          <div class="m-doc-include m-code m-inverted m-right-m m-text-right"><span class="cp">#include</span> <a class="cpf" href="impl__types_8h.html">&lt;ok-serializer/impl_types.h&gt;</a></div>
-          <div class="m-doc-template">template&lt;int Bytes, <a href="namespaceokser.html#ab272111dc4c26c5bbaf99f22698b46bc" class="m-doc">end</a> Endianness = <a href="namespaceokser.html#ab272111dc4c26c5bbaf99f22698b46bca910955a907e739b81ec8855763108a29" class="m-doc">end::<wbr />be</a>&gt;</div>
-          <span class="m-breadcrumb"><a href="namespaceokser.html">okser</a>::<wbr/></span>sint <span class="m-thin">struct</span>
+          <div class="m-doc-include m-code m-inverted m-right-m m-text-right"><span class="cp">#include</span> <a class="cpf" href="ok-serializer_8hpp.html">&lt;ok-serializer/ok-serializer.hpp&gt;</a></div>
+          <div class="m-doc-template">template&lt;<a href="namespaceokser.html#adc601784f0401396bf0b794f6c57dd9f" class="m-doc">Serializer</a> S, typename V&gt;</div>
+          <span class="m-breadcrumb"><a href="namespaceokser.html">okser</a>::<wbr/></span>deserializable_value <span class="m-thin">struct</span>
         </h1>
-        <table class="m-table m-fullwidth m-flat">
-          <thead>
-            <tr><th colspan="2">Template parameters</th></tr>
-          </thead>
-          <tbody>
-            <tr>
-              <td style="width: 1%">Bytes</td>
-              <td>The number of bytes in the binary representation of the integer</td>
-            </tr>
-            <tr>
-              <td>Endianness</td>
-              <td></td>
-            </tr>
-          </tbody>
-        </table>
+        <p><span></span></p>
         <nav class="m-block m-default">
           <h3>Contents</h3>
           <ul>
             <li>
               Reference
               <ul>
-                <li><a href="#base-classes">Base classes</a></li>
-                <li><a href="#pub-static-methods">Public static functions</a></li>
+                <li><a href="#pub-types">Public types</a></li>
               </ul>
             </li>
           </ul>
         </nav>
-<p>Unsigned integer type 
-Implemented using 2&#x27;s complement</p>
-        <section id="base-classes">
-          <h2><a href="#base-classes">Base classes</a></h2>
+        <section id="pub-types">
+          <h2><a href="#pub-types">Public types</a></h2>
           <dl class="m-doc">
-            <dt>
-              class <a href="classokser_1_1internal_1_1type.html" class="m-doc">type</a>
-            </dt>
-            <dd></dd>
-          </dl>
-        </section>
-        <section id="pub-static-methods">
-          <h2><a href="#pub-static-methods">Public static functions</a></h2>
-          <dl class="m-doc">
-            <dt id="a5dacca0c1c4c081802b84accb3e00760">
-              <div class="m-doc-template">template&lt;typename V, <a href="namespaceokser.html#ad303c76375992471999a8a2b3567abf2" class="m-doc">Output</a> Out&gt;</div>
-              <span class="m-doc-wrap-bumper">static void <a href="#a5dacca0c1c4c081802b84accb3e00760" class="m-doc-self">serialize</a>(</span><span class="m-doc-wrap">const V&amp; v,
-              Out&amp;&amp; o)</span>
+            <dt id="aba10cedcadf1cef9ddf355a35f75d55f">
+              using <a href="#aba10cedcadf1cef9ddf355a35f75d55f" class="m-doc-self">SerializerType</a> = S
             </dt>
             <dd><span></span></dd>
-            <dt id="a9021bf13f5e6a1e4759a634d9a7d6e6c">
-              <div class="m-doc-template">template&lt;typename V, <a href="namespaceokser.html#a47b29560e655ea0b1de66f83303c32b1" class="m-doc">Input</a> In&gt;</div>
-              <span class="m-doc-wrap-bumper">static auto <a href="#a9021bf13f5e6a1e4759a634d9a7d6e6c" class="m-doc-self">deserialize</a>(</span><span class="m-doc-wrap">In&amp;&amp; in) -&gt; V</span>
+            <dt id="abcc53c611f96b485a391276fce12e085">
+              using <a href="#abcc53c611f96b485a391276fce12e085" class="m-doc-self">ValueType</a> = V
             </dt>
             <dd><span></span></dd>
           </dl>

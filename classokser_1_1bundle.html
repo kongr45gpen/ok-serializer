@@ -56,7 +56,7 @@
         <nav class="m-block m-default">
           <h3>Contents</h3>
           <ul>
-            <li><a href="#autotoc_md8">Example</a></li>
+            <li><a href="#autotoc_md9">Example</a></li>
             <li>
               Reference
               <ul>
@@ -65,7 +65,7 @@
             </li>
           </ul>
         </nav>
-<p>An array of types to be serialized. Bundle objects describe the binary format of the serialized output, and are a required input of the serializer.</p><section id="autotoc_md8"><h3><a href="#autotoc_md8">Example</a></h3><pre class="m-code"><span class="k">using</span><span class="w"> </span><span class="n">MyBundle</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">okser</span><span class="o">::</span><span class="n">bundle</span><span class="o">&lt;</span><span class="n">okser</span><span class="o">::</span><span class="n">uint</span><span class="o">&lt;</span><span class="mi">4</span><span class="o">&gt;</span><span class="p">,</span><span class="w"> </span><span class="n">okser</span><span class="o">::</span><span class="n">sint</span><span class="o">&lt;</span><span class="mi">2</span><span class="o">&gt;</span><span class="p">,</span><span class="w"> </span><span class="n">okser</span><span class="o">::</span><span class="n">floatp</span><span class="o">&gt;</span><span class="p">;</span></pre></section>
+<p>An array of types to be serialized. Bundle objects describe the binary format of the serialized output, and are a required input of the serializer.</p><section id="autotoc_md9"><h3><a href="#autotoc_md9">Example</a></h3><pre class="m-code"><span class="k">using</span><span class="w"> </span><span class="n">MyBundle</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">okser</span><span class="o">::</span><span class="n">bundle</span><span class="o">&lt;</span><span class="n">okser</span><span class="o">::</span><span class="n">uint</span><span class="o">&lt;</span><span class="mi">4</span><span class="o">&gt;</span><span class="p">,</span><span class="w"> </span><span class="n">okser</span><span class="o">::</span><span class="n">sint</span><span class="o">&lt;</span><span class="mi">2</span><span class="o">&gt;</span><span class="p">,</span><span class="w"> </span><span class="n">okser</span><span class="o">::</span><span class="n">floatp</span><span class="o">&gt;</span><span class="p">;</span></pre></section>
         <section id="pub-static-methods">
           <h2><a href="#pub-static-methods">Public static functions</a></h2>
           <dl class="m-doc">
@@ -73,6 +73,11 @@
               <div class="m-doc-template">template&lt;<a href="namespaceokser.html#ad303c76375992471999a8a2b3567abf2" class="m-doc">Output</a> Out, typename... Values&gt;</div>
               <span class="m-doc-wrap-bumper">static void <a href="#a78842eb397e08f20ac8f33250e1f9b74" class="m-doc-self">serialize</a>(</span><span class="m-doc-wrap">Out&amp;&amp; output,
               Values... values) <span class="m-label m-flat m-primary">constexpr</span></span>
+            </dt>
+            <dd><span></span></dd>
+            <dt id="a3599f5fc64f083ed7d7ca3f21edd5f63">
+              <div class="m-doc-template">template&lt;<a href="namespaceokser.html#a47b29560e655ea0b1de66f83303c32b1" class="m-doc">Input</a> In, typename... Values&gt;</div>
+              <span class="m-doc-wrap-bumper">static auto <a href="#a3599f5fc64f083ed7d7ca3f21edd5f63" class="m-doc-self">deserialize</a>(</span><span class="m-doc-wrap">In&amp;&amp; input) -&gt; std::tuple&lt;Values...&gt; <span class="m-label m-flat m-primary">constexpr</span></span>
             </dt>
             <dd><span></span></dd>
           </dl>
