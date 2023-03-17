@@ -64,18 +64,23 @@ namespace okser {
         }
 
         template<typename V, Input In>
-        constexpr static V deserialize(In&& in) {
+        constexpr static std::pair<V,In> deserialize(In in) {
             V result = 0;
+            In input = in;
             if constexpr (Endianness == end::le) {
                 for (int i = 0; i < Bytes; i++) {
-                    result |= static_cast<V>(in.get().value()) << (8 * i);
+                    std::optional<uint8_t> value;
+                    std::tie(value, input) = input.get();
+                    result |= static_cast<V>(value.value()) << (8 * i);
                 }
             } else {
                 for (int i = 0; i < Bytes; i++) {
-                    result |= static_cast<V>(in.get().value()) << (8 * (Bytes - i - 1));
+                    std::optional<uint8_t> value;
+                    std::tie(value, input) = input.get();
+                    result |= static_cast<V>(value.value()) << (8 * (Bytes - i - 1));
                 }
             }
-            return result;
+            return {result, input};
         }
     };
 
@@ -97,10 +102,12 @@ namespace okser {
         }
 
         template<typename V, Input In>
-        static V deserialize(In&& in) {
+        static std::pair<V, In> deserialize(In in) {
             using Unsigned = std::make_unsigned_t<V>;
-            Unsigned u = uint<Bytes, Endianness>::template deserialize<Unsigned>(in);
-            return std::bit_cast<V>(u);
+            Unsigned u;
+
+            std::tie(u, in) = uint<Bytes, Endianness>::template deserialize<Unsigned>(in);
+            return {std::bit_cast<V>(u), in};
         }
     };
 
@@ -127,12 +134,13 @@ namespace okser {
 
         template<typename V = std::conditional_t<Bytes == 4, float, double>, Input In>
         requires (std::is_floating_point_v<V>)
-        static V deserialize(In&& in) {
+        static std::pair<V, In> deserialize(In&& in) {
             using Float = std::conditional_t<Bytes == 4, float, double>;
             using Unsigned = std::conditional_t<Bytes == 4, uint32_t, uint64_t>;
 
-            Unsigned u = uint<Bytes, Endianness>::template deserialize<Unsigned>(in);
-            return std::bit_cast<Float>(u);
+            Unsigned u;
+            std::tie(u, in) = uint<Bytes, Endianness>::template deserialize<Unsigned>(in);
+            return {std::bit_cast<Float>(u), in};
         }
     };
 
@@ -169,9 +177,12 @@ namespace okser {
         }
 
         template<Input In>
-        static Enum deserialize(In&& in) {
+        static std::pair<Enum, In> deserialize(In in) {
             using Underlying = std::underlying_type_t<Enum>;
-            return static_cast<Enum>(uint<Bytes, Endianness>::template deserialize<Underlying>(in));
+
+            auto [result, input] = uint<Bytes, Endianness>::template deserialize<Underlying>(in);
+
+            return {static_cast<Enum>(result), input};
         }
     };
 }

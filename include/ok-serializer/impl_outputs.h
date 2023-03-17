@@ -20,7 +20,8 @@ namespace okser {
     template<typename T>
     concept Input = requires(T t, int N, uint8_t byte)
     {
-        { t.get() } -> std::convertible_to<std::optional<uint8_t>>;
+        { t.get() };
+//        { t.get() } -> std::convertible_to<std::pair<In, std::optional<uint8_t>>>;
 //        { t.get<N>() } -> std::ranges::range;
     };
 
@@ -31,47 +32,52 @@ namespace okser {
         template<std::ranges::input_range R = std::string>
         class range {
         private:
-            R::const_iterator current;
-            R::const_iterator end;
-        public:
-            constexpr range(const R& _range) : current(_range.begin()), end(_range.end()) {}
+            using Const_Iterator = typename R::const_iterator;
 
-            constexpr std::optional<uint8_t> get() {
+            Const_Iterator begin;
+            Const_Iterator end;
+
+            constexpr range(Const_Iterator begin, Const_Iterator end) : begin(begin), end(end) {}
+        public:
+            constexpr range(const R& _range) : begin(_range.begin()), end(_range.end()) {}
+
+            constexpr std::pair<std::optional<uint8_t>, range<R>> get() const {
                 auto result = std::optional<uint8_t>{};
-                if (current != end) {
-                    result = *current;
-                    current++;
+                if (begin != end) {
+                    result = *begin;
                 }
-                return result;
+                return {result, range<R>{begin + 1, end}};
             }
 
             template<size_t N, std::ranges::input_range Array = std::array<uint8_t, N>>
             requires (N > 0, std::tuple_size_v<Array> >= N)
-            std::optional<Array> get() {
+            constexpr std::pair<std::optional<Array>, range<R>> get() const {
                 auto result = std::optional<Array>{};
-                if (std::ranges::distance(current, end) >= N) {
+                auto input_current = begin;
+                if (std::ranges::distance(begin, end) >= N) {
                     result.emplace();
                     auto result_current = std::ranges::begin(*result);
                     for (int i = 0; i < N; i++) {
-                        *result_current = *current;
-                        current++;
+                        *result_current = *input_current;
+                        input_current++;
                         result_current++;
                     }
                 }
-                return result;
+                return {result, range<R>{input_current, end}};
             }
 
             template<std::ranges::input_range Vector = std::string>
-            std::optional<Vector> get(size_t N) {
+            constexpr std::pair<std::optional<Vector>, range<R>> get(size_t N) const {
                 auto result = std::optional<Vector>{};
-                if (std::ranges::distance(current, end) >= N) {
+                auto current = begin;
+                if (std::ranges::distance(begin, end) >= N) {
                     result.emplace();
                     for (int i = 0; i < N; i++) {
                         result->push_back(*current);
                         current++;
                     }
                 }
-                return result;
+                return {result, range<R>{current, end}};
             }
         };
     }
@@ -128,15 +134,15 @@ namespace okser {
         template<std::ranges::output_range<uint8_t> C>
         class fixed_container {
             private:
-                C::iterator current;
-                C::const_iterator last;
+                typename C::iterator current;
+                typename C::const_iterator last;
             public:
                 explicit fixed_container(C& container) : current(container.begin()), last(container.end()) {}
 
                 template<typename T>
                 void add(const T &value) {
                     if (current == last) {
-                        throw std::out_of_range("okser::out::fixed_container: container is full");
+//                        throw std::out_of_range("okser::out::fixed_container: container is full");
                     }
                     *current = value;
                     current++;

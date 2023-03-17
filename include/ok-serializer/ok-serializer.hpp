@@ -28,6 +28,8 @@ template <Serializer S, typename V> struct deserializable_value {
   // constexpr deserializable_value(const ValueType& v) : value(v) {}
 };
 
+// -DCMAKE_CXX_FLAGS:STRING="-isystem /home/kongr45gpen/llvm-project/build/include/c++/v1/ -isystem /home/kongr45gpen/llvm-project/build/include/x86_64-unknown-linux-gnu/c++/v1 -nostdinc++ -nostdlib++ -freflection-ts -L/home/kongr45gpen/llvm-project/build/lib/x86_64-unknown-linux-gnu -Wl,-rpath,/home/kongr45gpen/llvm-project/build/lib/x86_64-unknown-linux-gnu/ -lc++" -DBUILD_TESTING="ON"
+
 
 /**
  * An array of types to be serialized. Bundle objects describe the binary format of the serialized output,
@@ -55,8 +57,10 @@ public:
   constexpr static std::tuple<Values...> deserialize(In input) {
     using ValuesTuple = std::tuple<Values...>;
 
+    std::optional<In> in = input;
+
     // Loop through all elements of the tuple at compile time
-    return internal::apply([&input] (const auto i) {
+    return internal::apply([&in] (const auto i) {
       // i cannot be defined as `constexpr`, so its value (i.e. the loop index)
       // is stored in a class type (std::integral_constant). Here we fetch the
       // loop index from this type, and store it in a constexpr variable.
@@ -65,7 +69,12 @@ public:
       using Serializer = std::tuple_element_t<Index, TypesTuple>;
       using Value = std::tuple_element_t<Index, ValuesTuple>;
 
-      return Serializer::template deserialize<Value>(input);
+      auto [value, newIn] = Serializer::template deserialize<Value>(*in);
+
+      // this is stupid
+      in.emplace(newIn);
+
+      return value;
     }, IndexSequence());
   }
 };
@@ -91,7 +100,7 @@ constexpr void serialize(Out &&output, Values... values) {
 }
 
 template <class Bundle, Input In, typename... Values>
-constexpr std::tuple<Values...> deserialize(In &&input) {
+constexpr std::tuple<Values...> deserialize(In input) {
   return Bundle::template deserialize<In, Values...>(std::forward<In>(input));
 }
 
@@ -112,7 +121,7 @@ constexpr void serialize(Out &&output, Values... values) {
 }
 
 template <Serializer... Types, Input In, typename... Values>
-constexpr void deserialize(In &&input, Values... values) {
+constexpr void deserialize(In input, Values... values) {
     return bundle<Types...>::deserialize(input, values...);
 }
 
@@ -128,7 +137,7 @@ constexpr void deserialize(In &&input, Values... values) {
  * \endcode
  */
 template <Serializer... Types, typename... Values>
-constexpr std::string simple_serialize(Values... values) {
+std::string simple_serialize(Values... values) {
     std::string output;
     bundle<Types...>::serialize(out::stdstring{output}, values...);
     return output;
