@@ -32,5 +32,18 @@ constexpr void serialize_one(Pair p, Out &&o) {
     Pair::SerializerType::serialize(p.value, o);
 }
 
+template<class Pair, Input In>
+constexpr void deserialize_one(Pair& p, In &&i) {
+    // TODO handle optional
+    p.value = Pair::SerializerType::template deserialize<typename Pair::ValueType, In>(i);
+}
+
+template <typename F, std::size_t ... Is>
+constexpr auto apply(F f, std::index_sequence<Is...>)
+{
+    f(std::integral_constant<int, Is...>{});
+}
+
+
 }
 }

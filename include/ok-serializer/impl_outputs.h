@@ -15,6 +15,68 @@ namespace okser {
     };
 
     /**
+    * A concept to check if a class can be used as an okser input.
+    */
+    template<typename T>
+    concept Input = requires(T t, int N, uint8_t byte)
+    {
+        { t.get() } -> std::convertible_to<std::optional<uint8_t>>;
+//        { t.get<N>() } -> std::ranges::range;
+    };
+
+    /**
+     * Useful output classes for serialized results
+     */
+    namespace in {
+        template<std::ranges::input_range R = std::string>
+        class range {
+        private:
+            R::const_iterator current;
+            R::const_iterator end;
+        public:
+            range(const R& _range) : current(_range.begin()), end(_range.end()) {}
+
+            std::optional<uint8_t> get() {
+                auto result = std::optional<uint8_t>{};
+                if (current != end) {
+                    result = *current;
+                    current++;
+                }
+                return result;
+            }
+
+            template<size_t N, std::ranges::input_range Array = std::array<uint8_t, N>>
+            requires (N > 0, std::tuple_size_v<Array> >= N)
+            std::optional<Array> get() {
+                auto result = std::optional<Array>{};
+                if (std::ranges::distance(current, end) >= N) {
+                    result.emplace();
+                    auto result_current = std::ranges::begin(*result);
+                    for (int i = 0; i < N; i++) {
+                        *result_current = *current;
+                        current++;
+                        result_current++;
+                    }
+                }
+                return result;
+            }
+
+            template<std::ranges::input_range Vector = std::string>
+            std::optional<Vector> get(size_t N) {
+                auto result = std::optional<Vector>{};
+                if (std::ranges::distance(current, end) >= N) {
+                    result.emplace();
+                    for (int i = 0; i < N; i++) {
+                        result->push_back(*current);
+                        current++;
+                    }
+                }
+                return result;
+            }
+        };
+    }
+
+    /**
      * Useful output classes for serialized results
      */
     namespace out {

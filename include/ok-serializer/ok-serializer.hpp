@@ -21,6 +21,14 @@ template <Serializer S, typename V> struct serializable_value {
   constexpr serializable_value(const ValueType& v) : value(v) {}
 };
 
+template <Serializer S, typename V> struct deserializable_value {
+  using SerializerType = S;
+  using ValueType = V;
+
+  // constexpr deserializable_value(const ValueType& v) : value(v) {}
+};
+
+
 /**
  * An array of types to be serialized. Bundle objects describe the binary format of the serialized output,
  * and are a required input of the serializer.
@@ -39,6 +47,41 @@ public:
     std::apply(
         [&output](auto &&...v) { ((internal::serialize_one(v, output)), ...); },
         typeValues);
+  }
+
+  template <Input In, typename... Values>
+  constexpr static std::tuple<Values...> deserialize(In &&input) {
+    // TODO: What if there is no empty constructor?
+    // std::tuple<serializable_value<Types, Values>...> pairs{};
+
+    // std::apply(
+    //     [&input](auto &&...p) { ((internal::deserialize_one(p, input)), ...); },
+    //     pairs);
+    
+    // std::tuple<Values...> values{};
+    // std::ranges::transform(pairs.begin(), pairs.end(), values.begin(), [](auto p) { return p.value; });
+    // return values;
+
+
+
+    // std::tuple<Values...> values{};
+
+    using TypesTuple = std::tuple<Types...>;
+    using ValuesTuple = std::tuple<Values...>;
+    ValuesTuple values;
+
+    using IndexSequence = std::make_index_sequence<sizeof...(Types)>;
+
+    internal::apply([&input, &values] (const auto i) {
+      constexpr auto Index = decltype(i)::value;
+      using Serializer = std::tuple_element_t<Index, TypesTuple>;
+      using Value = std::tuple_element_t<Index, ValuesTuple>;
+      std::get<Index>(values) = Serializer::template deserialize<Value>(input);
+    }, IndexSequence());
+
+
+
+    return values;
   }
 };
 
@@ -62,6 +105,11 @@ constexpr void serialize(Out &&output, Values... values) {
   return Bundle::serialize(output, values...);
 }
 
+template <class Bundle, Input In, typename... Values>
+constexpr std::tuple<Values...> deserialize(In &&input) {
+  return Bundle::template deserialize<In, Values...>(std::forward<In>(input));
+}
+
 /**
  * Shortcut to okser::serialize without the need to declare a bundle.
  *
@@ -76,6 +124,11 @@ constexpr void serialize(Out &&output, Values... values) {
 template <Serializer... Types, Output Out, typename... Values>
 constexpr void serialize(Out &&output, Values... values) {
     return bundle<Types...>::serialize(output, values...);
+}
+
+template <Serializer... Types, Input In, typename... Values>
+constexpr void deserialize(In &&input, Values... values) {
+    return bundle<Types...>::deserialize(input, values...);
 }
 
 /**
