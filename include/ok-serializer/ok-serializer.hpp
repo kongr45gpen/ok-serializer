@@ -51,35 +51,17 @@ public:
 
   template <Input In, typename... Values>
   constexpr static std::tuple<Values...> deserialize(In &&input) {
-    // TODO: What if there is no empty constructor?
-    // std::tuple<serializable_value<Types, Values>...> pairs{};
-
-    // std::apply(
-    //     [&input](auto &&...p) { ((internal::deserialize_one(p, input)), ...); },
-    //     pairs);
-    
-    // std::tuple<Values...> values{};
-    // std::ranges::transform(pairs.begin(), pairs.end(), values.begin(), [](auto p) { return p.value; });
-    // return values;
-
-
-
-    // std::tuple<Values...> values{};
-
     using TypesTuple = std::tuple<Types...>;
     using ValuesTuple = std::tuple<Values...>;
-    ValuesTuple values;
-
     using IndexSequence = std::make_index_sequence<sizeof...(Types)>;
 
-    internal::apply([&input, &values] (const auto i) {
+    ValuesTuple values = internal::apply([&input, &values] (const auto i) {
       constexpr auto Index = decltype(i)::value;
       using Serializer = std::tuple_element_t<Index, TypesTuple>;
       using Value = std::tuple_element_t<Index, ValuesTuple>;
-      std::get<Index>(values) = Serializer::template deserialize<Value>(input);
+
+      return Serializer::template deserialize<Value>(input);
     }, IndexSequence());
-
-
 
     return values;
   }
