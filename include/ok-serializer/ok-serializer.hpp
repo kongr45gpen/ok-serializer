@@ -39,6 +39,8 @@ template <Serializer S, typename V> struct deserializable_value {
  * \endcode
  */
 template <Serializer... Types> class bundle {
+  using TypesTuple = std::tuple<Types...>;
+  using IndexSequence = std::make_index_sequence<sizeof...(Types)>;
 public:
   template <Output Out, typename... Values>
   constexpr static void serialize(Out &&output, Values... values) {
@@ -50,20 +52,21 @@ public:
   }
 
   template <Input In, typename... Values>
-  constexpr static std::tuple<Values...> deserialize(In &&input) {
-    using TypesTuple = std::tuple<Types...>;
+  constexpr static std::tuple<Values...> deserialize(In input) {
     using ValuesTuple = std::tuple<Values...>;
-    using IndexSequence = std::make_index_sequence<sizeof...(Types)>;
 
-    ValuesTuple values = internal::apply([&input, &values] (const auto i) {
+    // Loop through all elements of the tuple at compile time
+    return internal::apply([&input] (const auto i) {
+      // i cannot be defined as `constexpr`, so its value (i.e. the loop index)
+      // is stored in a class type (std::integral_constant). Here we fetch the
+      // loop index from this type, and store it in a constexpr variable.
+      // This then allows us to throw it inside templates.
       constexpr auto Index = decltype(i)::value;
       using Serializer = std::tuple_element_t<Index, TypesTuple>;
       using Value = std::tuple_element_t<Index, ValuesTuple>;
 
       return Serializer::template deserialize<Value>(input);
     }, IndexSequence());
-
-    return values;
   }
 };
 

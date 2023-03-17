@@ -34,9 +34,9 @@ namespace okser {
             R::const_iterator current;
             R::const_iterator end;
         public:
-            range(const R& _range) : current(_range.begin()), end(_range.end()) {}
+            constexpr range(const R& _range) : current(_range.begin()), end(_range.end()) {}
 
-            std::optional<uint8_t> get() {
+            constexpr std::optional<uint8_t> get() {
                 auto result = std::optional<uint8_t>{};
                 if (current != end) {
                     result = *current;
