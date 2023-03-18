@@ -38,8 +38,11 @@ namespace okser {
             Const_Iterator end;
 
             constexpr range(Const_Iterator begin, Const_Iterator end) : begin(begin), end(end) {}
+
         public:
-            constexpr range(const R& _range) : begin(_range.begin()), end(_range.end()) {}
+            using ContainedType = R;
+
+            constexpr range(const R &_range) : begin(_range.begin()), end(_range.end()) {}
 
             constexpr std::pair<std::optional<uint8_t>, range<R>> get() const {
                 auto result = std::optional<uint8_t>{};

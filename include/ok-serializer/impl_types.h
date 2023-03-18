@@ -2,6 +2,7 @@
 
 #include <bit>
 #include <cstdint>
+#include "impl_utils.h"
 
 namespace okser {
     /**
@@ -50,8 +51,10 @@ namespace okser {
     template<int Bytes, end Endianness = end::be>
     requires (Bytes > 0 && Bytes <= 8)
     struct uint : public internal::type {
+        using DefaultType = okser::internal::uint_bytes_to_type<Bytes>;
+
         template<typename V, Output Out>
-        constexpr static void serialize(const V &v, Out&& o) {
+        constexpr static void serialize(const V &v, Out &&o) {
             if constexpr (Endianness == end::le) {
                 for (int i = 0; i < Bytes; i++) {
                     o.add(static_cast<uint8_t>((v >> (8 * i)) & 0xFFU));
@@ -94,8 +97,10 @@ namespace okser {
      */
     template<int Bytes, end Endianness = end::be>
     struct sint : public internal::type {
+        using DefaultType = std::make_signed_t<okser::internal::uint_bytes_to_type<Bytes>>;
+
         template<typename V, Output Out>
-        static void serialize(const V &v, Out&& o) {
+        static void serialize(const V &v, Out &&o) {
             using Unsigned = std::make_unsigned_t<V>;
             Unsigned u = std::bit_cast<Unsigned>(v);
             uint<Bytes, Endianness>::serialize(u, o);
@@ -121,26 +126,26 @@ namespace okser {
     template<int Bytes = 4, end Endianness = end::be>
     requires (Bytes == 4 || Bytes == 8)
     struct floatp : public internal::type {
+        using DefaultType = std::conditional_t<Bytes == 4, float, double>;
+
         template<typename V, Output Out>
-        requires (std::is_floating_point_v<V>)
-        static void serialize(const V &v, Out&& o) {
-            using Float = std::conditional_t<Bytes == 4, float, double>;
+        requires(std::is_floating_point_v<V>)
+        static void serialize(const V &v, Out &&o) {
             using Unsigned = std::conditional_t<Bytes == 4, uint32_t, uint64_t>;
 
-            Unsigned u = std::bit_cast<Unsigned>(static_cast<Float>(v));
+            Unsigned u = std::bit_cast<Unsigned>(static_cast<DefaultType>(v));
 
             uint<Bytes, Endianness>::serialize(u, o);
         }
 
-        template<typename V = std::conditional_t<Bytes == 4, float, double>, Input In>
-        requires (std::is_floating_point_v<V>)
-        static std::pair<V, In> deserialize(In&& in) {
-            using Float = std::conditional_t<Bytes == 4, float, double>;
+        template<typename V = DefaultType, Input In>
+        requires(std::is_floating_point_v<V>)
+        static std::pair<V, In> deserialize(In &&in) {
             using Unsigned = std::conditional_t<Bytes == 4, uint32_t, uint64_t>;
 
             Unsigned u;
             std::tie(u, in) = uint<Bytes, Endianness>::template deserialize<Unsigned>(in);
-            return {std::bit_cast<Float>(u), in};
+            return {std::bit_cast<DefaultType>(u), in};
         }
     };
 
@@ -170,19 +175,38 @@ namespace okser {
     template<typename Enum, int Bytes = sizeof(std::underlying_type<Enum>), end Endianness = end::be>
     requires (Bytes > 0 && Bytes <= 8 && std::is_enum_v<Enum>)
     struct enumv : public internal::type {
+    protected:
+        using Underlying = std::underlying_type_t<Enum>;
+    public:
+        using DefaultType = Enum;
+
         template<Output Out>
-        static void serialize(const Enum &e, Out&& o) {
-            using Underlying = std::underlying_type_t<Enum>;
+        static void serialize(const Enum &e, Out &&o) {
             uint<Bytes, Endianness>::serialize(static_cast<Underlying>(e), o);
         }
 
         template<Input In>
         static std::pair<Enum, In> deserialize(In in) {
-            using Underlying = std::underlying_type_t<Enum>;
-
             auto [result, input] = uint<Bytes, Endianness>::template deserialize<Underlying>(in);
 
             return {static_cast<Enum>(result), input};
         }
     };
+
+/**
+* A concept to check if a class can be used as an okser serializer and serialise values to binaries.
+*
+* By default, every child of the okser::internal::type class satisfies this concept. For any custom user-provided
+* serializable types, you can derive your type from okser::internal::type, or use a template specialization as follows:
+* \code
+* template<>
+* constexpr inline bool is_serializer<MySerializer> = true;
+* \endcode
+* @todo Make this concept more generic, by checking members?
+*/
+template<typename T>
+concept Serializer = requires()
+{
+    requires internal::is_serializer<T>;
+};
 }

@@ -2,24 +2,13 @@
 
 namespace okser {
 
-/**
- * A concept to check if a class can be used as an okser serializer and serialise values to binaries.
- *
- * By default, every child of the okser::internal::type class satisfies this concept. For any custom user-provided
- * serializable types, you can derive your type from okser::internal::type, or use a template specialization as follows:
- * \code
- * template<>
- * constexpr inline bool is_serializer<MySerializer> = true;
- * \endcode
- */
-template<typename T>
-concept Serializer = requires()
+template<typename B>
+concept IsBundle = requires(B b)
 {
-    requires internal::is_serializer<T>;
+    B::i_am_a_bundle == true;
 };
 
 namespace internal {
-
 /**
  * Append a single serializable_value to an output.
  * @tparam Pair The serializable_value type
@@ -39,6 +28,13 @@ constexpr auto apply(F f, std::index_sequence<Is...>)
     return std::make_tuple(f(std::integral_constant<std::size_t, Is...>{}));
 }
 
+template<int Bytes>
+using uint_bytes_to_type = std::conditional_t<Bytes <= 1, uint8_t,
+        std::conditional_t<Bytes <= 2, uint16_t,
+                std::conditional_t<Bytes <= 4, uint32_t,
+                        std::conditional_t<Bytes <= 8, uint64_t,
+                                void>>>>;
 
-}
+} // namespace internal
+
 }

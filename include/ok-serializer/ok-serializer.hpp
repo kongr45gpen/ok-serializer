@@ -5,6 +5,7 @@
 #include "impl_outputs.h"
 #include "impl_types.h"
 #include "impl_utils.h"
+#include "impl_helpers.h"
 
 namespace okser {
 
@@ -13,22 +14,14 @@ namespace okser {
  * @tparam S The serializer type
  * @tparam V The value type
  */
-template <Serializer S, typename V> struct serializable_value {
-  using SerializerType = S;
-  using ValueType = V;
-  ValueType value;
+template<Serializer S, typename V>
+struct serializable_value {
+    using SerializerType = S;
+    using ValueType = V;
+    ValueType value;
 
-  constexpr serializable_value(const ValueType& v) : value(v) {}
+    constexpr serializable_value(const ValueType &v) : value(v) {}
 };
-
-template <Serializer S, typename V> struct deserializable_value {
-  using SerializerType = S;
-  using ValueType = V;
-
-  // constexpr deserializable_value(const ValueType& v) : value(v) {}
-};
-
-// -DCMAKE_CXX_FLAGS:STRING="-isystem /home/kongr45gpen/llvm-project/build/include/c++/v1/ -isystem /home/kongr45gpen/llvm-project/build/include/x86_64-unknown-linux-gnu/c++/v1 -nostdinc++ -nostdlib++ -freflection-ts -L/home/kongr45gpen/llvm-project/build/lib/x86_64-unknown-linux-gnu -Wl,-rpath,/home/kongr45gpen/llvm-project/build/lib/x86_64-unknown-linux-gnu/ -lc++" -DBUILD_TESTING="ON"
 
 
 /**
@@ -40,43 +33,46 @@ template <Serializer S, typename V> struct deserializable_value {
  * using MyBundle = okser::bundle<okser::uint<4>, okser::sint<2>, okser::floatp>;
  * \endcode
  */
-template <Serializer... Types> class bundle {
-  using TypesTuple = std::tuple<Types...>;
-  using IndexSequence = std::make_index_sequence<sizeof...(Types)>;
+template<Serializer... Types>
+class bundle {
+    using TypesTuple = std::tuple<Types...>;
+    using IndexSequence = std::make_index_sequence<sizeof...(Types)>;
 public:
-  template <Output Out, typename... Values>
-  constexpr static void serialize(Out &&output, Values... values) {
-    std::tuple<serializable_value<Types, Values>...> typeValues{values...};
+    constexpr static bool i_am_a_bundle = true;
 
-    std::apply(
-        [&output](auto &&...v) { ((internal::serialize_one(v, output)), ...); },
-        typeValues);
-  }
+    template<Output Out, typename... Values>
+    constexpr static void serialize(Out &&output, Values... values) {
+        std::tuple<serializable_value<Types, Values>...> typeValues{values...};
 
-  template <Input In, typename... Values>
-  constexpr static std::tuple<Values...> deserialize(In input) {
-    using ValuesTuple = std::tuple<Values...>;
+        std::apply(
+                [&output](auto &&...v) { ((internal::serialize_one(v, output)), ...); },
+                typeValues);
+    }
 
-    std::optional<In> in = input;
+    template<Input In, typename... Values>
+    constexpr static std::tuple<Values...> deserialize(In input) {
+        using ValuesTuple = std::tuple<Values...>;
 
-    // Loop through all elements of the tuple at compile time
-    return internal::apply([&in] (const auto i) {
-      // i cannot be defined as `constexpr`, so its value (i.e. the loop index)
-      // is stored in a class type (std::integral_constant). Here we fetch the
-      // loop index from this type, and store it in a constexpr variable.
-      // This then allows us to throw it inside templates.
-      constexpr auto Index = decltype(i)::value;
-      using Serializer = std::tuple_element_t<Index, TypesTuple>;
-      using Value = std::tuple_element_t<Index, ValuesTuple>;
+        std::optional<In> in = input;
 
-      auto [value, newIn] = Serializer::template deserialize<Value>(*in);
+        // Loop through all elements of the tuple at compile time
+        return internal::apply([&in](const auto i) {
+            // i cannot be defined as `constexpr`, so its value (i.e. the loop index)
+            // is stored in a class type (std::integral_constant). Here we fetch the
+            // loop index from this type, and store it in a constexpr variable.
+            // This then allows us to throw it inside templates.
+            constexpr auto Index = decltype(i)::value;
+            using Serializer = std::tuple_element_t<Index, TypesTuple>;
+            using Value = std::tuple_element_t<Index, ValuesTuple>;
 
-      // this is stupid
-      in.emplace(newIn);
+            auto [value, newIn] = Serializer::template deserialize<Value>(*in);
 
-      return value;
-    }, IndexSequence());
-  }
+            // this is stupid
+            in.emplace(newIn);
+
+            return value;
+        }, IndexSequence());
+    }
 };
 
 /**
@@ -94,14 +90,14 @@ public:
  * @param output The output to append to at runtime.
  * @param values The values to serialize. This needs to match the number and order of @p Values.
  */
-template <class Bundle, Output Out, typename... Values>
+template<class Bundle, Output Out, typename... Values>
 constexpr void serialize(Out &&output, Values... values) {
-  return Bundle::serialize(output, values...);
+    return Bundle::serialize(output, values...);
 }
 
-template <class Bundle, Input In, typename... Values>
+template<IsBundle Bundle, Input In, typename... Values>
 constexpr std::tuple<Values...> deserialize(In input) {
-  return Bundle::template deserialize<In, Values...>(std::forward<In>(input));
+    return Bundle::template deserialize<In, Values...>(std::forward<In>(input));
 }
 
 /**
@@ -115,14 +111,21 @@ constexpr std::tuple<Values...> deserialize(In input) {
  * @tparam Types The serializer types of the "bundle"
  * @todo See if this can be combined with the above function through deduction
  */
-template <Serializer... Types, Output Out, typename... Values>
+template<Serializer... Types, Output Out, typename... Values>
 constexpr void serialize(Out &&output, Values... values) {
     return bundle<Types...>::serialize(output, values...);
 }
 
-template <Serializer... Types, Input In, typename... Values>
-constexpr void deserialize(In input, Values... values) {
-    return bundle<Types...>::deserialize(input, values...);
+template<Serializer... Types, Input In, typename... Values>
+requires (sizeof...(Values) == sizeof...(Types) && sizeof...(Values) > 1)
+constexpr std::tuple<Values...> deserialize(In input) {
+    return bundle<Types...>::deserialize(input);
+}
+
+template<Serializer Type, typename Value = typename Type::DefaultType, class In>
+constexpr Value deserialize(In input) {
+    auto contained_input = internal::convert_input_to_okser(input);
+    return std::get<0>(bundle<Type>::template deserialize<decltype(contained_input), Value>(contained_input));
 }
 
 /**
@@ -136,7 +139,7 @@ constexpr void deserialize(In input, Values... values) {
  * >(-5, 15);
  * \endcode
  */
-template <Serializer... Types, typename... Values>
+template<Serializer... Types, typename... Values>
 std::string simple_serialize(Values... values) {
     std::string output;
     bundle<Types...>::serialize(out::stdstring{output}, values...);
