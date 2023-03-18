@@ -52,7 +52,7 @@ template<Deserializer Type, typename Value = typename Type::DefaultType, class I
 constexpr Value deserialize(In &&input) {
     auto contained_input = internal::convert_input_to_okser(std::forward<In>(input));
 
-    return Type::template deserialize<Value, decltype(contained_input)>(contained_input).first;
+    return Type::template deserialize<Value>(std::forward<decltype(contained_input)>(contained_input)).first;
 }
 
 // Multiple argument deserialisation, converts many elements to bundles
