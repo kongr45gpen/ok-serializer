@@ -6,74 +6,10 @@
 #include "impl_types.h"
 #include "impl_utils.h"
 #include "impl_helpers.h"
+#include "compound_types.h"
 
 namespace okser {
 
-/**
- * A container for a serializable value, which includes static information about the serializer used for this value.
- * @tparam S The serializer type
- * @tparam V The value type
- */
-template<Serializer S, typename V>
-struct serializable_value {
-    using SerializerType = S;
-    using ValueType = V;
-    ValueType value;
-
-    constexpr serializable_value(const ValueType &v) : value(v) {}
-};
-
-
-/**
- * An array of types to be serialized. Bundle objects describe the binary format of the serialized output,
- * and are a required input of the serializer.
- *
- * ## Example
- * \code
- * using MyBundle = okser::bundle<okser::uint<4>, okser::sint<2>, okser::floatp>;
- * \endcode
- */
-template<Serializer... Types>
-class bundle {
-    using TypesTuple = std::tuple<Types...>;
-    using IndexSequence = std::make_index_sequence<sizeof...(Types)>;
-public:
-    constexpr static bool i_am_a_bundle = true;
-
-    template<Output Out, typename... Values>
-    constexpr static void serialize(Out &&output, Values... values) {
-        std::tuple<serializable_value<Types, Values>...> typeValues{values...};
-
-        std::apply(
-                [&output](auto &&...v) { ((internal::serialize_one(v, output)), ...); },
-                typeValues);
-    }
-
-    template<Input In, typename... Values>
-    constexpr static std::tuple<Values...> deserialize(In input) {
-        using ValuesTuple = std::tuple<Values...>;
-
-        std::optional<In> in = input;
-
-        // Loop through all elements of the tuple at compile time
-        return internal::apply([&in](const auto i) {
-            // i cannot be defined as `constexpr`, so its value (i.e. the loop index)
-            // is stored in a class type (std::integral_constant). Here we fetch the
-            // loop index from this type, and store it in a constexpr variable.
-            // This then allows us to throw it inside templates.
-            constexpr auto Index = decltype(i)::value;
-            using Serializer = std::tuple_element_t<Index, TypesTuple>;
-            using Value = std::tuple_element_t<Index, ValuesTuple>;
-
-            auto [value, newIn] = Serializer::template deserialize<Value>(*in);
-
-            // this is stupid
-            in.emplace(newIn);
-
-            return value;
-        }, IndexSequence());
-    }
-};
 
 /**
  * Take some @p values, serialize them using a @p bundle, and append them to an @p output
@@ -95,11 +31,6 @@ constexpr void serialize(Out &&output, Values... values) {
     return Bundle::serialize(output, values...);
 }
 
-template<IsBundle Bundle, Input In, typename... Values>
-constexpr std::tuple<Values...> deserialize(In input) {
-    return Bundle::template deserialize<In, Values...>(std::forward<In>(input));
-}
-
 /**
  * Shortcut to okser::serialize without the need to declare a bundle.
  *
@@ -111,21 +42,24 @@ constexpr std::tuple<Values...> deserialize(In input) {
  * @tparam Types The serializer types of the "bundle"
  * @todo See if this can be combined with the above function through deduction
  */
-template<Serializer... Types, Output Out, typename... Values>
-constexpr void serialize(Out &&output, Values... values) {
-    return bundle<Types...>::serialize(output, values...);
-}
+//template<Serializer... Types, Output Out, typename... Values>
+//constexpr void serialize(Out &&output, Values... values) {
+//    return bundle<Types...>::serialize(output, values...);
+//}
 
-template<Serializer... Types, Input In, typename... Values>
-requires (sizeof...(Values) == sizeof...(Types) && sizeof...(Values) > 1)
-constexpr std::tuple<Values...> deserialize(In input) {
-    return bundle<Types...>::deserialize(input);
-}
-
+// Single argument deserialisation
 template<Serializer Type, typename Value = typename Type::DefaultType, class In>
-constexpr Value deserialize(In input) {
-    auto contained_input = internal::convert_input_to_okser(input);
-    return std::get<0>(bundle<Type>::template deserialize<decltype(contained_input), Value>(contained_input));
+constexpr Value deserialize(In &&input) {
+    auto contained_input = internal::convert_input_to_okser(std::forward<In>(input));
+
+    return Type::template deserialize<Value, decltype(contained_input)>(contained_input).first;
+}
+
+// Multiple argument deserialisation, converts many elements to bundles
+template<Serializer... Types, class... Values, std::derived_from<std::tuple<Values...>> Tuple = std::tuple<Values...>, class In>
+requires (sizeof...(Values) == sizeof...(Types) && sizeof...(Types) > 1)
+constexpr Tuple deserialize(In &&input) {
+    return deserialize<bundle<Tuple>, Values..., In>(std::forward<In>(input));
 }
 
 /**

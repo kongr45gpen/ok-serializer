@@ -21,11 +21,21 @@ constexpr void serialize_one(Pair p, Out &&o) {
     Pair::SerializerType::serialize(p.value, o);
 }
 
+/**
+ * Apply a function to all elements of an index sequence.
+ * This function is useful for looping over tuples at compile time with an index. The applications would be looping
+ * over two tuples at the same time.
+ * @tparam F The function to apply. The return value of this function will be returned as a tuple. The only argument
+ *           passed to this function is an std::integral_constant with the index.
+ * @tparam Is An index sequence.
+ * @param f The function to apply.
+ * @return An std::tuple with the elements of each application of f.
+ */
 template <typename F, std::size_t ... Is>
-constexpr auto apply(F f, std::index_sequence<Is...>)
-    -> std::tuple<decltype(f(std::integral_constant<std::size_t, Is>{}...))>
-{
-    return std::make_tuple(f(std::integral_constant<std::size_t, Is...>{}));
+constexpr auto apply(F f, std::index_sequence<Is...>) {
+    // We cannot use packed parameter expansion, as the evaluation order might be random.
+    // So we use braced initialiser lists.
+    return std::tuple{f(std::integral_constant<std::size_t, Is>{})...};
 }
 
 template<int Bytes>
