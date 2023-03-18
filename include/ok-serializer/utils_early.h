@@ -1,13 +1,9 @@
 #pragma once
 
+#include <utility>
+#include "concepts.h"
+
 namespace okser {
-
-template<typename B>
-concept IsBundle = requires(B b)
-{
-    B::i_am_a_bundle == true;
-};
-
 namespace internal {
 /**
  * Append a single serializable_value to an output.
@@ -31,7 +27,7 @@ constexpr void serialize_one(Pair p, Out &&o) {
  * @param f The function to apply.
  * @return An std::tuple with the elements of each application of f.
  */
-template <typename F, std::size_t ... Is>
+template<typename F, std::size_t ... Is>
 constexpr auto apply(F f, std::index_sequence<Is...>) {
     // We cannot use packed parameter expansion, as the evaluation order might be random.
     // So we use braced initialiser lists.

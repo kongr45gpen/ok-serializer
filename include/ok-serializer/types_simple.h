@@ -2,21 +2,22 @@
 
 #include <bit>
 #include <cstdint>
-#include "impl_utils.h"
+#include "concepts.h"
+#include "utils_early.h"
 
 namespace okser {
-    /**
-     * Enum to represent endianness
-     *
-     * @note This library does not depend on the endianness of the compiler or target system. Any output
-     * should be interchangeable between different systems.
-     *
-     * However, the user can specify the endianness of the serialized data at compile-time. Big endianness
-     * is used conventionally by default.
-     *
-     * @see https://en.wikipedia.org/wiki/Endianness
-     * @todo Use standard library definition, https://en.cppreference.com/w/cpp/types/endian
-     */
+/**
+ * Enum to represent endianness
+ *
+ * @note This library does not depend on the endianness of the compiler or target system. Any output
+ * should be interchangeable between different systems.
+ *
+ * However, the user can specify the endianness of the serialized data at compile-time. Big endianness
+ * is used conventionally by default.
+ *
+ * @see https://en.wikipedia.org/wiki/Endianness
+ * @todo Use standard library definition, https://en.cppreference.com/w/cpp/types/endian
+ */
     enum class end {
         le, ///< Little endian
         be, ///< Big endian
@@ -27,20 +28,6 @@ namespace okser {
          * A generic base class for serializer types. Does not provide any useful functionality.
          */
         class type {};
-
-        /**
-         * A concept to check if a class is a serializer.
-         * @internal
-         */
-        template<class T>
-        constexpr inline bool is_serializer = false;
-
-        /**
-         * Specialization to consider all children of okser::internal::type as serializers.
-         */
-        template<class T>
-        requires std::derived_from<T, type>
-        constexpr inline bool is_serializer<T> = true;
     }
 
     /**
@@ -192,21 +179,4 @@ namespace okser {
             return {static_cast<Enum>(result), input};
         }
     };
-
-/**
-* A concept to check if a class can be used as an okser serializer and serialise values to binaries.
-*
-* By default, every child of the okser::internal::type class satisfies this concept. For any custom user-provided
-* serializable types, you can derive your type from okser::internal::type, or use a template specialization as follows:
-* \code
-* template<>
-* constexpr inline bool is_serializer<MySerializer> = true;
-* \endcode
-* @todo Make this concept more generic, by checking members?
-*/
-template<typename T>
-concept Serializer = requires()
-{
-    requires internal::is_serializer<T>;
-};
 }

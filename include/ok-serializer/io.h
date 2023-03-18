@@ -6,26 +6,6 @@
 
 namespace okser {
     /**
-    * A concept to check if a class can be used as an okser output.
-    */
-    template<typename T>
-    concept Output = requires(T t, uint8_t byte)
-    {
-        { t.add(byte) };
-    };
-
-    /**
-    * A concept to check if a class can be used as an okser input.
-    */
-    template<typename T>
-    concept Input = requires(T t, int N, uint8_t byte)
-    {
-        { t.get() };
-//        { t.get() } -> std::convertible_to<std::pair<In, std::optional<uint8_t>>>;
-//        { t.get<N>() } -> std::ranges::range;
-    };
-
-    /**
      * Useful output classes for serialized results
      */
     namespace in {

@@ -1,11 +1,9 @@
 #pragma once
 
 #include <type_traits>
-#include "impl_outputs.h"
+#include "io.h"
 
 namespace okser {
-
-
 namespace internal {
 
 template<class In>
@@ -21,5 +19,4 @@ auto constexpr convert_input_to_okser(In unknown_input) {
 }
 
 } // namespace internal
-
 }

@@ -2,11 +2,11 @@
 
 #include <tuple>
 
-#include "impl_outputs.h"
-#include "impl_types.h"
-#include "impl_utils.h"
-#include "impl_helpers.h"
-#include "compound_types.h"
+#include "io.h"
+#include "types_simple.h"
+#include "concepts.h"
+#include "utils_late.h"
+#include "types_compound.h"
 
 namespace okser {
 
@@ -48,7 +48,7 @@ constexpr void serialize(Out &&output, Values... values) {
 //}
 
 // Single argument deserialisation
-template<Serializer Type, typename Value = typename Type::DefaultType, class In>
+template<Deserializer Type, typename Value = typename Type::DefaultType, class In>
 constexpr Value deserialize(In &&input) {
     auto contained_input = internal::convert_input_to_okser(std::forward<In>(input));
 
@@ -56,7 +56,7 @@ constexpr Value deserialize(In &&input) {
 }
 
 // Multiple argument deserialisation, converts many elements to bundles
-template<Serializer... Types, class... Values, std::derived_from<std::tuple<Values...>> Tuple = std::tuple<Values...>, class In>
+template<Deserializer... Types, class... Values, std::derived_from<std::tuple<Values...>> Tuple = std::tuple<Values...>, class In>
 requires (sizeof...(Values) == sizeof...(Types) && sizeof...(Types) > 1)
 constexpr Tuple deserialize(In &&input) {
     return deserialize<bundle<Tuple>, Values..., In>(std::forward<In>(input));

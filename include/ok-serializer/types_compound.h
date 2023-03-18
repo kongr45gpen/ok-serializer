@@ -1,7 +1,8 @@
 #pragma once
 
-#include "impl_outputs.h"
-#include "impl_types.h"
+#include "io.h"
+#include "types_simple.h"
+#include "utils_early.h"
 
 namespace okser {
 
@@ -29,16 +30,16 @@ struct serializable_value {
  * using MyBundle = okser::bundle<okser::uint<4>, okser::sint<2>, okser::floatp>;
  * \endcode
  */
-template<Serializer... Types>
+template<class... Types>
 class bundle {
 private:
     using IndexSequence = std::make_index_sequence<sizeof...(Types)>;
 public:
     using TypesTuple = std::tuple<Types...>;
     using DefaultType = std::tuple<typename Types::DefaultType...>;
-    constexpr static bool i_am_a_bundle = true;
 
     template<Output Out, typename... Values>
+    requires (Serializer<Types>, ...)
     constexpr static void serialize(Out &&output, Values... values) {
         std::tuple<serializable_value<Types, Values>...> typeValues{values...};
 
@@ -48,7 +49,7 @@ public:
     }
 
     template<class Tuple, Input In>
-    //TODO: Make sure that a tuple is passed
+    requires (Deserializer<Types>, ...)
     constexpr static std::pair<Tuple, In> deserialize(In input) {
         using ValuesTuple = Tuple;
 
@@ -66,7 +67,8 @@ public:
 
             auto [value, newIn] = Serializer::template deserialize<Value>(*in);
 
-            // this is stupid
+            // Forces using the copy constructor, instead of the copy assignment operator, which might not be usable
+            // in constant environments.
             in.emplace(newIn);
 
             return value;
@@ -75,12 +77,5 @@ public:
         return std::pair(values, *in);
     }
 };
-
-namespace internal {
-
-template<IsBundle T>
-constexpr inline bool is_serializer<T> = true;
-
-}
 
 } // namespace okser
