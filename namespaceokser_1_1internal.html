@@ -59,8 +59,8 @@
               Reference
               <ul>
                 <li><a href="#nested-classes">Classes</a></li>
+                <li><a href="#typedef-members">Typedefs</a></li>
                 <li><a href="#func-members">Functions</a></li>
-                <li><a href="#var-members">Variables</a></li>
               </ul>
             </li>
           </ul>
@@ -69,9 +69,23 @@
           <h2><a href="#nested-classes">Classes</a></h2>
           <dl class="m-doc">
             <dt>
+              struct <a href="structokser_1_1internal_1_1DummyInOut.html" class="m-doc">DummyInOut</a>
+            </dt>
+            <dd><span></span></dd>
+            <dt>
               class <a href="classokser_1_1internal_1_1type.html" class="m-doc">type</a>
             </dt>
             <dd></dd>
+          </dl>
+        </section>
+        <section id="typedef-members">
+          <h2><a href="#typedef-members">Typedefs</a></h2>
+          <dl class="m-doc">
+            <dt>
+              <div class="m-doc-template">template&lt;int Bytes&gt;</div>
+              using <a href="#a747b317363f447e264c9e7fb57d68cfe" class="m-doc">uint_bytes_to_type</a> = std::conditional_t&lt;Bytes&lt;=1, uint8_t, std::conditional_t&lt;Bytes&lt;=2, uint16_t, std::conditional_t&lt;Bytes&lt;=4, uint32_t, std::conditional_t&lt;Bytes&lt;=8, uint64_t, void&gt;&gt;&gt;&gt;
+            </dt>
+            <dd><span></span></dd>
           </dl>
         </section>
         <section id="func-members">
@@ -85,32 +99,40 @@
             <dd></dd>
             <dt>
               <div class="m-doc-template">template&lt;typename F, std::size_t ... Is&gt;</div>
-              <span class="m-doc-wrap-bumper">auto <a href="#a5e0db6b4d761ef3ac5f669c7d9db1df4" class="m-doc">apply</a>(</span><span class="m-doc-wrap">F f,
-              std::index_sequence&lt;Is...&gt;) &gt; -&gt; auto <span class="m-label m-flat m-primary">constexpr</span></span>
+              <span class="m-doc-wrap-bumper">auto <a href="#a97fc6e6261c385acf6b473bb82ae7756" class="m-doc">apply</a>(</span><span class="m-doc-wrap">F f,
+              std::index_sequence&lt;Is...&gt;) -&gt; auto <span class="m-label m-flat m-primary">constexpr</span></span>
+            </dt>
+            <dd></dd>
+            <dt>
+              <div class="m-doc-template">template&lt;class In&gt;</div>
+              <span class="m-doc-wrap-bumper"><a href="#a5443aaf713e1c81125a0dd5ddef89ded" class="m-doc">requires</a>(</span><span class="m-doc-wrap">std::derived_from&lt;In, <a href="classokser_1_1in_1_1range.html" class="m-doc">okser::<wbr />in::<wbr />range</a>&lt;typename In::ContainedType&gt;&gt;)</span>
+            </dt>
+            <dd><span></span></dd>
+            <dt>
+              <div class="m-doc-template">template&lt;class In&gt;</div>
+              <span class="m-doc-wrap-bumper"><a href="#aeffc99b9c65f7c8b4b7faef477f760a2" class="m-doc">requires</a>(</span><span class="m-doc-wrap">std::constructible_from&lt;<a href="classokser_1_1in_1_1range.html" class="m-doc">okser::<wbr />in::<wbr />range</a>&lt;In&gt;, In&gt;)</span>
             </dt>
             <dd><span></span></dd>
           </dl>
         </section>
-        <section id="var-members">
-          <h2><a href="#var-members">Variables</a></h2>
-          <dl class="m-doc">
-            <dt>
-              <div class="m-doc-template">template&lt;class T&gt;</div>
-              bool <a href="#a54f0766594b6384c99138a1e82f9a12c" class="m-doc">is_serializer</a> <span class="m-label m-flat m-primary">constexpr</span>
-            </dt>
-            <dd></dd>
-            <dt>
-              <div class="m-doc-template">template&lt;class T&gt;</div>
-              requires constexpr std::derived_from&lt;T, <a href="classokser_1_1internal_1_1type.html" class="m-doc">type</a>&gt; bool <a href="#a993181d9202881ed4966672fc4c52843" class="m-doc">is_serializer< T ></a> <span class="m-label m-flat m-primary">constexpr</span>
-            </dt>
-            <dd></dd>
-          </dl>
+        <section>
+          <h2>Typedef documentation</h2>
+          <section class="m-doc-details" id="a747b317363f447e264c9e7fb57d68cfe"><div>
+            <h3>
+              <div class="m-doc-include m-code m-inverted m-right-m m-text-right"><span class="cp">#include</span> <a class="cpf" href="utils__early_8h.html">&lt;ok-serializer/utils_early.h&gt;</a></div>
+              <div class="m-doc-template">
+                template&lt;int Bytes&gt;
+              </div>
+              using okser::<wbr />internal::<wbr /><a href="#a747b317363f447e264c9e7fb57d68cfe" class="m-doc-self">uint_bytes_to_type</a> = std::conditional_t&lt;Bytes&lt;=1, uint8_t, std::conditional_t&lt;Bytes&lt;=2, uint16_t, std::conditional_t&lt;Bytes&lt;=4, uint32_t, std::conditional_t&lt;Bytes&lt;=8, uint64_t, void&gt;&gt;&gt;&gt;
+            </h3>
+            <p><span></span></p>
+          </div></section>
         </section>
         <section>
           <h2>Function documentation</h2>
           <section class="m-doc-details" id="a8cb0a1c58ba93fe9b56a8d021d9efcd6"><div>
             <h3>
-              <div class="m-doc-include m-code m-inverted m-right-m m-text-right"><span class="cp">#include</span> <a class="cpf" href="impl__utils_8h.html">&lt;ok-serializer/impl_utils.h&gt;</a></div>
+              <div class="m-doc-include m-code m-inverted m-right-m m-text-right"><span class="cp">#include</span> <a class="cpf" href="utils__early_8h.html">&lt;ok-serializer/utils_early.h&gt;</a></div>
               <div class="m-doc-template">
                 template&lt;class Pair, Output Out&gt;
               </div>
@@ -147,39 +169,66 @@
             </table>
 <p>Append a single <a href="structokser_1_1serializable__value.html" class="m-doc">serializable_<wbr />value</a> to an output.</p>
           </div></section>
-          <section class="m-doc-details" id="a5e0db6b4d761ef3ac5f669c7d9db1df4"><div>
+          <section class="m-doc-details" id="a97fc6e6261c385acf6b473bb82ae7756"><div>
             <h3>
-              <div class="m-doc-include m-code m-inverted m-right-m m-text-right"><span class="cp">#include</span> <a class="cpf" href="impl__utils_8h.html">&lt;ok-serializer/impl_utils.h&gt;</a></div>
+              <div class="m-doc-include m-code m-inverted m-right-m m-text-right"><span class="cp">#include</span> <a class="cpf" href="utils__early_8h.html">&lt;ok-serializer/utils_early.h&gt;</a></div>
               <div class="m-doc-template">
                 template&lt;typename F, std::size_t ... Is&gt;
               </div>
-              <span class="m-doc-wrap-bumper">auto okser::<wbr />internal::<wbr /></span><span class="m-doc-wrap"><span class="m-doc-wrap-bumper"><a href="#a5e0db6b4d761ef3ac5f669c7d9db1df4" class="m-doc-self">apply</a>(</span><span class="m-doc-wrap">F f,
-              std::index_sequence&lt;Is...&gt;) &gt; <span class="m-label m-primary">constexpr</span></span></span>
+              <span class="m-doc-wrap-bumper">auto okser::<wbr />internal::<wbr /></span><span class="m-doc-wrap"><span class="m-doc-wrap-bumper"><a href="#a97fc6e6261c385acf6b473bb82ae7756" class="m-doc-self">apply</a>(</span><span class="m-doc-wrap">F f,
+              std::index_sequence&lt;Is...&gt;) <span class="m-label m-primary">constexpr</span></span></span>
+            </h3>
+            <table class="m-table m-fullwidth m-flat">
+              <thead>
+                <tr><th colspan="2">Template parameters</th></tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td style="width: 1%">F</td>
+                  <td>The function to apply. The return value of this function will be returned as a tuple. The only argument passed to this function is an std::integral_constant with the index.</td>
+                </tr>
+                <tr>
+                  <td>Is</td>
+                  <td>An index sequence.</td>
+                </tr>
+              </tbody>
+              <thead>
+                <tr><th colspan="2">Parameters</th></tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>f</td>
+                  <td>The function to apply.</td>
+                </tr>
+              </tbody>
+              <tfoot>
+                <tr>
+                  <th>Returns</th>
+                  <td>An std::tuple with the elements of each application of f.</td>
+                </tr>
+              </tfoot>
+            </table>
+<p>Apply a function to all elements of an index sequence. This function is useful for looping over tuples at compile time with an index. The applications would be looping over two tuples at the same time.</p>
+          </div></section>
+          <section class="m-doc-details" id="a5443aaf713e1c81125a0dd5ddef89ded"><div>
+            <h3>
+              <div class="m-doc-include m-code m-inverted m-right-m m-text-right"><span class="cp">#include</span> <a class="cpf" href="utils__late_8h.html">&lt;ok-serializer/utils_late.h&gt;</a></div>
+              <div class="m-doc-template">
+                template&lt;class In&gt;
+              </div>
+              <span class="m-doc-wrap-bumper"> okser::<wbr />internal::<wbr /></span><span class="m-doc-wrap"><span class="m-doc-wrap-bumper"><a href="#a5443aaf713e1c81125a0dd5ddef89ded" class="m-doc-self">requires</a>(</span><span class="m-doc-wrap">std::derived_from&lt;In, <a href="classokser_1_1in_1_1range.html" class="m-doc">okser::<wbr />in::<wbr />range</a>&lt;typename In::ContainedType&gt;&gt;)</span></span>
             </h3>
             <p><span></span></p>
           </div></section>
-        </section>
-        <section>
-          <h2>Variable documentation</h2>
-          <section class="m-doc-details" id="a54f0766594b6384c99138a1e82f9a12c"><div>
+          <section class="m-doc-details" id="aeffc99b9c65f7c8b4b7faef477f760a2"><div>
             <h3>
-              <div class="m-doc-include m-code m-inverted m-right-m m-text-right"><span class="cp">#include</span> <a class="cpf" href="impl__types_8h.html">&lt;ok-serializer/impl_types.h&gt;</a></div>
+              <div class="m-doc-include m-code m-inverted m-right-m m-text-right"><span class="cp">#include</span> <a class="cpf" href="utils__late_8h.html">&lt;ok-serializer/utils_late.h&gt;</a></div>
               <div class="m-doc-template">
-                template&lt;class T&gt;
+                template&lt;class In&gt;
               </div>
-              bool okser::<wbr />internal::<wbr /><a href="#a54f0766594b6384c99138a1e82f9a12c" class="m-doc-self">is_serializer</a> <span class="m-label m-primary">constexpr</span>
+              <span class="m-doc-wrap-bumper"> okser::<wbr />internal::<wbr /></span><span class="m-doc-wrap"><span class="m-doc-wrap-bumper"><a href="#aeffc99b9c65f7c8b4b7faef477f760a2" class="m-doc-self">requires</a>(</span><span class="m-doc-wrap">std::constructible_from&lt;<a href="classokser_1_1in_1_1range.html" class="m-doc">okser::<wbr />in::<wbr />range</a>&lt;In&gt;, In&gt;)</span></span>
             </h3>
-<p>A concept to check if a class is a serializer.</p>
-          </div></section>
-          <section class="m-doc-details" id="a993181d9202881ed4966672fc4c52843"><div>
-            <h3>
-              <div class="m-doc-include m-code m-inverted m-right-m m-text-right"><span class="cp">#include</span> <a class="cpf" href="impl__types_8h.html">&lt;ok-serializer/impl_types.h&gt;</a></div>
-              <div class="m-doc-template">
-                template&lt;class T&gt;
-              </div>
-              requires constexpr std::derived_from&lt;T, <a href="classokser_1_1internal_1_1type.html" class="m-doc">type</a>&gt; bool okser::<wbr />internal::<wbr /><a href="#a993181d9202881ed4966672fc4c52843" class="m-doc-self">is_serializer< T ></a> <span class="m-label m-primary">constexpr</span>
-            </h3>
-<p>Specialization to consider all children of <a href="classokser_1_1internal_1_1type.html" class="m-doc">okser::<wbr />internal::<wbr />type</a> as serializers.</p>
+            <p><span></span></p>
           </div></section>
         </section>
       </div>

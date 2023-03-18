@@ -49,35 +49,65 @@
     <div class="m-row">
       <div class="m-col-l-10 m-push-l-1">
         <h1>
-          <div class="m-doc-include m-code m-inverted m-right-m m-text-right"><span class="cp">#include</span> <a class="cpf" href="ok-serializer_8hpp.html">&lt;ok-serializer/ok-serializer.hpp&gt;</a></div>
-          <div class="m-doc-template">template&lt;Serializer... Types&gt;</div>
+          <div class="m-doc-include m-code m-inverted m-right-m m-text-right"><span class="cp">#include</span> <a class="cpf" href="types__compound_8h.html">&lt;ok-serializer/types_compound.h&gt;</a></div>
+          <div class="m-doc-template">template&lt;class... Types&gt;</div>
           <span class="m-breadcrumb"><a href="namespaceokser.html">okser</a>::<wbr/></span>bundle <span class="m-thin">class</span>
         </h1>
         <nav class="m-block m-default">
           <h3>Contents</h3>
           <ul>
-            <li><a href="#autotoc_md9">Example</a></li>
+            <li><a href="#autotoc_md12">Example</a></li>
             <li>
               Reference
               <ul>
-                <li><a href="#pub-static-methods">Public static functions</a></li>
+                <li><a href="#pub-types">Public types</a></li>
+                <li><a href="#typeless-methods">Constructors, destructors, conversion operators</a></li>
+                <li><a href="#pub-attribs">Public variables</a></li>
               </ul>
             </li>
           </ul>
         </nav>
-<p>An array of types to be serialized. Bundle objects describe the binary format of the serialized output, and are a required input of the serializer.</p><section id="autotoc_md9"><h3><a href="#autotoc_md9">Example</a></h3><pre class="m-code"><span class="k">using</span><span class="w"> </span><span class="n">MyBundle</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">okser</span><span class="o">::</span><span class="n">bundle</span><span class="o">&lt;</span><span class="n">okser</span><span class="o">::</span><span class="n">uint</span><span class="o">&lt;</span><span class="mi">4</span><span class="o">&gt;</span><span class="p">,</span><span class="w"> </span><span class="n">okser</span><span class="o">::</span><span class="n">sint</span><span class="o">&lt;</span><span class="mi">2</span><span class="o">&gt;</span><span class="p">,</span><span class="w"> </span><span class="n">okser</span><span class="o">::</span><span class="n">floatp</span><span class="o">&gt;</span><span class="p">;</span></pre></section>
-        <section id="pub-static-methods">
-          <h2><a href="#pub-static-methods">Public static functions</a></h2>
+<p>An array of types to be serialized. Bundle objects describe the binary format of the serialized output, and are a required input of the serializer.</p><section id="autotoc_md12"><h3><a href="#autotoc_md12">Example</a></h3><pre class="m-code"><span class="k">using</span><span class="w"> </span><span class="n">MyBundle</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">okser</span><span class="o">::</span><span class="n">bundle</span><span class="o">&lt;</span><span class="n">okser</span><span class="o">::</span><span class="n">uint</span><span class="o">&lt;</span><span class="mi">4</span><span class="o">&gt;</span><span class="p">,</span><span class="w"> </span><span class="n">okser</span><span class="o">::</span><span class="n">sint</span><span class="o">&lt;</span><span class="mi">2</span><span class="o">&gt;</span><span class="p">,</span><span class="w"> </span><span class="n">okser</span><span class="o">::</span><span class="n">floatp</span><span class="o">&gt;</span><span class="p">;</span></pre></section>
+        <section id="pub-types">
+          <h2><a href="#pub-types">Public types</a></h2>
           <dl class="m-doc">
-            <dt id="a78842eb397e08f20ac8f33250e1f9b74">
-              <div class="m-doc-template">template&lt;<a href="namespaceokser.html#ad303c76375992471999a8a2b3567abf2" class="m-doc">Output</a> Out, typename... Values&gt;</div>
-              <span class="m-doc-wrap-bumper">static void <a href="#a78842eb397e08f20ac8f33250e1f9b74" class="m-doc-self">serialize</a>(</span><span class="m-doc-wrap">Out&amp;&amp; output,
-              Values... values) <span class="m-label m-flat m-primary">constexpr</span></span>
+            <dt id="adefd079bc7acd84d50bbf61a5a1b8aba">
+              using <a href="#adefd079bc7acd84d50bbf61a5a1b8aba" class="m-doc-self">TypesTuple</a> = std::tuple&lt;Types...&gt;
             </dt>
             <dd><span></span></dd>
-            <dt id="a813e436ef8558f76e379cd5ea2a81cb5">
-              <div class="m-doc-template">template&lt;<a href="namespaceokser.html#a47b29560e655ea0b1de66f83303c32b1" class="m-doc">Input</a> In, typename... Values&gt;</div>
-              <span class="m-doc-wrap-bumper">static auto <a href="#a813e436ef8558f76e379cd5ea2a81cb5" class="m-doc-self">deserialize</a>(</span><span class="m-doc-wrap">In input) -&gt; std::tuple&lt;Values...&gt; <span class="m-label m-flat m-primary">constexpr</span></span>
+            <dt id="afd15dccdd062f81fb76f40f0acfca840">
+              using <a href="#afd15dccdd062f81fb76f40f0acfca840" class="m-doc-self">DefaultType</a> = std::tuple&lt;typename Types::DefaultType...&gt;
+            </dt>
+            <dd><span></span></dd>
+          </dl>
+        </section>
+        <section id="typeless-methods">
+          <h2><a href="#typeless-methods">Constructors, destructors, conversion operators</a></h2>
+          <dl class="m-doc">
+            <dt id="a529e888981b5ecaf176d45e7b9731335">
+              <div class="m-doc-template">template&lt;<a href="namespaceokser.html#ad303c76375992471999a8a2b3567abf2" class="m-doc">Output</a> Out, typename... Values&gt;</div>
+              <span class="m-doc-wrap-bumper"><a href="#a529e888981b5ecaf176d45e7b9731335" class="m-doc-self">requires</a>(</span><span class="m-doc-wrap"><a href="namespaceokser.html#adc601784f0401396bf0b794f6c57dd9f" class="m-doc">Serializer</a>&lt;Types&gt;,
+              ...) const expr static void serialize(Out &amp;&amp;output</span>
+            </dt>
+            <dd><span></span></dd>
+            <dt id="a44d38f4c9e2f8d3544a48b5e37f5c651">
+              <span class="m-doc-wrap-bumper"><a href="#a44d38f4c9e2f8d3544a48b5e37f5c651" class="m-doc-self">std::apply</a>(</span><span class="m-doc-wrap">(auto &amp;&amp; ...v) {((<a href="namespaceokser_1_1internal.html#a8cb0a1c58ba93fe9b56a8d021d9efcd6" class="m-doc">internal::<wbr />serialize_one</a>(v, output)),...);},
+              typeValues)</span>
+            </dt>
+            <dd><span></span></dd>
+            <dt id="a7620a653c4fc97a671e0135b89ec1553">
+              <div class="m-doc-template">template&lt;class Tuple, <a href="namespaceokser.html#a47b29560e655ea0b1de66f83303c32b1" class="m-doc">Input</a> In&gt;</div>
+              <span class="m-doc-wrap-bumper"><a href="#a7620a653c4fc97a671e0135b89ec1553" class="m-doc-self">requires</a>(</span><span class="m-doc-wrap"><a href="namespaceokser.html#a4b37a8f5441fc9690e1e4844236d3f72" class="m-doc">Deserializer</a>&lt;Types&gt;,
+              ...) const expr static std</span>
+            </dt>
+            <dd><span></span></dd>
+          </dl>
+        </section>
+        <section id="pub-attribs">
+          <h2><a href="#pub-attribs">Public variables</a></h2>
+          <dl class="m-doc">
+            <dt id="a2bfae2a507642e543e7cd9d7ee6252fa">
+              Values <a href="#a2bfae2a507642e543e7cd9d7ee6252fa" class="m-doc-self">values</a>
             </dt>
             <dd><span></span></dd>
           </dl>
