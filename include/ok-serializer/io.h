@@ -4,64 +4,68 @@
 #include <string>
 #include <ranges>
 
+#include "errors.h"
+
 namespace okser {
-    /**
-     * Useful output classes for serialized results
-     */
-    namespace in {
-        template<std::ranges::input_range R = std::string>
-        class range {
-        private:
-            using Const_Iterator = typename R::const_iterator;
+/**
+ * Useful output classes for serialized results
+ */
+namespace in {
+template<std::ranges::input_range R = std::string>
+class range {
+private:
+    using Const_Iterator = typename R::const_iterator;
 
-            Const_Iterator begin;
-            Const_Iterator end;
+    Const_Iterator begin;
+    Const_Iterator end;
 
-            constexpr range(Const_Iterator begin, Const_Iterator end) : begin(begin), end(end) {}
+    constexpr range(Const_Iterator begin, Const_Iterator end) : begin(begin), end(end) {}
 
-        public:
-            using ContainedType = R;
+public:
+    using ContainedType = R;
 
-            constexpr range(const R &_range) : begin(_range.begin()), end(_range.end()) {}
+    constexpr range(const R &_range) : begin(_range.begin()), end(_range.end()) {}
 
-            constexpr std::pair<std::optional<uint8_t>, range<R>> get() const {
-                auto result = std::optional<uint8_t>{};
-                if (begin != end) {
-                    result = *begin;
-                }
-                return {result, range<R>{begin + 1, end}};
+    constexpr std::pair<okser::result<uint8_t>, range<R>> get() const {
+        okser::result<uint8_t> result = std::unexpected(okser::error_type::not_enough_bytes);
+
+        if (begin != end) {
+            result = *begin;
+        }
+
+        return {result, range<R>{begin + 1, end}};
+    }
+
+    template<size_t N, std::ranges::input_range Array = std::array<uint8_t, N>>
+    requires (N > 0, std::tuple_size_v<Array> >= N)
+    constexpr std::pair<okser::result<Array>, range<R>> get() const {
+        okser::result<Array> result = std::unexpected(okser::error_type::not_enough_bytes);
+        auto input_current = begin;
+        if (std::ranges::distance(begin, end) >= N) {
+            result.emplace();
+            auto result_current = std::ranges::begin(*result);
+            for (int i = 0; i < N; i++) {
+                *result_current = *input_current;
+                input_current++;
+                result_current++;
             }
-
-            template<size_t N, std::ranges::input_range Array = std::array<uint8_t, N>>
-            requires (N > 0, std::tuple_size_v<Array> >= N)
-            constexpr std::pair<std::optional<Array>, range<R>> get() const {
-                auto result = std::optional<Array>{};
-                auto input_current = begin;
-                if (std::ranges::distance(begin, end) >= N) {
-                    result.emplace();
-                    auto result_current = std::ranges::begin(*result);
-                    for (int i = 0; i < N; i++) {
-                        *result_current = *input_current;
-                        input_current++;
-                        result_current++;
-                    }
-                }
+        }
                 return {result, range<R>{input_current, end}};
             }
 
-            template<std::ranges::input_range Vector = std::string>
-            constexpr std::pair<std::optional<Vector>, range<R>> get(size_t N) const {
-                auto result = std::optional<Vector>{};
-                auto current = begin;
-                if (std::ranges::distance(begin, end) >= N) {
-                    result.emplace();
-                    for (int i = 0; i < N; i++) {
-                        result->push_back(*current);
-                        current++;
-                    }
-                }
-                return {result, range<R>{current, end}};
+    template<std::ranges::input_range Vector = std::string>
+    constexpr std::pair<okser::result<Vector>, range<R>> get(size_t N) const {
+        okser::result<Vector> result = std::unexpected(okser::error_type::not_enough_bytes);
+        auto current = begin;
+        if (std::ranges::distance(begin, end) >= N) {
+            result.emplace();
+            for (int i = 0; i < N; i++) {
+                result->push_back(*current);
+                current++;
             }
+        }
+        return {result, range<R>{current, end}};
+    }
         };
     }
 

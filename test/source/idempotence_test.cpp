@@ -15,7 +15,7 @@ TEST_CASE("uint idempotence") {
 
         auto result = deserialize<okser::uint<1>>(str);
 
-        CHECK(i == result);
+        CHECK(i == *result);
     }
 
     SECTION("sint64_t big endian") {
@@ -25,7 +25,7 @@ TEST_CASE("uint idempotence") {
 
         auto result = deserialize<okser::sint<8, end::be>>(str);
 
-        CHECK(i == result);
+        CHECK(i == *result);
     }
 
     SECTION("sint64_t little endian") {
@@ -35,22 +35,24 @@ TEST_CASE("uint idempotence") {
 
         auto result = deserialize<okser::sint<8, end::le>>(str);
 
-        CHECK(i == result);
+        CHECK(i == *result);
     }
 }
 
 TEST_CASE("floatp idempotence") {
-    std::string str;
-    okser::out::stdstring out{str};
-
     SECTION("single-precision") {
         float i = GENERATE(take(100, random(-1e30, 1e30)));
+
+        std::string str("");
+        uint8_t *u8str = reinterpret_cast<uint8_t *>(str.data());
+        okser::out::stdstring out{str};
 
         serialize<bundle<okser::floatp<4>>>(out, i);
 
         auto result = deserialize<okser::floatp<4>>(str);
 
-        CHECK(i == result);
+        REQUIRE(result.has_value());
+        CHECK(i == *result);
     }
 
 }

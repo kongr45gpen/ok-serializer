@@ -49,16 +49,17 @@ constexpr void serialize(Out &&output, Values... values) {
 
 // Single argument deserialisation
 template<Deserializer Type, typename Value = typename Type::DefaultType, class In>
-constexpr Value deserialize(In &&input) {
+constexpr result<Value> deserialize(In &&input) {
     auto contained_input = internal::convert_input_to_okser(std::forward<In>(input));
+    input_context context{contained_input};
 
-    return Type::template deserialize<Value>(std::forward<decltype(contained_input)>(contained_input)).first;
+    return Type::template deserialize<Value>(context).first;
 }
 
 // Multiple argument deserialisation, converts many elements to bundles
 template<Deserializer... Types, class... Values, std::derived_from<std::tuple<Values...>> Tuple = std::tuple<Values...>, class In>
 requires (sizeof...(Values) == sizeof...(Types) && sizeof...(Types) > 1)
-constexpr Tuple deserialize(In &&input) {
+constexpr result<Tuple> deserialize(In &&input) {
     return deserialize<bundle<Tuple>, Values..., In>(std::forward<In>(input));
 }
 

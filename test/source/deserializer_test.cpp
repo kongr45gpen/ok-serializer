@@ -3,12 +3,15 @@
 
 using Catch::Matchers::Equals;
 
+template<typename T, typename U>
+constexpr auto is_result = std::is_same_v<T, okser::result<U>>;
+
 TEST_CASE("uint decoding") {
     SECTION("uint8_t") {
         std::string str = "\x7C";
         auto number = okser::deserialize<okser::uint<1>>(str);
 
-        static_assert(std::is_same_v<decltype(number), uint8_t>);
+        static_assert(is_result<decltype(number), uint8_t>);
 
         CHECK(number == 124);
     }
@@ -17,7 +20,7 @@ TEST_CASE("uint decoding") {
         std::string str = "\x43\xB0";
         auto number = okser::deserialize<okser::uint<2, okser::end::be>>(str);
 
-        static_assert(std::is_same_v<decltype(number), uint16_t>);
+        static_assert(is_result<decltype(number), uint16_t>);
 
         CHECK(number == 17328);
     }
@@ -26,7 +29,7 @@ TEST_CASE("uint decoding") {
         std::string str = "\xB0\x43";
         auto number = okser::deserialize<okser::uint<2, okser::end::le>>(str);
 
-        static_assert(std::is_same_v<decltype(number), uint16_t>);
+        static_assert(is_result<decltype(number), uint16_t>);
 
         CHECK(number == 17328);
     }
@@ -35,7 +38,7 @@ TEST_CASE("uint decoding") {
         std::string str = "\x05\x7B\xB8";
         auto number = okser::deserialize<okser::uint<3, okser::end::be>>(str);
 
-        static_assert(std::is_same_v<decltype(number), uint32_t>);
+        static_assert(is_result<decltype(number), uint32_t>);
 
         CHECK(number == 359352);
     }
@@ -44,7 +47,7 @@ TEST_CASE("uint decoding") {
         std::string str = "\xB8\x7B\x05";
         auto number = okser::deserialize<okser::uint<3, okser::end::le>>(str);
 
-        static_assert(std::is_same_v<decltype(number), uint32_t>);
+        static_assert(is_result<decltype(number), uint32_t>);
 
         CHECK(number == 359352);
     }
@@ -57,7 +60,7 @@ TEST_CASE("bundle decoding") {
 
         auto tuple = okser::deserialize<Bundle, std::tuple<uint8_t>>(str);
 
-        CHECK(std::get<0>(tuple) == 0xB8);
+        CHECK(std::get<0>(*tuple) == 0xB8);
     }
 
     SECTION("Explicit bundle specification, multiple elements") {
@@ -66,11 +69,11 @@ TEST_CASE("bundle decoding") {
 
         auto tuple = okser::deserialize<Bundle, std::tuple<uint8_t, uint8_t, uint8_t>>(str);
 
-        static_assert(std::is_same_v<decltype(tuple), std::tuple<uint8_t, uint8_t, uint8_t>>);
+        static_assert(is_result<decltype(tuple), std::tuple<uint8_t, uint8_t, uint8_t>>);
 
-        CHECK(std::get<0>(tuple) == 0xB8);
-        CHECK(std::get<1>(tuple) == 0x7B);
-        CHECK(std::get<2>(tuple) == 0x05);
+        CHECK(std::get<0>(*tuple) == 0xB8);
+        CHECK(std::get<1>(*tuple) == 0x7B);
+        CHECK(std::get<2>(*tuple) == 0x05);
     }
 
     SECTION("Automatic bundle type deduction") {
@@ -79,10 +82,10 @@ TEST_CASE("bundle decoding") {
 
         auto tuple = okser::deserialize<Bundle>(str);
 
-        static_assert(std::is_same_v<decltype(tuple), std::tuple<uint8_t, uint16_t>>);
+        static_assert(is_result<decltype(tuple), std::tuple<uint8_t, uint16_t>>);
 
-        CHECK(std::get<0>(tuple) == 0xB8);
-        CHECK(std::get<1>(tuple) == 0x7B05);
+        CHECK(std::get<0>(*tuple) == 0xB8);
+        CHECK(std::get<1>(*tuple) == 0x7B05);
     }
 }
 
@@ -92,18 +95,18 @@ TEST_CASE("static-time deserialization") {
         constexpr okser::in::range<std::string_view> in(str);
         using Bundle = okser::bundle<okser::uint<2, okser::end::le>>;
 
-        constexpr std::pair<std::optional<uint8_t>, decltype(in)> output_tuple = in.get();
+        constexpr auto output_tuple = in.get();
         CHECK(output_tuple.first.has_value());
         CHECK(output_tuple.first.value() == 0xB0);
 
         constexpr auto output = okser::deserialize<Bundle, std::tuple<uint16_t>>(in);
-        CHECK(std::get<0>(output) == 17328);
+        CHECK(std::get<0>(*output) == 17328);
     }
 
     SECTION("quick deserialization") {
         constexpr std::string_view str("\x43\xB0");
 
         constexpr auto output = okser::deserialize<okser::uint<2>>(str);
-        CHECK(output == 17328);
+        CHECK(*output == 17328);
     }
 }

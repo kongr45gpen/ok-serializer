@@ -4,6 +4,7 @@
 #include <cstdint>
 #include "concepts.h"
 #include "utils_early.h"
+#include "context.h"
 
 namespace okser {
 /**
@@ -53,24 +54,27 @@ namespace okser {
             }
         }
 
-        template<typename V, Input In>
-        constexpr static std::pair<V,In> deserialize(In in) {
-            V result = 0;
-            In input = in;
+        template<typename V, InputContext Context>
+        constexpr static std::pair<okser::result<V>, Context> deserialize(Context context) {
+            auto [result, input] = context.input.template get<Bytes>();
+            context.input = input;
+
+            if (!result) {
+                return {0, context};
+            }
+
+            V value = 0;
             if constexpr (Endianness == end::le) {
                 for (int i = 0; i < Bytes; i++) {
-                    std::optional<uint8_t> value;
-                    std::tie(value, input) = input.get();
-                    result |= static_cast<V>(value.value()) << (8 * i);
+                    value |= static_cast<V>(result.value()[i]) << (8 * i);
                 }
             } else {
                 for (int i = 0; i < Bytes; i++) {
-                    std::optional<uint8_t> value;
-                    std::tie(value, input) = input.get();
-                    result |= static_cast<V>(value.value()) << (8 * (Bytes - i - 1));
+                    value |= static_cast<V>(result.value()[i]) << (8 * (Bytes - i - 1));
                 }
             }
-            return {result, input};
+
+            return {value, context};
         }
     };
 
@@ -93,13 +97,15 @@ namespace okser {
             uint<Bytes, Endianness>::serialize(u, o);
         }
 
-        template<typename V, Input In>
-        static std::pair<V, In> deserialize(In in) {
+        template<typename V, InputContext Context>
+        static std::pair<okser::result<V>, Context> deserialize(Context context) {
             using Unsigned = std::make_unsigned_t<V>;
-            Unsigned u;
+            okser::result<Unsigned> u;
 
-            std::tie(u, in) = uint<Bytes, Endianness>::template deserialize<Unsigned>(in);
-            return {std::bit_cast<V>(u), in};
+            std::tie(u, context) = uint<Bytes, Endianness>::template deserialize<Unsigned>(context);
+            internal::transform(u, std::bit_cast<V, Unsigned>);
+
+            return {u, context};
         }
     };
 
@@ -125,14 +131,16 @@ namespace okser {
             uint<Bytes, Endianness>::serialize(u, o);
         }
 
-        template<typename V = DefaultType, Input In>
+        template<typename V = DefaultType, InputContext Context>
         requires(std::is_floating_point_v<V>)
-        static std::pair<V, In> deserialize(In &&in) {
+        //todo auto return type
+        static std::pair<okser::result<V>, Context> deserialize(Context context) {
             using Unsigned = std::conditional_t<Bytes == 4, uint32_t, uint64_t>;
 
-            Unsigned u;
-            std::tie(u, in) = uint<Bytes, Endianness>::template deserialize<Unsigned>(in);
-            return {std::bit_cast<DefaultType>(u), in};
+            okser::result<Unsigned> u;
+            std::tie(u, context) = uint<Bytes, Endianness>::template deserialize<Unsigned>(context);
+
+            return {internal::transform(u, std::bit_cast<DefaultType, Unsigned>), context};
         }
     };
 
@@ -172,11 +180,12 @@ namespace okser {
             uint<Bytes, Endianness>::serialize(static_cast<Underlying>(e), o);
         }
 
-        template<Input In>
-        static std::pair<Enum, In> deserialize(In in) {
-            auto [result, input] = uint<Bytes, Endianness>::template deserialize<Underlying>(in);
+        template<InputContext Context>
+        static std::pair<okser::result<Enum>, Context> deserialize(Context context) {
+            auto [result, new_context] = uint<Bytes, Endianness>::template deserialize<Underlying>(context);
+            result.transform([](Underlying u) { return static_cast<Enum>(u); });
 
-            return {static_cast<Enum>(result), input};
+            return {result, new_context};
         }
     };
 }

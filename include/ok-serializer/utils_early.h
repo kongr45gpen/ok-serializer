@@ -34,12 +34,32 @@ constexpr auto apply(F f, std::index_sequence<Is...>) {
     return std::tuple{f(std::integral_constant<std::size_t, Is>{})...};
 }
 
+////todo: generalise to non-tuples
+//template<typename F, typename ... T>
+//constexpr auto apply(F f, std::tuple<T...> t) {
+//    auto IndSeq = std::make_index_sequence<sizeof...(T)>{};
+//
+//    return std::tuple{f(std::get<IndSeq>(t))...};
+//}
+
 template<int Bytes>
 using uint_bytes_to_type = std::conditional_t<Bytes <= 1, uint8_t,
         std::conditional_t<Bytes <= 2, uint16_t,
                 std::conditional_t<Bytes <= 4, uint32_t,
                         std::conditional_t<Bytes <= 8, uint64_t,
                                 void>>>>;
+
+template<typename T, typename E, typename F>
+constexpr auto transform(const std::expected<T, E> &e, F &&f) {
+    using FunctionReturn = std::invoke_result_t<F, T>;
+    using ExpectedReturn = std::expected<FunctionReturn, E>;
+
+    if (e) {
+        return ExpectedReturn(f(std::move(e.value())));
+    } else {
+        return ExpectedReturn(std::unexpected(std::move(e.error())));
+    }
+}
 
 } // namespace internal
 

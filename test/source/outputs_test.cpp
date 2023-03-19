@@ -19,7 +19,7 @@ TEST_CASE("stdstring input") {
     SECTION("to uint8_t") {
         std::string string("\x70\xAF");
         okser::in::range in{string};
-        std::optional<uint8_t> value;
+        okser::result<uint8_t> value;
 
         std::tie(value, in) = in.get();
         CHECK(*value == 0x70);

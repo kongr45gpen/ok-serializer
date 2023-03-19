@@ -1,18 +1,18 @@
 #pragma once
 
+#include "concepts.h"
+
 namespace okser {
 
-template<typename T>
-concept InputContext = requires(T t)
-{
-    t.input;
+template<Input In>
+struct input_context {
+    In input;
+    std::optional<okser::parse_error> error;
 };
 
-template<typename T>
-concept OutputContext = requires(T t)
-{
-    t.output;
+template<Output Out>
+struct output_context {
+    Out output;
 };
-
 
 }

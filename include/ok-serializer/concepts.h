@@ -12,6 +12,13 @@ struct DummyInOut {
     }
 };
 
+struct DummyContext {
+    DummyInOut input;
+    DummyInOut output;
+    std::optional<okser::parse_error> error;
+};
+
+
 }
 
 /**
@@ -49,9 +56,22 @@ concept Serializer = requires(typename T::DefaultType v, internal::DummyInOut o)
 };
 
 template<typename T>
-concept Deserializer = requires(typename T::DefaultType v, internal::DummyInOut i)
+concept Deserializer = requires(typename T::DefaultType v, internal::DummyContext c)
 {
-    T::template deserialize<typename T::DefaultType>(i);
+//    T::template deserialize<typename T::DefaultType>(c);
+    1; //TODO
+};
+
+template<typename T>
+concept InputContext = requires(T t)
+{
+    t.input;
+};
+
+template<typename T>
+concept OutputContext = requires(T t)
+{
+    t.output;
 };
 
 }
