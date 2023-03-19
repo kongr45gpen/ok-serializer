@@ -117,13 +117,21 @@ TEST_CASE("enum encoding") {
     okser::serialize<okser::bundle<okser::enumv<TestEnum>>>(
         okser::out::stdstring{out}, TestEnum::A);
     CHECK_THAT(out, Equals("\x01"));
-  }
+    }
 
-  SECTION("8-bit enum to 16-bit value") {
-    std::string out;
-    okser::serialize<okser::bundle<okser::enumv<TestEnum, 2>>>(
-        okser::out::stdstring{out}, TestEnum::B);
-    CHECK(out[0] == 0x00);
-    CHECK(out[1] == 0x02);
-  }
+    SECTION("8-bit enum to 16-bit value") {
+        std::string out;
+        okser::serialize<okser::bundle<okser::enumv<TestEnum, 2>>>(
+                okser::out::stdstring{out}, TestEnum::B);
+        CHECK(out[0] == 0x00);
+        CHECK(out[1] == 0x02);
+    }
+}
+
+TEST_CASE("redundant encoding") {
+    SECTION("Triple modular redundancy") {
+        std::string out;
+        okser::serialize<okser::bundle<okser::redundant<okser::uint<1>, 3>>>(okser::out::stdstring{out}, 0x01);
+        CHECK_THAT(out, Equals("\x01\x01\x01"));
+    }
 }

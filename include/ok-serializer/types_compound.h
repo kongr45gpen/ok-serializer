@@ -96,4 +96,41 @@ public:
     }
 };
 
+template<class T, int N> requires (N >= 1)
+class redundant {
+public:
+    using DefaultType = T::DefaultType;
+
+    template<Output Out, typename Value>
+    requires(Serializer<T>)
+    constexpr static void serialize(const Value &value, Out &&output) {
+        for (int i = 0; i < N; i++) {
+            T::template serialize<Value, Out>(value, output);
+        }
+    }
+
+    template<class Value, InputContext Context>
+    requires(Deserializer<T>)
+    constexpr static std::pair<okser::result<Value>, Context> deserialize(Context context) {
+        auto [value, newContext] = T::template deserialize<Value>(context);
+
+        bool ok = true;
+
+        for (int i = 1; i < N; i++) {
+            auto [nextValue, nextContext] = T::template deserialize<Value>(newContext);
+            // TODO propagate errors?
+            if (!nextValue || !value || nextValue.value() != value.value()) {
+                ok = false;
+            }
+            newContext = nextContext;
+        }
+
+        if (ok) {
+            return std::make_pair(value, newContext);
+        } else {
+            return std::make_pair(std::unexpected(okser::error_type::redundant_mismatch), newContext);
+        }
+    };
+};
+
 } // namespace okser

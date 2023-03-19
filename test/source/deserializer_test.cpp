@@ -110,3 +110,22 @@ TEST_CASE("static-time deserialization") {
         CHECK(*output == 17328);
     }
 }
+
+TEST_CASE("redundant decoding") {
+    SECTION("Triple modular redundancy - correct") {
+        std::string str = "\x42\x42\x42";
+
+        auto number = okser::deserialize<okser::redundant<okser::uint<1>, 3>>(str);
+
+        REQUIRE(number.has_value());
+        CHECK(*number == 0x42);
+    }
+
+    SECTION("Triple modular redundancy - correct") {
+        std::string str = "\x42\x41\x42";
+
+        auto number = okser::deserialize<okser::redundant<okser::uint<1>, 3>>(str);
+
+        REQUIRE_FALSE(number.has_value());
+    }
+}
