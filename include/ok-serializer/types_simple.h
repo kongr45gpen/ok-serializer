@@ -133,14 +133,13 @@ namespace okser {
 
         template<typename V = DefaultType, InputContext Context>
         requires(std::is_floating_point_v<V>)
-        //todo auto return type
-        static std::pair<okser::result<V>, Context> deserialize(Context context) {
+        static constexpr auto deserialize(Context context) {
             using Unsigned = std::conditional_t<Bytes == 4, uint32_t, uint64_t>;
 
             okser::result<Unsigned> u;
             std::tie(u, context) = uint<Bytes, Endianness>::template deserialize<Unsigned>(context);
 
-            return {internal::transform(u, std::bit_cast<DefaultType, Unsigned>), context};
+            return std::make_pair(internal::transform(u, std::bit_cast<DefaultType, Unsigned>), context);
         }
     };
 

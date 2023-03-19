@@ -16,6 +16,11 @@ add_executable(ok-serializer_test source/serializer_test.cpp source/outputs_test
 target_link_libraries(ok-serializer_test PRIVATE ok-serializer::ok-serializer Catch2::Catch2WithMain)
 target_compile_features(ok-serializer_test PRIVATE cxx_std_23)
 
+add_executable(ok-serializer_bench source/benchmarks.cpp)
+target_link_libraries(ok-serializer_bench PRIVATE ok-serializer::ok-serializer)
+target_compile_features(ok-serializer_bench PRIVATE cxx_std_23)
+target_compile_options(ok-serializer_bench PUBLIC -fno-rtti -fno-exceptions -O1)
+
 # ---- Assembly code tests ----
 add_library(ok-serializer_perf_o0 STATIC source/optimizer_test.cpp)
 target_link_libraries(ok-serializer_perf_o0 PRIVATE ok-serializer::ok-serializer)
