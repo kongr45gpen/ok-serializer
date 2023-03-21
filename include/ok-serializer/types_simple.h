@@ -179,12 +179,12 @@ namespace okser {
             uint<Bytes, Endianness>::serialize(static_cast<Underlying>(e), o);
         }
 
-        template<InputContext Context>
+        template<typename E = Enum, InputContext Context>
+        requires (std::is_same_v<E, Enum>)
         static std::pair<okser::result<Enum>, Context> deserialize(Context context) {
             auto [result, new_context] = uint<Bytes, Endianness>::template deserialize<Underlying>(context);
-            result.transform([](Underlying u) { return static_cast<Enum>(u); });
 
-            return {result, new_context};
+            return {internal::transform(result, [](const auto u) { return static_cast<Enum>(u); }), new_context};
         }
     };
 }

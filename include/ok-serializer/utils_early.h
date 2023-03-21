@@ -61,6 +61,25 @@ constexpr auto transform(const std::expected<T, E> &e, F &&f) {
     }
 }
 
+template<typename T>
+concept HasConstIterator = requires()
+{
+    typename T::const_iterator;
+};
+
+template<typename T>
+requires(HasConstIterator<T>)
+T::const_iterator ConstIterator_s();
+
+template<typename T>
+requires(!HasConstIterator<T>)
+T::iterator ConstIterator_s();
+
+template<typename T>
+using ConstIterator = decltype(ConstIterator_s<T>());
+
+
+
 } // namespace internal
 
 }

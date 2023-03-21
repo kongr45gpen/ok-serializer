@@ -18,7 +18,6 @@ struct DummyContext {
     std::optional<okser::parse_error> error;
 };
 
-
 }
 
 /**

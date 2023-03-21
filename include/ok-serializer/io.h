@@ -5,6 +5,7 @@
 #include <ranges>
 
 #include "errors.h"
+#include "utils_early.h"
 
 namespace okser {
 /**
@@ -14,7 +15,7 @@ namespace in {
 template<std::ranges::input_range R = std::string>
 class range {
 private:
-    using Const_Iterator = typename R::const_iterator;
+    using Const_Iterator = okser::internal::ConstIterator<R>;
 
     Const_Iterator begin;
     Const_Iterator end;
@@ -40,18 +41,12 @@ public:
     requires (N > 0, std::tuple_size_v<Array> >= N)
     constexpr std::pair<okser::result<Array>, range<R>> get() const {
         okser::result<Array> result = std::unexpected(okser::error_type::not_enough_bytes);
-        auto input_current = begin;
         if (std::ranges::distance(begin, end) >= N) {
             result.emplace();
-            auto result_current = std::ranges::begin(*result);
-            for (int i = 0; i < N; i++) {
-                *result_current = *input_current;
-                input_current++;
-                result_current++;
-            }
+            std::copy(begin, begin + N, result->begin());
         }
-                return {result, range<R>{input_current, end}};
-            }
+        return {result, range<R>{begin + N, end}};
+    }
 
     template<std::ranges::input_range Vector = std::string>
     constexpr std::pair<okser::result<Vector>, range<R>> get(size_t N) const {
