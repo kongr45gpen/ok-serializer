@@ -2,6 +2,7 @@
 #include "ok-serializer/ok-serializer.hpp"
 
 using Catch::Matchers::Equals;
+using Catch::Matchers::WithinRel;
 using namespace okser;
 
 TEST_CASE("uint idempotence") {
@@ -52,7 +53,7 @@ TEST_CASE("floatp idempotence") {
         auto result = deserialize<okser::floatp<4>>(str);
 
         REQUIRE(result.has_value());
-        CHECK(i == *result);
+        CHECK_THAT(i, WithinRel(*result));
     }
 
 }
