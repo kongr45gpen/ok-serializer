@@ -83,6 +83,20 @@
           <h2><a href="#nested-classes">Classes</a></h2>
           <dl class="m-doc">
             <dt>
+              <div class="m-doc-template">template&lt;<a href="namespaceokser.html#a47b29560e655ea0b1de66f83303c32b1" class="m-doc">Input</a> In&gt;</div>
+              struct <a href="structokser_1_1input__context.html" class="m-doc">input_context</a>
+            </dt>
+            <dd><span></span></dd>
+            <dt>
+              <div class="m-doc-template">template&lt;<a href="namespaceokser.html#ad303c76375992471999a8a2b3567abf2" class="m-doc">Output</a> Out&gt;</div>
+              struct <a href="structokser_1_1output__context.html" class="m-doc">output_context</a>
+            </dt>
+            <dd><span></span></dd>
+            <dt>
+              struct <a href="structokser_1_1parse__error.html" class="m-doc">parse_error</a>
+            </dt>
+            <dd><span></span></dd>
+            <dt>
               <div class="m-doc-template">template&lt;<a href="namespaceokser.html#adc601784f0401396bf0b794f6c57dd9f" class="m-doc">Serializer</a> S, typename V&gt;</div>
               struct <a href="structokser_1_1serializable__value.html" class="m-doc">serializable_value</a>
             </dt>
@@ -103,6 +117,12 @@
           <h2><a href="#enum-members">Enums</a></h2>
           <dl class="m-doc">
             <dt>
+              <span class="m-doc-wrap-bumper">enum class <a href="#aeae37acfeec147cd7158dc4258ea2e08" class="m-doc">error_type</a>: uint8_t { </span><span class="m-doc-wrap"><a href="#aeae37acfeec147cd7158dc4258ea2e08a88fcf9df6593b399e9aa20931979d0e3" class="m-doc">not_enough_bytes</a>,
+              <a href="#aeae37acfeec147cd7158dc4258ea2e08acccc32f2a5f7dc7b87d2f85daea66789" class="m-doc">io_error</a>,
+              <a href="#aeae37acfeec147cd7158dc4258ea2e08ae3a874772798ef572c27b767cc5cd117" class="m-doc">redundant_mismatch</a> }</span>
+            </dt>
+            <dd><span></span></dd>
+            <dt>
               <span class="m-doc-wrap-bumper">enum class <a href="#ab272111dc4c26c5bbaf99f22698b46bc" class="m-doc">end</a> { </span><span class="m-doc-wrap"><a href="#ab272111dc4c26c5bbaf99f22698b46bcad9180594744f870aeefb086982e980bb" class="m-doc">le</a>,
               <a href="#ab272111dc4c26c5bbaf99f22698b46bca910955a907e739b81ec8855763108a29" class="m-doc">be</a> }</span>
             </dt>
@@ -112,6 +132,11 @@
         <section id="typedef-members">
           <h2><a href="#typedef-members">Typedefs</a></h2>
           <dl class="m-doc">
+            <dt>
+              <div class="m-doc-template">template&lt;class T&gt;</div>
+              using <a href="#ac462dcbc6bec619f523ae3cf89dbe754" class="m-doc">result</a> = std::expected&lt;T, <a href="structokser_1_1parse__error.html" class="m-doc">parse_<wbr />error</a>&gt;
+            </dt>
+            <dd><span></span></dd>
             <dt>
               <div class="m-doc-template">template&lt;end Endianness = end::be&gt;</div>
               using <a href="#a22d8f7c146fcad60498127cd7c49d638" class="m-doc">doublep</a> = (Bytes==4||Bytes==8) struct floatp floatp&lt;8, Endianness&gt;
@@ -130,12 +155,12 @@
             <dd></dd>
             <dt>
               <div class="m-doc-template">template&lt;Deserializer Type, typename Value = typename Type::DefaultType, class In&gt;</div>
-              <span class="m-doc-wrap-bumper">auto <a href="#a2a0ca08e44b2ed832dbdac65a1de5b43" class="m-doc">deserialize</a>(</span><span class="m-doc-wrap">In&amp;&amp; input) -&gt; Value <span class="m-label m-flat m-primary">constexpr</span></span>
+              <span class="m-doc-wrap-bumper">auto <a href="#a06dfdc86540e31d34425218ab03afb51" class="m-doc">deserialize</a>(</span><span class="m-doc-wrap">In&amp;&amp; input) -&gt; <a href="namespaceokser.html#ac462dcbc6bec619f523ae3cf89dbe754" class="m-doc">result</a>&lt;Value&gt; <span class="m-label m-flat m-primary">constexpr</span></span>
             </dt>
             <dd></dd>
             <dt>
               <div class="m-doc-template">template&lt;Deserializer... Types, class... Values, std::derived_from&lt;std::tuple&lt;Values...&gt;&gt; Tuple = std::tuple&lt;Values...&gt;, class In&gt;</div>
-              <span class="m-doc-wrap-bumper"><a href="#ada2a153644fe4936df4984416e82729c" class="m-doc">requires</a>(</span><span class="m-doc-wrap">sizeof...Values = =sizeof...(Types) &amp;&amp; sizeof...(Types),
+              <span class="m-doc-wrap-bumper"><a href="#a7be137007fa7f2e64654fcd3b569927c" class="m-doc">requires</a>(</span><span class="m-doc-wrap">sizeof...Values = =sizeof...(Types) &amp;&amp; sizeof...(Types),
               1)</span>
             </dt>
             <dd><span></span></dd>
@@ -144,6 +169,11 @@
               <span class="m-doc-wrap-bumper">auto <a href="#af25e859553d0391b04694b7097bd5147" class="m-doc">simple_serialize</a>(</span><span class="m-doc-wrap">Values... values) -&gt; std::string</span>
             </dt>
             <dd></dd>
+            <dt>
+              <div class="m-doc-template">template&lt;class T, int N&gt;</div>
+              <span class="m-doc-wrap-bumper"><a href="#a76c7c9c2900196a231e872451cf04d2b" class="m-doc">requires</a>(</span><span class="m-doc-wrap">N&gt;= 1) class redundant</span>
+            </dt>
+            <dd><span></span></dd>
           </dl>
         </section>
         <section id="var-members">
@@ -183,6 +213,13 @@
         </section>
         <section>
           <h2>Enum documentation</h2>
+          <section class="m-doc-details" id="aeae37acfeec147cd7158dc4258ea2e08"><div>
+            <h3>
+              enum class okser::<wbr /><a href="#aeae37acfeec147cd7158dc4258ea2e08" class="m-doc-self">error_type</a>: uint8_t
+              <div class="m-doc-include m-code m-inverted m-text-right"><span class="cp">#include</span> <a class="cpf" href="errors_8h.html">&lt;ok-serializer/errors.h&gt;</a></div>
+            </h3>
+            <p><span></span></p>
+          </div></section>
           <section class="m-doc-details" id="ab272111dc4c26c5bbaf99f22698b46bc"><div>
             <h3>
               enum class okser::<wbr /><a href="#ab272111dc4c26c5bbaf99f22698b46bc" class="m-doc-self">end</a>
@@ -210,6 +247,16 @@
         </section>
         <section>
           <h2>Typedef documentation</h2>
+          <section class="m-doc-details" id="ac462dcbc6bec619f523ae3cf89dbe754"><div>
+            <h3>
+              <div class="m-doc-include m-code m-inverted m-right-m m-text-right"><span class="cp">#include</span> <a class="cpf" href="errors_8h.html">&lt;ok-serializer/errors.h&gt;</a></div>
+              <div class="m-doc-template">
+                template&lt;class T&gt;
+              </div>
+              using okser::<wbr /><a href="#ac462dcbc6bec619f523ae3cf89dbe754" class="m-doc-self">result</a> = std::expected&lt;T, <a href="structokser_1_1parse__error.html" class="m-doc">parse_<wbr />error</a>&gt;
+            </h3>
+            <p><span></span></p>
+          </div></section>
           <section class="m-doc-details" id="a22d8f7c146fcad60498127cd7c49d638"><div>
             <h3>
               <div class="m-doc-include m-code m-inverted m-right-m m-text-right"><span class="cp">#include</span> <a class="cpf" href="types__simple_8h.html">&lt;ok-serializer/types_simple.h&gt;</a></div>
@@ -278,23 +325,23 @@
 <p>Take some <code>values</code>, serialize them using a <code>bundle</code>, and append them to an <code>output</code></p><h5 id="autotoc_md9">Example</h5><pre class="m-code"><span class="k">using</span><span class="w"> </span><span class="n">bundle</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">okser</span><span class="o">::</span><span class="n">bundle</span><span class="o">&lt;</span><span class="n">okser</span><span class="o">::</span><span class="n">sint</span><span class="o">&lt;</span><span class="mi">1</span><span class="o">&gt;</span><span class="p">,</span><span class="w"> </span><span class="n">okser</span><span class="o">::</span><span class="n">uint</span><span class="o">&lt;</span><span class="mi">2</span><span class="o">&gt;&gt;</span><span class="p">;</span>
 <span class="n">okser</span><span class="o">::</span><span class="n">serialize</span><span class="o">&lt;</span><span class="n">bundle</span><span class="o">&gt;</span><span class="p">(</span><span class="n">output</span><span class="p">,</span><span class="w"> </span><span class="mi">100</span><span class="p">,</span><span class="w"> </span><span class="mi">50000</span><span class="p">);</span></pre>
           </div></section>
-          <section class="m-doc-details" id="a2a0ca08e44b2ed832dbdac65a1de5b43"><div>
+          <section class="m-doc-details" id="a06dfdc86540e31d34425218ab03afb51"><div>
             <h3>
               <div class="m-doc-include m-code m-inverted m-right-m m-text-right"><span class="cp">#include</span> <a class="cpf" href="ok-serializer_8hpp.html">&lt;ok-serializer/ok-serializer.hpp&gt;</a></div>
               <div class="m-doc-template">
                 template&lt;Deserializer Type, typename Value = typename Type::DefaultType, class In&gt;
               </div>
-              <span class="m-doc-wrap-bumper">Value okser::<wbr /></span><span class="m-doc-wrap"><span class="m-doc-wrap-bumper"><a href="#a2a0ca08e44b2ed832dbdac65a1de5b43" class="m-doc-self">deserialize</a>(</span><span class="m-doc-wrap">In&amp;&amp; input) <span class="m-label m-primary">constexpr</span></span></span>
+              <span class="m-doc-wrap-bumper"><a href="namespaceokser.html#ac462dcbc6bec619f523ae3cf89dbe754" class="m-doc">result</a>&lt;Value&gt; okser::<wbr /></span><span class="m-doc-wrap"><span class="m-doc-wrap-bumper"><a href="#a06dfdc86540e31d34425218ab03afb51" class="m-doc-self">deserialize</a>(</span><span class="m-doc-wrap">In&amp;&amp; input) <span class="m-label m-primary">constexpr</span></span></span>
             </h3>
 <p>Shortcut to <a href="namespaceokser.html#afe7c55dfd5bebb741ffe7bc4c262cbea" class="m-doc">okser::<wbr />serialize</a> without the need to declare a bundle.</p><h5 id="autotoc_md10">Example</h5><pre class="m-code"><span class="n">okser</span><span class="o">::</span><span class="n">serialize</span><span class="o">&lt;</span><span class="n">okser</span><span class="o">::</span><span class="n">sint</span><span class="o">&lt;</span><span class="mi">1</span><span class="o">&gt;</span><span class="p">,</span><span class="w"> </span><span class="n">okser</span><span class="o">::</span><span class="n">uint</span><span class="o">&lt;</span><span class="mi">2</span><span class="o">&gt;&gt;</span><span class="p">(</span><span class="n">output</span><span class="p">,</span><span class="w"> </span><span class="mi">100</span><span class="p">,</span><span class="w"> </span><span class="mi">50000</span><span class="p">);</span></pre><aside class="m-note m-dim"><h4><a href="todo.html#_todo000001" class="m-doc">Todo</a></h4><p>See if this can be combined with the above function through deduction</p></aside>
           </div></section>
-          <section class="m-doc-details" id="ada2a153644fe4936df4984416e82729c"><div>
+          <section class="m-doc-details" id="a7be137007fa7f2e64654fcd3b569927c"><div>
             <h3>
               <div class="m-doc-include m-code m-inverted m-right-m m-text-right"><span class="cp">#include</span> <a class="cpf" href="ok-serializer_8hpp.html">&lt;ok-serializer/ok-serializer.hpp&gt;</a></div>
               <div class="m-doc-template">
                 template&lt;Deserializer... Types, class... Values, std::derived_from&lt;std::tuple&lt;Values...&gt;&gt; Tuple = std::tuple&lt;Values...&gt;, class In&gt;
               </div>
-              <span class="m-doc-wrap-bumper"> okser::<wbr /></span><span class="m-doc-wrap"><span class="m-doc-wrap-bumper"><a href="#ada2a153644fe4936df4984416e82729c" class="m-doc-self">requires</a>(</span><span class="m-doc-wrap">sizeof...Values = =sizeof...(Types) &amp;&amp; sizeof...(Types),
+              <span class="m-doc-wrap-bumper"> okser::<wbr /></span><span class="m-doc-wrap"><span class="m-doc-wrap-bumper"><a href="#a7be137007fa7f2e64654fcd3b569927c" class="m-doc-self">requires</a>(</span><span class="m-doc-wrap">sizeof...Values = =sizeof...(Types) &amp;&amp; sizeof...(Types),
               1)</span></span>
             </h3>
             <p><span></span></p>
@@ -311,6 +358,16 @@
 <span class="w">    </span><span class="n">okser</span><span class="o">::</span><span class="n">sint</span><span class="o">&lt;</span><span class="mi">1</span><span class="o">&gt;</span><span class="p">,</span>
 <span class="w">    </span><span class="n">okser</span><span class="o">::</span><span class="n">uint</span><span class="o">&lt;</span><span class="mi">2</span><span class="o">&gt;</span>
 <span class="o">&gt;</span><span class="p">(</span><span class="mi">-5</span><span class="p">,</span><span class="w"> </span><span class="mi">15</span><span class="p">);</span></pre>
+          </div></section>
+          <section class="m-doc-details" id="a76c7c9c2900196a231e872451cf04d2b"><div>
+            <h3>
+              <div class="m-doc-include m-code m-inverted m-right-m m-text-right"><span class="cp">#include</span> <a class="cpf" href="types__compound_8h.html">&lt;ok-serializer/types_compound.h&gt;</a></div>
+              <div class="m-doc-template">
+                template&lt;class T, int N&gt;
+              </div>
+              <span class="m-doc-wrap-bumper"> okser::<wbr /></span><span class="m-doc-wrap"><span class="m-doc-wrap-bumper"><a href="#a76c7c9c2900196a231e872451cf04d2b" class="m-doc-self">requires</a>(</span><span class="m-doc-wrap">N&gt;= 1) class redundant</span></span>
+            </h3>
+            <p><span></span></p>
           </div></section>
         </section>
         <section>
@@ -358,7 +415,7 @@
           </div></section>
           <section class="m-doc-details" id="a48bd87a7ac21aa5bccc1978425116f52"><div>
             <h3>
-              <div class="m-doc-include m-code m-inverted m-right-m m-text-right"><span class="cp">#include</span> <a class="cpf" href="context_8h.html">&lt;ok-serializer/context.h&gt;</a></div>
+              <div class="m-doc-include m-code m-inverted m-right-m m-text-right"><span class="cp">#include</span> <a class="cpf" href="concepts_8h.html">&lt;ok-serializer/concepts.h&gt;</a></div>
               <div class="m-doc-template">
                 template&lt;typename T&gt;
               </div>
@@ -368,7 +425,7 @@
           </div></section>
           <section class="m-doc-details" id="ad26c156eb71184626a993ded2469df70"><div>
             <h3>
-              <div class="m-doc-include m-code m-inverted m-right-m m-text-right"><span class="cp">#include</span> <a class="cpf" href="context_8h.html">&lt;ok-serializer/context.h&gt;</a></div>
+              <div class="m-doc-include m-code m-inverted m-right-m m-text-right"><span class="cp">#include</span> <a class="cpf" href="concepts_8h.html">&lt;ok-serializer/concepts.h&gt;</a></div>
               <div class="m-doc-template">
                 template&lt;typename T&gt;
               </div>
