@@ -3,11 +3,11 @@ cmake_minimum_required(VERSION 3.14)
 include(cmake/prelude.cmake)
 
 project(
-    ok-serializer
-    VERSION 0.1.0
-    DESCRIPTION "Short description"
-    HOMEPAGE_URL "https://github.com/kongr45gpen/ok-serializer"
-    LANGUAGES NONE
+        ok-serializer
+        VERSION 0.1.0
+        DESCRIPTION "A modern binary data (de)serializer that's quite OK"
+        HOMEPAGE_URL "https://github.com/kongr45gpen/ok-serializer"
+        LANGUAGES NONE
 )
 
 include(cmake/project-is-top-level.cmake)

@@ -39,6 +39,33 @@ serialize<MyBundle>(output, 63, 3.14f);
 
 ## Getting started
 
+⚠️ **Note:** This is a **very work-in-progress** library, expect breaking and frequent interface changes, things
+not working, and a complete lack of documentation.
+
+### Setting up the compiler
+
+_TODO set up compiler for reflection_
+
+### Compiling
+
+`ok-serializer` is built as a CMake project. The easiest way to run a few quick tests with it would be to run
+the following:
+
+```shell
+# Clone the repository
+git clone https://github.com/kongr45gpen/ok-serializer.git
+cd ok-serializer
+
+# Initialize and build CMake project
+mkdir build && cd build
+cmake ..
+cmake --build . -j4
+
+# Run an example
+example/empty_example
+test/ok-serializer_test
+```
+
 ## Contributing
 
 See the [CONTRIBUTING](CONTRIBUTING.md) document.
