@@ -69,11 +69,11 @@ concept HasConstIterator = requires()
 
 template<typename T>
 requires(HasConstIterator<T>)
-T::const_iterator ConstIterator_s();
+typename T::const_iterator ConstIterator_s();
 
 template<typename T>
 requires(!HasConstIterator<T>)
-T::iterator ConstIterator_s();
+typename T::iterator ConstIterator_s();
 
 template<typename T>
 using ConstIterator = decltype(ConstIterator_s<T>());

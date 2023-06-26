@@ -99,7 +99,7 @@ public:
 template<class T, int N> requires (N >= 1)
 class redundant {
 public:
-    using DefaultType = T::DefaultType;
+    using DefaultType = typename T::DefaultType;
 
     template<Output Out, typename Value>
     requires(Serializer<T>)

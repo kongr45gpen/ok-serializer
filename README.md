@@ -44,7 +44,28 @@ not working, and a complete lack of documentation.
 
 ### Setting up the compiler
 
-_TODO set up compiler for reflection_
+This library requires a recent implementation of C++23 which implements concepts, `std::expected` with monadic
+operations and more. This means that, as of 2023, you will have to use one of these compilers:
+
+- GCC 12
+- Clang 17
+- MSVC 19.36 (untested)
+
+The optional **reflection** features are not implemented in any compiler so far. We are using a proof-of-concept
+implementation in [matus-chochlik's llvm fork](https://github.com/matus-chochlik/llvm-project). This fork uses
+an older clang version, so you will have to convince clang to use GCC 12's latest header files.
+
+You will need to compile this fork on your own. Here's a quick set of steps that should work for this:
+
+```shell
+git clone https://github.com/llvm/llvm-project.git
+cd llvm-project
+cmake -S llvm -B build -G "Unix Makefiles" -DCMAKE_BUILD_TYPE=Release -DLLVM_ENABLE_PROJECTS="clang" -DLLVM_ENABLE_RUNTIMES="libcxx;libcxxabi"
+cmake --build build -- -j 8 # 8 parallel jobs
+```
+
+Keep in mind the location of the produced `clang++` executable, and make sure to install (or download) GCC 12
+as well, to benefit from the updated library files (technically only libstdc++ is needed).
 
 ### Compiling
 
@@ -59,11 +80,22 @@ cd ok-serializer
 # Initialize and build CMake project
 mkdir build && cd build
 cmake ..
-cmake --build . -j4
+
+# Compile the code (add --target empty_example to specify a target)
+cmake --build .
 
 # Run an example
 example/empty_example
 test/ok-serializer_test
+```
+
+If you are using a different compiler than the default, or you want to use the reflection extensions, run `cmake`
+as such:
+
+```shell
+# Enables reflection extensions, sets the standard library to libstdc++ and fakes more recent concept support
+# to enable <expected>
+cmake -DCMAKE_CXX_COMPILER="/path/to/llvm-project/build/bin/clang++" -DCMAKE_CXX_FLAGS:STRING="-freflection-ts -stdlib=libstdc++ -D__cpp_concepts=202002L" -DBUILD_TESTING="ON" ..
 ```
 
 ## Contributing
