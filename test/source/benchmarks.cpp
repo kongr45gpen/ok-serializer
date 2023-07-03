@@ -1,7 +1,5 @@
-#define CATCH_CONFIG_ENABLE_BENCHMARKING
-#define CATCH_CONFIG_MAIN
-
-#include "catch2/catch.hpp"
+#include <catch2/catch_test_macros.hpp>
+#include <catch2/benchmark/catch_benchmark.hpp>
 #include "ok-serializer/ok-serializer.hpp"
 
 TEST_CASE("Float encoding - with okser") {

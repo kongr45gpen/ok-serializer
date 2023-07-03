@@ -7,7 +7,9 @@ namespace okser {
 template<Input In>
 struct input_context {
     In input;
-    std::optional<okser::parse_error> error;
+    std::optional<okser::parse_error> error = std::nullopt;
+
+    constexpr explicit input_context(In input) : input(input) {}
 };
 
 template<Output Out>

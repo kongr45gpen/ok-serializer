@@ -51,7 +51,7 @@ constexpr void serialize(Out &&output, Values... values) {
 template<Deserializer Type, typename Value = typename Type::DefaultType, class In>
 constexpr result<Value> deserialize(In &&input) {
     auto contained_input = internal::convert_input_to_okser(std::forward<In>(input));
-    input_context context{contained_input};
+    input_context context(contained_input);
 
     return Type::template deserialize<Value>(context).first;
 }

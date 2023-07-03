@@ -1,4 +1,7 @@
-#include "catch2/catch.hpp"
+#include <catch2/catch_test_macros.hpp>
+#include <catch2/matchers/catch_matchers_string.hpp>
+#include <catch2/matchers/catch_matchers_floating_point.hpp>
+#include <catch2/generators/catch_generators_all.hpp>
 #include "ok-serializer/ok-serializer.hpp"
 
 using Catch::Matchers::Equals;

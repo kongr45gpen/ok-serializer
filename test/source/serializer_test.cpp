@@ -1,14 +1,15 @@
-#include "catch2/catch.hpp"
+#include <catch2/catch_test_macros.hpp>
+#include <catch2/matchers/catch_matchers_string.hpp>
 #include "ok-serializer/ok-serializer.hpp"
 
 using Catch::Matchers::Equals;
 
 TEST_CASE("uint encoding") {
-  SECTION("uint8_t") {
-    std::string out;
-    okser::serialize<okser::bundle<okser::uint<1>>>(okser::out::stdstring{out},
-                                                    124);
-    REQUIRE(out[0] == 0x7C);
+    SECTION("uint8_t") {
+        std::string out;
+        okser::serialize<okser::bundle<okser::uint<1>>>(okser::out::stdstring{out},
+                                                        124);
+        REQUIRE(out[0] == 0x7C);
   }
 
   SECTION("uint16_t big-endian") {

@@ -3,6 +3,7 @@
 #include <functional>
 #include <string>
 #include <ranges>
+#include <expected>
 
 #include "errors.h"
 #include "utils_early.h"
