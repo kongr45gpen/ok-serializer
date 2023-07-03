@@ -52,20 +52,21 @@ operations and more. This means that, as of 2023, you will have to use one of th
 - MSVC 19.36 (untested)
 
 The optional **reflection** features are not implemented in any compiler so far. We are using a proof-of-concept
-implementation in [matus-chochlik's llvm fork](https://github.com/matus-chochlik/llvm-project). This fork uses
-an older clang version, so you will have to convince clang to use GCC 12's latest header files.
+implementation in [matus-chochlik's llvm fork](https://github.com/matus-chochlik/llvm-project), further updated
+with Clang 16 in [kongr45gpen/llvm-project](https://github.com/kongr45gpen/llvm-project).
 
 You will need to compile this fork on your own. Here's a quick set of steps that should work for this:
 
 ```shell
-git clone https://github.com/llvm/llvm-project.git
+# You can add --depth=1 to make the clone slightly faster
+git clone https://github.com/kongr45gpen/llvm-project.git
 cd llvm-project
 cmake -S llvm -B build -G "Unix Makefiles" -DCMAKE_BUILD_TYPE=Release -DLLVM_ENABLE_PROJECTS="clang" -DLLVM_ENABLE_RUNTIMES="libcxx;libcxxabi"
 cmake --build build -- -j 8 # 8 parallel jobs
 ```
 
-Keep in mind the location of the produced `clang++` executable, and make sure to install (or download) GCC 12
-as well, to benefit from the updated library files (technically only libstdc++ is needed).
+Keep in mind the location of the produced `clang++` executable in `build-2/bin`, and the produced libc++ library
+files in `build/lib/x86_64-linux-gnu` or a similar folder.
 
 ### Compiling
 
@@ -95,7 +96,19 @@ as such:
 ```shell
 # Enables reflection extensions, sets the standard library to libstdc++ and fakes more recent concept support
 # to enable <expected>
-cmake -DCMAKE_CXX_COMPILER="/path/to/llvm-project/build/bin/clang++" -DCMAKE_CXX_FLAGS:STRING="-freflection-ts -stdlib=libstdc++ -D__cpp_concepts=202002L" -DBUILD_TESTING="ON" ..
+cmake -DCMAKE_CXX_COMPILER="/path/to/llvm-project/build/bin/clang++" -DCMAKE_CXX_FLAGS:STRING="-freflection-ts -stdlib=libc++" -DBUILD_TESTING="ON" ..
+```
+
+To execute the software, you will need to provide the path to the libc++ library files, as such:
+
+```shell
+LD_LIBRARY_PATH="/path/to/llvm-project/build/lib/x86_64-linux-gnu" ./example/empty_example
+```
+
+Alternatively, you can link the standard library statically to the generated executable, by running CMake with:
+
+```shell
+cmake -DCMAKE_CXX_COMPILER="/path/to/llvm-project/build/bin/clang++" -DCMAKE_CXX_FLAGS:STRING="-freflection-ts -stdlib=libc++ -static -lc++abi -fuse-ld=lld" -DBUILD_TESTING="ON" ..
 ```
 
 ## Contributing
