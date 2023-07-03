@@ -1,17 +1,21 @@
 cmake_minimum_required(VERSION 3.14)
 
-foreach(var IN ITEMS PROJECT_BINARY_DIR PROJECT_SOURCE_DIR)
-  if(NOT DEFINED "${var}")
-    message(FATAL_ERROR "${var} must be defined")
-  endif()
-endforeach()
+if (NOT DEFINED PROJECT_BINARY_DIR)
+  set(PROJECT_BINARY_DIR "${CMAKE_CURRENT_BINARY_DIR}/cmake-build-docs")
+  message(WARNING "PROJECT_BINARY_DIR is not defined, using ${PROJECT_BINARY_DIR}")
+endif ()
+if (NOT DEFINED PROJECT_SOURCE_DIR)
+  set(PROJECT_SOURCE_DIR "${CMAKE_CURRENT_SOURCE_DIR}")
+  message(WARNING "PROJECT_SOURCE_DIR is not defined, using ${PROJECT_SOURCE_DIR}")
+endif ()
+
 set(bin "${PROJECT_BINARY_DIR}")
 set(src "${PROJECT_SOURCE_DIR}")
 
 # ---- Dependencies ----
 
 set(mcss_SOURCE_DIR "${bin}/docs/.ci")
-if(NOT IS_DIRECTORY "${mcss_SOURCE_DIR}")
+if (NOT IS_DIRECTORY "${mcss_SOURCE_DIR}")
   file(MAKE_DIRECTORY "${mcss_SOURCE_DIR}")
   file(
       DOWNLOAD
