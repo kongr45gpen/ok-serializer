@@ -1,9 +1,21 @@
 #pragma once
 
+#include <optional>
+#include "errors.h"
+
+/**
+ * @file
+ * @brief A file containing various concepts used by ok-serializer, to specify restrictions on template parameters.
+ */
+
 namespace okser {
 
 namespace internal {
 
+/**
+ * An representative input/output that inputs nowhere and outputs nowhere.
+ * To be used as a concept argument.
+ */
 struct DummyInOut {
     constexpr void add(uint8_t) const {}
 
@@ -12,6 +24,10 @@ struct DummyInOut {
     }
 };
 
+/**
+ * A representative context that includes the dummy input and output.
+ * To be used as a concept argument.
+ */
 struct DummyContext {
     DummyInOut input;
     DummyInOut output;
@@ -54,6 +70,10 @@ concept Serializer = requires(typename T::DefaultType v, internal::DummyInOut o)
     T::serialize(v, o);
 };
 
+/**
+ * A concept to check if a class can be used as an okser deserializer, and deserialise values from binaries.
+ * @see Serializer
+ */
 template<typename T>
 concept Deserializer = requires(typename T::DefaultType v, internal::DummyContext c)
 {
@@ -61,12 +81,22 @@ concept Deserializer = requires(typename T::DefaultType v, internal::DummyContex
     1; //TODO
 };
 
+/**
+ * A concept to check if a class can be used as an okser input context.
+ *
+ * An input context needs to contain at least an okser::Input. Useful for de-serializing.
+ */
 template<typename T>
 concept InputContext = requires(T t)
 {
     t.input;
 };
 
+/**
+ * A concept to check if a class can be used as an okser output context.
+ *
+ * An output context needs to contain at least an okser::Output. Useful for serializing.
+ */
 template<typename T>
 concept OutputContext = requires(T t)
 {

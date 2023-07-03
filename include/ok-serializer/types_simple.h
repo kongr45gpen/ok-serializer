@@ -19,16 +19,17 @@ namespace okser {
  * @see https://en.wikipedia.org/wiki/Endianness
  * @todo Use standard library definition, https://en.cppreference.com/w/cpp/types/endian
  */
-    enum class end {
-        le, ///< Little endian
-        be, ///< Big endian
-    };
+enum class end {
+    le, ///< Little endian
+    be, ///< Big endian
+};
 
-    namespace internal {
-        /**
-         * A generic base class for serializer types. Does not provide any useful functionality.
-         */
-        class type {};
+namespace internal {
+/**
+ * A generic base class for serializer types. Does not provide any useful functionality.
+ */
+class type {
+};
     }
 
     /**
