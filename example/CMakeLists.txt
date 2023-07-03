@@ -4,6 +4,7 @@ project(ok-serializerExamples CXX)
 
 include(../cmake/project-is-top-level.cmake)
 include(../cmake/folders.cmake)
+include(../cmake/reflection.cmake)
 
 if(PROJECT_IS_TOP_LEVEL)
   find_package(ok-serializer REQUIRED)
@@ -15,11 +16,15 @@ function(add_example NAME)
   add_executable("${NAME}" "${NAME}.cpp")
   target_link_libraries("${NAME}" PRIVATE ok-serializer::ok-serializer)
   target_compile_features("${NAME}" PRIVATE cxx_std_23)
-  add_custom_target("run_${NAME}" COMMAND "${NAME}" VERBATIM)
-  add_dependencies("run_${NAME}" "${NAME}")
-  add_dependencies(run-examples "run_${NAME}")
 endfunction()
 
 add_example(empty_example)
+
+if (HAVE_REFLECTION)
+  add_example(reflection_example)
+else ()
+  message(WARNING "Reflection is not supported by this compiler. Optional reflection features will not be built.")
+endif ()
+
 
 add_folders(Example)

@@ -116,6 +116,10 @@ cmake -DCMAKE_CXX_COMPILER="/path/to/llvm-project/build/bin/clang++" --preset re
 
 See the [CONTRIBUTING](CONTRIBUTING.md) document.
 
+## Documentation
+
+Doxygen output available at https://kongr45gpen.github.io/ok-serializer/.
+
 # Licensing
 
-Licensed under MIT. See [LICENSE](LICENSE) for details.
+Licensed under MIT. See [LICENSE](LICENSE.txt) for details.
