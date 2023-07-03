@@ -97,6 +97,16 @@
             </dt>
             <dd><span></span></dd>
             <dt>
+              <div class="m-doc-template">template&lt;class T&gt;</div>
+              struct <a href="structokser_1_1default__serializers.html" class="m-doc">default_serializers</a>
+            </dt>
+            <dd><span></span></dd>
+            <dt>
+              <div class="m-doc-template">template&lt;std::unsigned_integral T&gt;</div>
+              struct <a href="structokser_1_1default__serializers_3_01T_01_4.html" class="m-doc">default_serializers&lt;T&gt;</a>
+            </dt>
+            <dd><span></span></dd>
+            <dt>
               <div class="m-doc-template">template&lt;<a href="namespaceokser.html#adc601784f0401396bf0b794f6c57dd9f" class="m-doc">Serializer</a> S, typename V&gt;</div>
               struct <a href="structokser_1_1serializable__value.html" class="m-doc">serializable_value</a>
             </dt>
@@ -170,6 +180,22 @@
             </dt>
             <dd></dd>
             <dt>
+              <div class="m-doc-template">template&lt;class T, Output Out&gt;</div>
+              <span class="m-doc-wrap-bumper">void <a href="#a4c31fc4e65a8a0004fe27f7c08e76dcc" class="m-doc">serialize_struct</a>(</span><span class="m-doc-wrap">Out&amp;&amp; output,
+              const T&amp; object) <span class="m-label m-flat m-primary">constexpr</span></span>
+            </dt>
+            <dd><span></span></dd>
+            <dt>
+              <div class="m-doc-template">template&lt;class T&gt;</div>
+              <span class="m-doc-wrap-bumper">auto <a href="#a71297bdae609dcdf64c9e64bc44d2aa5" class="m-doc">serialize_struct_to_string</a>(</span><span class="m-doc-wrap">const T&amp; object) -&gt; std::string <span class="m-label m-flat m-primary">constexpr</span></span>
+            </dt>
+            <dd><span></span></dd>
+            <dt>
+              <div class="m-doc-template">template&lt;class T, class In&gt;</div>
+              <span class="m-doc-wrap-bumper">auto <a href="#ae6cdeab0d00c977c8812e63290161549" class="m-doc">deserialize_struct</a>(</span><span class="m-doc-wrap">In&amp;&amp; input) -&gt; T <span class="m-label m-flat m-primary">constexpr</span></span>
+            </dt>
+            <dd><span></span></dd>
+            <dt>
               <div class="m-doc-template">template&lt;class T, int N&gt;</div>
               <span class="m-doc-wrap-bumper"><a href="#a76c7c9c2900196a231e872451cf04d2b" class="m-doc">requires</a>(</span><span class="m-doc-wrap">N&gt;= 1) class redundant</span>
             </dt>
@@ -198,15 +224,19 @@
               <div class="m-doc-template">template&lt;typename T&gt;</div>
               concept <a href="#a4b37a8f5441fc9690e1e4844236d3f72" class="m-doc">Deserializer</a>
             </dt>
-            <dd><span></span></dd>
+            <dd></dd>
             <dt>
               <div class="m-doc-template">template&lt;typename T&gt;</div>
               concept <a href="#a48bd87a7ac21aa5bccc1978425116f52" class="m-doc">InputContext</a>
             </dt>
-            <dd><span></span></dd>
+            <dd></dd>
             <dt>
               <div class="m-doc-template">template&lt;typename T&gt;</div>
               concept <a href="#ad26c156eb71184626a993ded2469df70" class="m-doc">OutputContext</a>
+            </dt>
+            <dd></dd>
+            <dt>
+              auto <a href="#a8b25591bc91972556c19ae73afb2f83a" class="m-doc">default_endianness</a> <span class="m-label m-flat m-primary">constexpr</span>
             </dt>
             <dd><span></span></dd>
           </dl>
@@ -322,7 +352,7 @@
                 </tr>
               </tbody>
             </table>
-<p>Take some <code>values</code>, serialize them using a <code>bundle</code>, and append them to an <code>output</code></p><h5 id="autotoc_md12">Example</h5><pre class="m-code"><span class="k">using</span><span class="w"> </span><span class="n">bundle</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">okser</span><span class="o">::</span><span class="n">bundle</span><span class="o">&lt;</span><span class="n">okser</span><span class="o">::</span><span class="n">sint</span><span class="o">&lt;</span><span class="mi">1</span><span class="o">&gt;</span><span class="p">,</span><span class="w"> </span><span class="n">okser</span><span class="o">::</span><span class="n">uint</span><span class="o">&lt;</span><span class="mi">2</span><span class="o">&gt;&gt;</span><span class="p">;</span>
+<p>Take some <code>values</code>, serialize them using a <code>bundle</code>, and append them to an <code>output</code></p><h5 id="autotoc_md13">Example</h5><pre class="m-code"><span class="k">using</span><span class="w"> </span><span class="n">bundle</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">okser</span><span class="o">::</span><span class="n">bundle</span><span class="o">&lt;</span><span class="n">okser</span><span class="o">::</span><span class="n">sint</span><span class="o">&lt;</span><span class="mi">1</span><span class="o">&gt;</span><span class="p">,</span><span class="w"> </span><span class="n">okser</span><span class="o">::</span><span class="n">uint</span><span class="o">&lt;</span><span class="mi">2</span><span class="o">&gt;&gt;</span><span class="p">;</span>
 <span class="n">okser</span><span class="o">::</span><span class="n">serialize</span><span class="o">&lt;</span><span class="n">bundle</span><span class="o">&gt;</span><span class="p">(</span><span class="n">output</span><span class="p">,</span><span class="w"> </span><span class="mi">100</span><span class="p">,</span><span class="w"> </span><span class="mi">50000</span><span class="p">);</span></pre>
           </div></section>
           <section class="m-doc-details" id="a06dfdc86540e31d34425218ab03afb51"><div>
@@ -333,7 +363,7 @@
               </div>
               <span class="m-doc-wrap-bumper"><a href="namespaceokser.html#ac462dcbc6bec619f523ae3cf89dbe754" class="m-doc">result</a>&lt;Value&gt; okser::<wbr /></span><span class="m-doc-wrap"><span class="m-doc-wrap-bumper"><a href="#a06dfdc86540e31d34425218ab03afb51" class="m-doc-self">deserialize</a>(</span><span class="m-doc-wrap">In&amp;&amp; input) <span class="m-label m-primary">constexpr</span></span></span>
             </h3>
-<p>Shortcut to <a href="namespaceokser.html#afe7c55dfd5bebb741ffe7bc4c262cbea" class="m-doc">okser::<wbr />serialize</a> without the need to declare a bundle.</p><h5 id="autotoc_md13">Example</h5><pre class="m-code"><span class="n">okser</span><span class="o">::</span><span class="n">serialize</span><span class="o">&lt;</span><span class="n">okser</span><span class="o">::</span><span class="n">sint</span><span class="o">&lt;</span><span class="mi">1</span><span class="o">&gt;</span><span class="p">,</span><span class="w"> </span><span class="n">okser</span><span class="o">::</span><span class="n">uint</span><span class="o">&lt;</span><span class="mi">2</span><span class="o">&gt;&gt;</span><span class="p">(</span><span class="n">output</span><span class="p">,</span><span class="w"> </span><span class="mi">100</span><span class="p">,</span><span class="w"> </span><span class="mi">50000</span><span class="p">);</span></pre><aside class="m-note m-dim"><h4><a href="todo.html#_todo000001" class="m-doc">Todo</a></h4><p>See if this can be combined with the above function through deduction</p></aside>
+<p>Shortcut to <a href="namespaceokser.html#afe7c55dfd5bebb741ffe7bc4c262cbea" class="m-doc">okser::<wbr />serialize</a> without the need to declare a bundle.</p><h5 id="autotoc_md14">Example</h5><pre class="m-code"><span class="n">okser</span><span class="o">::</span><span class="n">serialize</span><span class="o">&lt;</span><span class="n">okser</span><span class="o">::</span><span class="n">sint</span><span class="o">&lt;</span><span class="mi">1</span><span class="o">&gt;</span><span class="p">,</span><span class="w"> </span><span class="n">okser</span><span class="o">::</span><span class="n">uint</span><span class="o">&lt;</span><span class="mi">2</span><span class="o">&gt;&gt;</span><span class="p">(</span><span class="n">output</span><span class="p">,</span><span class="w"> </span><span class="mi">100</span><span class="p">,</span><span class="w"> </span><span class="mi">50000</span><span class="p">);</span></pre><aside class="m-note m-dim"><h4><a href="todo.html#_todo000001" class="m-doc">Todo</a></h4><p>See if this can be combined with the above function through deduction</p></aside>
           </div></section>
           <section class="m-doc-details" id="a7be137007fa7f2e64654fcd3b569927c"><div>
             <h3>
@@ -354,10 +384,41 @@
               </div>
               <span class="m-doc-wrap-bumper">std::string okser::<wbr /></span><span class="m-doc-wrap"><span class="m-doc-wrap-bumper"><a href="#af25e859553d0391b04694b7097bd5147" class="m-doc-self">simple_serialize</a>(</span><span class="m-doc-wrap">Values... values)</span></span>
             </h3>
-<p>Shortcut to <a href="namespaceokser.html#afe7c55dfd5bebb741ffe7bc4c262cbea" class="m-doc">okser::<wbr />serialize</a> that directly produces an std::string.</p><h5 id="autotoc_md14">Example</h5><pre class="m-code"><span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="w"> </span><span class="n">out</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">okser</span><span class="o">::</span><span class="n">simple_serialize</span><span class="o">&lt;</span>
+<p>Shortcut to <a href="namespaceokser.html#afe7c55dfd5bebb741ffe7bc4c262cbea" class="m-doc">okser::<wbr />serialize</a> that directly produces an std::string.</p><h5 id="autotoc_md15">Example</h5><pre class="m-code"><span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="w"> </span><span class="n">out</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">okser</span><span class="o">::</span><span class="n">simple_serialize</span><span class="o">&lt;</span>
 <span class="w">    </span><span class="n">okser</span><span class="o">::</span><span class="n">sint</span><span class="o">&lt;</span><span class="mi">1</span><span class="o">&gt;</span><span class="p">,</span>
 <span class="w">    </span><span class="n">okser</span><span class="o">::</span><span class="n">uint</span><span class="o">&lt;</span><span class="mi">2</span><span class="o">&gt;</span>
 <span class="o">&gt;</span><span class="p">(</span><span class="mi">-5</span><span class="p">,</span><span class="w"> </span><span class="mi">15</span><span class="p">);</span></pre>
+          </div></section>
+          <section class="m-doc-details" id="a4c31fc4e65a8a0004fe27f7c08e76dcc"><div>
+            <h3>
+              <div class="m-doc-include m-code m-inverted m-right-m m-text-right"><span class="cp">#include</span> <a class="cpf" href="reflection_8h.html">&lt;ok-serializer/reflection.h&gt;</a></div>
+              <div class="m-doc-template">
+                template&lt;class T, Output Out&gt;
+              </div>
+              <span class="m-doc-wrap-bumper">void okser::<wbr /></span><span class="m-doc-wrap"><span class="m-doc-wrap-bumper"><a href="#a4c31fc4e65a8a0004fe27f7c08e76dcc" class="m-doc-self">serialize_struct</a>(</span><span class="m-doc-wrap">Out&amp;&amp; output,
+              const T&amp; object) <span class="m-label m-primary">constexpr</span></span></span>
+            </h3>
+            <p><span></span></p>
+          </div></section>
+          <section class="m-doc-details" id="a71297bdae609dcdf64c9e64bc44d2aa5"><div>
+            <h3>
+              <div class="m-doc-include m-code m-inverted m-right-m m-text-right"><span class="cp">#include</span> <a class="cpf" href="reflection_8h.html">&lt;ok-serializer/reflection.h&gt;</a></div>
+              <div class="m-doc-template">
+                template&lt;class T&gt;
+              </div>
+              <span class="m-doc-wrap-bumper">std::string okser::<wbr /></span><span class="m-doc-wrap"><span class="m-doc-wrap-bumper"><a href="#a71297bdae609dcdf64c9e64bc44d2aa5" class="m-doc-self">serialize_struct_to_string</a>(</span><span class="m-doc-wrap">const T&amp; object) <span class="m-label m-primary">constexpr</span></span></span>
+            </h3>
+            <p><span></span></p>
+          </div></section>
+          <section class="m-doc-details" id="ae6cdeab0d00c977c8812e63290161549"><div>
+            <h3>
+              <div class="m-doc-include m-code m-inverted m-right-m m-text-right"><span class="cp">#include</span> <a class="cpf" href="reflection_8h.html">&lt;ok-serializer/reflection.h&gt;</a></div>
+              <div class="m-doc-template">
+                template&lt;class T, class In&gt;
+              </div>
+              <span class="m-doc-wrap-bumper">T okser::<wbr /></span><span class="m-doc-wrap"><span class="m-doc-wrap-bumper"><a href="#ae6cdeab0d00c977c8812e63290161549" class="m-doc-self">deserialize_struct</a>(</span><span class="m-doc-wrap">In&amp;&amp; input) <span class="m-label m-primary">constexpr</span></span></span>
+            </h3>
+            <p><span></span></p>
           </div></section>
           <section class="m-doc-details" id="a76c7c9c2900196a231e872451cf04d2b"><div>
             <h3>
@@ -411,7 +472,7 @@
               </div>
               concept okser::<wbr /><a href="#a4b37a8f5441fc9690e1e4844236d3f72" class="m-doc-self">Deserializer</a>
             </h3>
-            <p><span></span></p>
+<p>A concept to check if a class can be used as an okser deserializer, and deserialise values from binaries.</p><aside class="m-note m-default"><h4>See also</h4><p><a href="namespaceokser.html#adc601784f0401396bf0b794f6c57dd9f" class="m-doc">Serializer</a></p></aside>
           </div></section>
           <section class="m-doc-details" id="a48bd87a7ac21aa5bccc1978425116f52"><div>
             <h3>
@@ -421,7 +482,7 @@
               </div>
               concept okser::<wbr /><a href="#a48bd87a7ac21aa5bccc1978425116f52" class="m-doc-self">InputContext</a>
             </h3>
-            <p><span></span></p>
+<p>A concept to check if a class can be used as an okser input context.</p><p>An input context needs to contain at least an <a href="namespaceokser.html#a47b29560e655ea0b1de66f83303c32b1" class="m-doc">okser::<wbr />Input</a>. Useful for de-serializing.</p>
           </div></section>
           <section class="m-doc-details" id="ad26c156eb71184626a993ded2469df70"><div>
             <h3>
@@ -430,6 +491,13 @@
                 template&lt;typename T&gt;
               </div>
               concept okser::<wbr /><a href="#ad26c156eb71184626a993ded2469df70" class="m-doc-self">OutputContext</a>
+            </h3>
+<p>A concept to check if a class can be used as an okser output context.</p><p>An output context needs to contain at least an <a href="namespaceokser.html#ad303c76375992471999a8a2b3567abf2" class="m-doc">okser::<wbr />Output</a>. Useful for serializing.</p>
+          </div></section>
+          <section class="m-doc-details" id="a8b25591bc91972556c19ae73afb2f83a"><div>
+            <h3>
+              auto okser::<wbr /><a href="#a8b25591bc91972556c19ae73afb2f83a" class="m-doc-self">default_endianness</a> <span class="m-label m-primary">constexpr</span>
+              <div class="m-doc-include m-code m-inverted m-text-right"><span class="cp">#include</span> <a class="cpf" href="reflection_8h.html">&lt;ok-serializer/reflection.h&gt;</a></div>
             </h3>
             <p><span></span></p>
           </div></section>
