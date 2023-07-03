@@ -13,6 +13,7 @@ source.
 - Built from the ground up using **C++23**.
 - **Compile-time** type definitions for minimal overhead.
 - Optional support for the C++ **reflection** technical specification.
+- ⚠️ **Work in progress**: Expect undocumented info and broken interfaces.
 
 ## Example code
 
@@ -96,7 +97,7 @@ as such:
 ```shell
 # Enables reflection extensions, sets the standard library to libstdc++ and fakes more recent concept support
 # to enable <expected>
-cmake -DCMAKE_CXX_COMPILER="/path/to/llvm-project/build/bin/clang++" -DCMAKE_CXX_FLAGS:STRING="-freflection-ts -stdlib=libc++" -DBUILD_TESTING="ON" ..
+cmake -DCMAKE_CXX_COMPILER="/path/to/llvm-project/build/bin/clang++" --preset reflection ..
 ```
 
 To execute the software, you will need to provide the path to the libc++ library files, as such:
@@ -108,7 +109,7 @@ LD_LIBRARY_PATH="/path/to/llvm-project/build/lib/x86_64-linux-gnu" ./example/emp
 Alternatively, you can link the standard library statically to the generated executable, by running CMake with:
 
 ```shell
-cmake -DCMAKE_CXX_COMPILER="/path/to/llvm-project/build/bin/clang++" -DCMAKE_CXX_FLAGS:STRING="-freflection-ts -stdlib=libc++ -static -lc++abi -fuse-ld=lld" -DBUILD_TESTING="ON" ..
+cmake -DCMAKE_CXX_COMPILER="/path/to/llvm-project/build/bin/clang++" --preset reflection-static ..
 ```
 
 ## Contributing
