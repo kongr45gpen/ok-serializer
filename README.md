@@ -38,6 +38,20 @@ auto output = out::stdstring{result};
 serialize<MyBundle>(output, 63, 3.14f);
 ```
 
+### Example with reflection
+
+If you have extra-fancy reflection features enabled in your compiler, then you could just do this:
+
+```cpp
+struct MyStruct {
+    int8_t a = 104;     // a is serialized as a 1-byte signed integer
+    uint16_t b = 26913; // b is serialized as a 2-byte unsigned integer, big-endian by default
+};
+
+MyStruct object;
+std::string data = okser::serialize_struct_to_string(object); // data = "hi!"
+```
+
 ## Getting started
 
 ⚠️ **Note:** This is a **very work-in-progress** library, expect breaking and frequent interface changes, things

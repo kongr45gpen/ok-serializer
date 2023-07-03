@@ -42,6 +42,14 @@ constexpr void serialize_struct(Out &&output, const T &object) {
     });
 }
 
+template<class T>
+constexpr std::string serialize_struct_to_string(const T &object) {
+    std::string out;
+    serialize_struct(out::stdstring{out}, object);
+
+    return out;
+}
+
 template<class T, class In>
 constexpr T deserialize_struct(In &&input) {
     // TODO: Find a more presentable and repeatable way to do this
