@@ -28,14 +28,13 @@ struct default_serializers<T> {
 struct Structure {
     int8_t a;
     uint16_t b;
-    uint32_t c;
 };
 
 
 auto main() -> int {
     using namespace std::experimental;
 
-    Structure s{104, 26913, 59460234};
+    Structure s{104, 26913};
 
     using ss = reflexpr(Structure);
     std::cout << "Structure has " << reflect::get_size_v<reflect::get_data_members_t<ss>> << " data members"
@@ -56,5 +55,21 @@ auto main() -> int {
     });
 
     std::cout << "Result: " << result << std::endl;
+
+    Structure s2;
+    okser::in::range in(result);
+
+    for_each(get_data_members(mirror(Structure)), [&](auto member) {
+        auto reference = get_reference(member, s2);
+        using type = std::remove_cvref_t<decltype(reference)>;
+
+        using deserializer = okser::default_serializers<type>::deser;
+
+        reference = *(okser::deserialize<deserializer>(result));
+
+        std::cout << "Member:" << get_name(member) << "\t Type: " << get_name(get_type(member)) << " \t Value: "
+                  << get_value(member, s) << std::endl;
+    });
+
 }
 
