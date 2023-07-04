@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <title>ok-serializer</title>
+  <title>okser::default_serializers&lt;T, Config&gt; struct | ok-serializer</title>
   <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:400,400i,600,600i%7CSource+Code+Pro:400,400i,600" />
   <link rel="stylesheet" href="m-dark+documentation.compiled.css" />
   <link rel="icon" href="favicon-dark.png" type="image/png" />
@@ -33,7 +33,7 @@
             <li><a href="namespaces.html">Namespaces</a></li>
           </ol>
           <ol class="m-col-t-6 m-col-m-none" start="3">
-            <li><a href="annotated.html" id="m-navbar-current">Classes</a></li>
+            <li><a href="annotated.html">Classes</a></li>
             <li><a href="files.html">Files</a></li>
             <li class="m-show-m"><a href="#search" class="m-doc-search-icon" title="Search" onclick="return showSearch()"><svg style="height: 0.9rem;" viewBox="0 0 16 16">
               <use href="#m-doc-search-icon-path" />
@@ -48,62 +48,44 @@
   <div class="m-container m-container-inflatable">
     <div class="m-row">
       <div class="m-col-l-10 m-push-l-1">
-        <h1>Classes</h1>
-        <ul class="m-doc">
-          <li class="m-doc-collapsible">
-            <a href="#" onclick="return toggle(this)">namespace</a> <a href="namespaceokser.html" class="m-doc">okser</a> <span class="m-doc"><span></span></span>
-            <ul class="m-doc">
-              <li class="m-doc-collapsible collapsed">
-                <a href="#" onclick="return toggle(this)">namespace</a> <a href="namespaceokser_1_1in.html" class="m-doc">in</a> <span class="m-doc"></span>
-                <ul class="m-doc">
-                  <li>class <a href="classokser_1_1in_1_1range.html" class="m-doc">range</a> <span class="m-doc"><span></span></span></li>
-                </ul>
-              </li>
-              <li class="m-doc-collapsible collapsed">
-                <a href="#" onclick="return toggle(this)">namespace</a> <a href="namespaceokser_1_1internal.html" class="m-doc">internal</a> <span class="m-doc"><span></span></span>
-                <ul class="m-doc">
-                  <li>struct <a href="structokser_1_1internal_1_1DummyContext.html" class="m-doc">DummyContext</a> <span class="m-doc"></span></li>
-                  <li>struct <a href="structokser_1_1internal_1_1DummyInOut.html" class="m-doc">DummyInOut</a> <span class="m-doc"></span></li>
-                  <li>struct <a href="structokser_1_1internal_1_1empty.html" class="m-doc">empty</a> <span class="m-doc"><span></span></span></li>
-                  <li>class <a href="classokser_1_1internal_1_1type.html" class="m-doc">type</a> <span class="m-doc"></span></li>
-                </ul>
-              </li>
-              <li class="m-doc-collapsible collapsed">
-                <a href="#" onclick="return toggle(this)">namespace</a> <a href="namespaceokser_1_1out.html" class="m-doc">out</a> <span class="m-doc"></span>
-                <ul class="m-doc">
-                  <li>class <a href="classokser_1_1out_1_1cbuf.html" class="m-doc">cbuf</a> <span class="m-doc"></span></li>
-                  <li>class <a href="classokser_1_1out_1_1fixed__container.html" class="m-doc">fixed_container</a> <span class="m-doc"></span></li>
-                  <li>class <a href="classokser_1_1out_1_1stdstring.html" class="m-doc">stdstring</a> <span class="m-doc"></span></li>
-                </ul>
-              </li>
-              <li>class <a href="classokser_1_1bundle.html" class="m-doc">bundle</a> <span class="m-doc"></span></li>
-              <li>struct <a href="structokser_1_1configuration.html" class="m-doc">configuration</a> <span class="m-doc"><span></span></span></li>
-              <li>struct <a href="structokser_1_1default__serializers.html" class="m-doc">default_serializers</a> <span class="m-doc"><span></span></span></li>
-              <li>struct <a href="structokser_1_1default__serializers_3_01T_00_01Config_01_4.html" class="m-doc">default_serializers&lt;T, Config&gt;</a> <span class="m-doc"><span></span></span></li>
-              <li>struct <a href="structokser_1_1input__context.html" class="m-doc">input_context</a> <span class="m-doc"><span></span></span></li>
-              <li>struct <a href="structokser_1_1output__context.html" class="m-doc">output_context</a> <span class="m-doc"><span></span></span></li>
-              <li>struct <a href="structokser_1_1parse__error.html" class="m-doc">parse_error</a> <span class="m-doc"><span></span></span></li>
-              <li>struct <a href="structokser_1_1serializable__value.html" class="m-doc">serializable_value</a> <span class="m-doc"></span></li>
-              <li>struct <a href="structokser_1_1sint.html" class="m-doc">sint</a> <span class="m-doc"></span></li>
-            </ul>
-          </li>
-        </ul>
-        <script>
-        function toggle(e) {
-            e.parentElement.className = e.parentElement.className == 'm-doc-collapsible' ?
-                'm-doc-expansible' : 'm-doc-collapsible';
-            return false;
-        }
-        /* Collapse all nodes marked as such. Doing it via JS instead of
-           directly in markup so disabling it doesn't harm usability. The list
-           is somehow regenerated on every iteration and shrinks as I change
-           the classes. It's not documented anywhere and I'm not sure if this
-           is the same across browsers, so I am going backwards in that list to
-           be sure. */
-        var collapsed = document.getElementsByClassName("collapsed");
-        for(var i = collapsed.length - 1; i >= 0; --i)
-            collapsed[i].className = 'm-doc-expansible';
-        </script>
+        <h1>
+          <div class="m-doc-include m-code m-inverted m-right-m m-text-right"><span class="cp">#include</span> <a class="cpf" href="reflection_8h.html">&lt;ok-serializer/reflection.h&gt;</a></div>
+          <div class="m-doc-template">template&lt;std::unsigned_integral T, <a href="structokser_1_1configuration.html" class="m-doc">configuration</a> Config&gt;</div>
+          <span class="m-breadcrumb"><a href="namespaceokser.html">okser</a>::<wbr/></span>default_serializers&lt;T, Config&gt; <span class="m-thin">struct</span>
+        </h1>
+        <p><span></span></p>
+        <nav class="m-block m-default">
+          <h3>Contents</h3>
+          <ul>
+            <li>
+              Reference
+              <ul>
+                <li><a href="#pub-types">Public types</a></li>
+              </ul>
+            </li>
+          </ul>
+        </nav>
+        <section id="pub-types">
+          <h2><a href="#pub-types">Public types</a></h2>
+          <dl class="m-doc">
+            <dt id="aeec3b6191d15f649075939885a3e1b3f">
+              using <a href="#aeec3b6191d15f649075939885a3e1b3f" class="m-doc-self">ser</a> = okser::uint&lt;sizeof(T), Config.endianness&gt;
+            </dt>
+            <dd><span></span></dd>
+            <dt id="ae3facda2c636d4cc8d215e01e9b24d76">
+              using <a href="#ae3facda2c636d4cc8d215e01e9b24d76" class="m-doc-self">deser</a> = okser::uint&lt;sizeof(T), Config.endianness&gt;
+            </dt>
+            <dd><span></span></dd>
+            <dt id="a8b156731534ff6b49faadb6aeb325f50">
+              using <a href="#a8b156731534ff6b49faadb6aeb325f50" class="m-doc-self">ser</a> = <a href="structokser_1_1sint.html" class="m-doc">okser::<wbr />sint</a>&lt;sizeof(T), Config.endianness&gt;
+            </dt>
+            <dd><span></span></dd>
+            <dt id="ae841656cd9461bdf0ef6cac35d1f9670">
+              using <a href="#ae841656cd9461bdf0ef6cac35d1f9670" class="m-doc-self">deser</a> = <a href="structokser_1_1sint.html" class="m-doc">okser::<wbr />sint</a>&lt;sizeof(T), Config.endianness&gt;
+            </dt>
+            <dd><span></span></dd>
+          </dl>
+        </section>
       </div>
     </div>
   </div>

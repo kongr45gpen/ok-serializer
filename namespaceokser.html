@@ -97,13 +97,17 @@
             </dt>
             <dd><span></span></dd>
             <dt>
-              <div class="m-doc-template">template&lt;class T&gt;</div>
+              struct <a href="structokser_1_1configuration.html" class="m-doc">configuration</a>
+            </dt>
+            <dd><span></span></dd>
+            <dt>
+              <div class="m-doc-template">template&lt;class T, <a href="structokser_1_1configuration.html" class="m-doc">configuration</a> Config&gt;</div>
               struct <a href="structokser_1_1default__serializers.html" class="m-doc">default_serializers</a>
             </dt>
             <dd><span></span></dd>
             <dt>
-              <div class="m-doc-template">template&lt;std::unsigned_integral T&gt;</div>
-              struct <a href="structokser_1_1default__serializers_3_01T_01_4.html" class="m-doc">default_serializers&lt;T&gt;</a>
+              <div class="m-doc-template">template&lt;std::unsigned_integral T, <a href="structokser_1_1configuration.html" class="m-doc">configuration</a> Config&gt;</div>
+              struct <a href="structokser_1_1default__serializers_3_01T_00_01Config_01_4.html" class="m-doc">default_serializers&lt;T, Config&gt;</a>
             </dt>
             <dd><span></span></dd>
             <dt>
@@ -180,19 +184,19 @@
             </dt>
             <dd></dd>
             <dt>
-              <div class="m-doc-template">template&lt;class T, Output Out&gt;</div>
-              <span class="m-doc-wrap-bumper">void <a href="#a4c31fc4e65a8a0004fe27f7c08e76dcc" class="m-doc">serialize_struct</a>(</span><span class="m-doc-wrap">Out&amp;&amp; output,
+              <div class="m-doc-template">template&lt;class T, Output Out, auto config = internal::empty{}&gt;</div>
+              <span class="m-doc-wrap-bumper">void <a href="#a46037ba89e06665e1176d4e829b5831b" class="m-doc">serialize_struct</a>(</span><span class="m-doc-wrap">Out&amp;&amp; output,
               const T&amp; object) <span class="m-label m-flat m-primary">constexpr</span></span>
             </dt>
             <dd><span></span></dd>
             <dt>
-              <div class="m-doc-template">template&lt;class T&gt;</div>
-              <span class="m-doc-wrap-bumper">auto <a href="#a71297bdae609dcdf64c9e64bc44d2aa5" class="m-doc">serialize_struct_to_string</a>(</span><span class="m-doc-wrap">const T&amp; object) -&gt; std::string <span class="m-label m-flat m-primary">constexpr</span></span>
+              <div class="m-doc-template">template&lt;class T, auto config = internal::empty{}&gt;</div>
+              <span class="m-doc-wrap-bumper">auto <a href="#abfafaed2a2846fe2d5dc419d15798aba" class="m-doc">serialize_struct_to_string</a>(</span><span class="m-doc-wrap">const T&amp; object) -&gt; std::string <span class="m-label m-flat m-primary">constexpr</span></span>
             </dt>
             <dd><span></span></dd>
             <dt>
-              <div class="m-doc-template">template&lt;class T, class In&gt;</div>
-              <span class="m-doc-wrap-bumper">auto <a href="#ae6cdeab0d00c977c8812e63290161549" class="m-doc">deserialize_struct</a>(</span><span class="m-doc-wrap">In&amp;&amp; input) -&gt; T <span class="m-label m-flat m-primary">constexpr</span></span>
+              <div class="m-doc-template">template&lt;class T, class In, auto config = internal::empty{}&gt;</div>
+              <span class="m-doc-wrap-bumper">auto <a href="#a7e3c5578230a37214ff5fec6a73b3540" class="m-doc">deserialize_struct</a>(</span><span class="m-doc-wrap">In&amp;&amp; input) -&gt; T <span class="m-label m-flat m-primary">constexpr</span></span>
             </dt>
             <dd><span></span></dd>
             <dt>
@@ -235,10 +239,6 @@
               concept <a href="#ad26c156eb71184626a993ded2469df70" class="m-doc">OutputContext</a>
             </dt>
             <dd></dd>
-            <dt>
-              auto <a href="#a8b25591bc91972556c19ae73afb2f83a" class="m-doc">default_endianness</a> <span class="m-label m-flat m-primary">constexpr</span>
-            </dt>
-            <dd><span></span></dd>
           </dl>
         </section>
         <section>
@@ -389,34 +389,34 @@
 <span class="w">    </span><span class="n">okser</span><span class="o">::</span><span class="n">uint</span><span class="o">&lt;</span><span class="mi">2</span><span class="o">&gt;</span>
 <span class="o">&gt;</span><span class="p">(</span><span class="mi">-5</span><span class="p">,</span><span class="w"> </span><span class="mi">15</span><span class="p">);</span></pre>
           </div></section>
-          <section class="m-doc-details" id="a4c31fc4e65a8a0004fe27f7c08e76dcc"><div>
+          <section class="m-doc-details" id="a46037ba89e06665e1176d4e829b5831b"><div>
             <h3>
               <div class="m-doc-include m-code m-inverted m-right-m m-text-right"><span class="cp">#include</span> <a class="cpf" href="reflection_8h.html">&lt;ok-serializer/reflection.h&gt;</a></div>
               <div class="m-doc-template">
-                template&lt;class T, Output Out&gt;
+                template&lt;class T, Output Out, auto config = internal::empty{}&gt;
               </div>
-              <span class="m-doc-wrap-bumper">void okser::<wbr /></span><span class="m-doc-wrap"><span class="m-doc-wrap-bumper"><a href="#a4c31fc4e65a8a0004fe27f7c08e76dcc" class="m-doc-self">serialize_struct</a>(</span><span class="m-doc-wrap">Out&amp;&amp; output,
+              <span class="m-doc-wrap-bumper">void okser::<wbr /></span><span class="m-doc-wrap"><span class="m-doc-wrap-bumper"><a href="#a46037ba89e06665e1176d4e829b5831b" class="m-doc-self">serialize_struct</a>(</span><span class="m-doc-wrap">Out&amp;&amp; output,
               const T&amp; object) <span class="m-label m-primary">constexpr</span></span></span>
             </h3>
             <p><span></span></p>
           </div></section>
-          <section class="m-doc-details" id="a71297bdae609dcdf64c9e64bc44d2aa5"><div>
+          <section class="m-doc-details" id="abfafaed2a2846fe2d5dc419d15798aba"><div>
             <h3>
               <div class="m-doc-include m-code m-inverted m-right-m m-text-right"><span class="cp">#include</span> <a class="cpf" href="reflection_8h.html">&lt;ok-serializer/reflection.h&gt;</a></div>
               <div class="m-doc-template">
-                template&lt;class T&gt;
+                template&lt;class T, auto config = internal::empty{}&gt;
               </div>
-              <span class="m-doc-wrap-bumper">std::string okser::<wbr /></span><span class="m-doc-wrap"><span class="m-doc-wrap-bumper"><a href="#a71297bdae609dcdf64c9e64bc44d2aa5" class="m-doc-self">serialize_struct_to_string</a>(</span><span class="m-doc-wrap">const T&amp; object) <span class="m-label m-primary">constexpr</span></span></span>
+              <span class="m-doc-wrap-bumper">std::string okser::<wbr /></span><span class="m-doc-wrap"><span class="m-doc-wrap-bumper"><a href="#abfafaed2a2846fe2d5dc419d15798aba" class="m-doc-self">serialize_struct_to_string</a>(</span><span class="m-doc-wrap">const T&amp; object) <span class="m-label m-primary">constexpr</span></span></span>
             </h3>
             <p><span></span></p>
           </div></section>
-          <section class="m-doc-details" id="ae6cdeab0d00c977c8812e63290161549"><div>
+          <section class="m-doc-details" id="a7e3c5578230a37214ff5fec6a73b3540"><div>
             <h3>
               <div class="m-doc-include m-code m-inverted m-right-m m-text-right"><span class="cp">#include</span> <a class="cpf" href="reflection_8h.html">&lt;ok-serializer/reflection.h&gt;</a></div>
               <div class="m-doc-template">
-                template&lt;class T, class In&gt;
+                template&lt;class T, class In, auto config = internal::empty{}&gt;
               </div>
-              <span class="m-doc-wrap-bumper">T okser::<wbr /></span><span class="m-doc-wrap"><span class="m-doc-wrap-bumper"><a href="#ae6cdeab0d00c977c8812e63290161549" class="m-doc-self">deserialize_struct</a>(</span><span class="m-doc-wrap">In&amp;&amp; input) <span class="m-label m-primary">constexpr</span></span></span>
+              <span class="m-doc-wrap-bumper">T okser::<wbr /></span><span class="m-doc-wrap"><span class="m-doc-wrap-bumper"><a href="#a7e3c5578230a37214ff5fec6a73b3540" class="m-doc-self">deserialize_struct</a>(</span><span class="m-doc-wrap">In&amp;&amp; input) <span class="m-label m-primary">constexpr</span></span></span>
             </h3>
             <p><span></span></p>
           </div></section>
@@ -493,13 +493,6 @@
               concept okser::<wbr /><a href="#ad26c156eb71184626a993ded2469df70" class="m-doc-self">OutputContext</a>
             </h3>
 <p>A concept to check if a class can be used as an okser output context.</p><p>An output context needs to contain at least an <a href="namespaceokser.html#ad303c76375992471999a8a2b3567abf2" class="m-doc">okser::<wbr />Output</a>. Useful for serializing.</p>
-          </div></section>
-          <section class="m-doc-details" id="a8b25591bc91972556c19ae73afb2f83a"><div>
-            <h3>
-              auto okser::<wbr /><a href="#a8b25591bc91972556c19ae73afb2f83a" class="m-doc-self">default_endianness</a> <span class="m-label m-primary">constexpr</span>
-              <div class="m-doc-include m-code m-inverted m-text-right"><span class="cp">#include</span> <a class="cpf" href="reflection_8h.html">&lt;ok-serializer/reflection.h&gt;</a></div>
-            </h3>
-            <p><span></span></p>
           </div></section>
         </section>
       </div>
