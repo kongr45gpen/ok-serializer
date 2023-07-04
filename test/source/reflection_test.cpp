@@ -1,3 +1,5 @@
+#if __cpp_reflection >= 201902L
+
 #include <catch2/catch_test_macros.hpp>
 #include <catch2/matchers/catch_matchers_string.hpp>
 #include "ok-serializer/ok-serializer.hpp"
@@ -54,3 +56,5 @@ TEST_CASE("configuration") {
         CHECK(result[2] == -36);
     }
 }
+
+#endif
