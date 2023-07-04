@@ -20,7 +20,14 @@ FetchContent_MakeAvailable(Catch2)
 
 # ---- Tests ----
 
-add_executable(ok-serializer_test source/serializer_test.cpp source/outputs_test.cpp source/deserializer_test.cpp source/static_test.cpp source/idempotence_test.cpp)
+add_executable(ok-serializer_test
+        source/serializer_test.cpp
+        source/outputs_test.cpp
+        source/deserializer_test.cpp
+        source/static_test.cpp
+        source/idempotence_test.cpp
+        source/reflection_test.cpp
+)
 target_link_libraries(ok-serializer_test PRIVATE ok-serializer::ok-serializer Catch2::Catch2WithMain)
 target_compile_features(ok-serializer_test PRIVATE cxx_std_23)
 

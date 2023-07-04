@@ -7,26 +7,27 @@
 
 namespace okser {
 
-// TODO: Move these to a configuration class
-auto constexpr default_endianness = okser::end::be;
+struct configuration {
+    okser::end endianness = okser::end::be;
+};
 
-template<class T>
+template<class T, configuration Config>
 struct default_serializers;
 
-template<std::unsigned_integral T>
-struct default_serializers<T> {
-    using ser = okser::uint<sizeof(T), default_endianness>;
-    using deser = okser::uint<sizeof(T), default_endianness>;
+template<std::unsigned_integral T, configuration Config>
+struct default_serializers<T, Config> {
+    using ser = okser::uint<sizeof(T), Config.endianness>;
+    using deser = okser::uint<sizeof(T), Config.endianness>;
 };
 
-template<std::signed_integral T>
-struct default_serializers<T> {
-    using ser = okser::sint<sizeof(T), default_endianness>;
-    using deser = okser::sint<sizeof(T), default_endianness>;
+template<std::signed_integral T, configuration Config>
+struct default_serializers<T, Config> {
+    using ser = okser::sint<sizeof(T), Config.endianness>;
+    using deser = okser::sint<sizeof(T), Config.endianness>;
 };
 
 
-template<class T, Output Out>
+template<class T, Output Out, configuration Config = configuration()>
 constexpr void serialize_struct(Out &&output, const T &object) {
     auto mirrored_struct = mirror(T);
 
@@ -36,21 +37,21 @@ constexpr void serialize_struct(Out &&output, const T &object) {
         const auto &value = get_value(member, object);
         using type = std::remove_cvref_t<decltype(value)>;
 
-        using serializer = default_serializers<type>::ser;
+        using serializer = default_serializers<type, Config>::ser;
 
         serializer::serialize(value, output);
     });
 }
 
-template<class T>
+template<class T, configuration Config = configuration()>
 constexpr std::string serialize_struct_to_string(const T &object) {
     std::string out;
-    serialize_struct(out::stdstring{out}, object);
+    serialize_struct<T, out::stdstring, Config>({out}, object);
 
     return out;
 }
 
-template<class T, class In>
+template<class T, class In, configuration Config = configuration()>
 constexpr T deserialize_struct(In &&input) {
     // TODO: Find a more presentable and repeatable way to do this
     auto contained_input = internal::convert_input_to_okser(std::forward<In>(input));
@@ -67,7 +68,7 @@ constexpr T deserialize_struct(In &&input) {
         auto &reference = get_reference(member, result);
         using type = std::remove_cvref_t<decltype(reference)>;
 
-        using deserializer = default_serializers<type>::deser;
+        using deserializer = default_serializers<type, Config>::deser;
 
         // TODO: Error handling
         auto deserialized_result = deserializer::template deserialize<type>(*context);
