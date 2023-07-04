@@ -687,7 +687,7 @@ constexpr auto unpack(metaobject<_Mp>) {
 
 // unpacked range operations
 template<__metaobject_id... _Mp, typename _Fp>
-void for_each(unpacked_metaobject_sequence<_Mp...>, _Fp function) {
+constexpr void for_each(unpacked_metaobject_sequence<_Mp...>, _Fp function) {
     (void) (..., function(metaobject<_Mp>{}));
 }
 
@@ -695,7 +695,7 @@ template<
         __metaobject_id _Mp, typename _Fp,
         typename = enable_if_t<__metaobject_is_meta_object_sequence(_Mp)>>
 
-void for_each(metaobject<_Mp> mo, _Fp function) {
+constexpr void for_each(metaobject<_Mp> mo, _Fp function) {
     return for_each(unpack(mo), std::move(function));
 }
 
