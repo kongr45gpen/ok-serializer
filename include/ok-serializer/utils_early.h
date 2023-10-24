@@ -34,14 +34,9 @@ constexpr auto apply(F f, std::index_sequence<Is...>) {
     return std::tuple{f(std::integral_constant<std::size_t, Is>{})...};
 }
 
-////todo: generalise to non-tuples
-//template<typename F, typename ... T>
-//constexpr auto apply(F f, std::tuple<T...> t) {
-//    auto IndSeq = std::make_index_sequence<sizeof...(T)>{};
-//
-//    return std::tuple{f(std::get<IndSeq>(t))...};
-//}
-
+/**
+ * Convert from a number of bytes to the smallest unsigned integer type that can hold that many bytes.
+ */
 template<int Bytes>
 using uint_bytes_to_type = std::conditional_t<Bytes <= 1, uint8_t,
         std::conditional_t<Bytes <= 2, uint16_t,
@@ -49,6 +44,20 @@ using uint_bytes_to_type = std::conditional_t<Bytes <= 1, uint8_t,
                         std::conditional_t<Bytes <= 8, uint64_t,
                                 void>>>>;
 
+/**
+ * Apply a function f to an expected item e if it has a value.
+ *
+ * If e does not have a value, nothing is returned.
+ *
+ * This is a polyfill of C++23's std::expected::transform, which may not be implemented on many compilers.
+ *
+ * @tparam T Type of expected value
+ * @tparam E Type of unexpected value
+ * @tparam F Type of the function to invoke
+ * @param e The expected value
+ * @param f The function to invoke on the expected value, if it is valid
+ * @return The resulting std::expected value. The type T may have been transformed by the function F.
+ */
 template<typename T, typename E, typename F>
 constexpr auto transform(const std::expected<T, E> &e, F &&f) {
     using FunctionReturn = std::invoke_result_t<F, T>;
@@ -60,24 +69,6 @@ constexpr auto transform(const std::expected<T, E> &e, F &&f) {
         return ExpectedReturn(std::unexpected(std::move(e.error())));
     }
 }
-
-template<typename T>
-concept HasConstIterator = requires()
-{
-    typename T::const_iterator;
-};
-
-template<typename T>
-requires(HasConstIterator<T>)
-typename T::const_iterator ConstIterator_s();
-
-template<typename T>
-requires(!HasConstIterator<T>)
-typename T::iterator ConstIterator_s();
-
-template<typename T>
-using ConstIterator = decltype(ConstIterator_s<T>());
-
 
 
 } // namespace internal

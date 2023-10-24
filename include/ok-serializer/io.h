@@ -3,6 +3,7 @@
 #include <functional>
 #include <string>
 #include <ranges>
+#include <iterator>
 #include <expected>
 
 #include "errors.h"
@@ -16,7 +17,7 @@ namespace in {
 template<std::ranges::input_range R = std::string>
 class range {
 private:
-    using Const_Iterator = okser::internal::ConstIterator<R>;
+    using Const_Iterator = decltype(std::ranges::cbegin(std::declval<R&>()));
 
     Const_Iterator begin;
     Const_Iterator end;

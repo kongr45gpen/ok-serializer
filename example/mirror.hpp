@@ -15,7 +15,6 @@
 #define _LIBCPP_EXPERIMENTAL_MIRROR
 
 #include <experimental/__config>
-#include <__debug>
 #include <type_traits>
 #include <string_view>
 
