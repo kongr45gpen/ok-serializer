@@ -61,7 +61,6 @@
                 <li><a href="#nested-classes">Classes</a></li>
                 <li><a href="#typedef-members">Typedefs</a></li>
                 <li><a href="#func-members">Functions</a></li>
-                <li><a href="#var-members">Variables</a></li>
               </ul>
             </li>
           </ul>
@@ -94,12 +93,7 @@
               <div class="m-doc-template">template&lt;int Bytes&gt;</div>
               using <a href="#a747b317363f447e264c9e7fb57d68cfe" class="m-doc">uint_bytes_to_type</a> = std::conditional_t&lt;Bytes&lt;=1, uint8_t, std::conditional_t&lt;Bytes&lt;=2, uint16_t, std::conditional_t&lt;Bytes&lt;=4, uint32_t, std::conditional_t&lt;Bytes&lt;=8, uint64_t, void&gt;&gt;&gt;&gt;
             </dt>
-            <dd><span></span></dd>
-            <dt>
-              <div class="m-doc-template">template&lt;typename T&gt;</div>
-              using <a href="#a3874abc0518246dc38cf2a320d60cae3" class="m-doc">ConstIterator</a> = (!<a href="namespaceokser_1_1internal.html#a32a2a14a5334d9c6cd6a7f1a051f6f25" class="m-doc">HasConstIterator</a>&lt;T&gt;) typename T decltype(ConstIterator_s&lt;T&gt;())
-            </dt>
-            <dd><span></span></dd>
+            <dd></dd>
           </dl>
         </section>
         <section id="func-members">
@@ -127,7 +121,7 @@
               <span class="m-doc-wrap-bumper">auto <a href="#ade71de146896afc847a33054bd4fbb5a" class="m-doc">transform</a>(</span><span class="m-doc-wrap">const std::expected&lt;T, E&gt;&amp; e,
               F&amp;&amp; f) -&gt; auto <span class="m-label m-flat m-primary">constexpr</span></span>
             </dt>
-            <dd><span></span></dd>
+            <dd></dd>
             <dt>
               <div class="m-doc-template">template&lt;class In&gt;</div>
               <span class="m-doc-wrap-bumper"><a href="#a4fed449699ce6384cca55be0b0091f4d" class="m-doc">requires</a>(</span><span class="m-doc-wrap">std::derived_from&lt;In, <a href="classokser_1_1in_1_1range.html" class="m-doc">okser::<wbr />in::<wbr />range</a>&lt;typename In::ContainedType&gt;&gt;)</span>
@@ -136,16 +130,6 @@
             <dt>
               <div class="m-doc-template">template&lt;class In&gt;</div>
               <span class="m-doc-wrap-bumper"><a href="#a3605d58a97b84b070f1aadc3ed84c9f8" class="m-doc">requires</a>(</span><span class="m-doc-wrap">std::constructible_from&lt;<a href="classokser_1_1in_1_1range.html" class="m-doc">okser::<wbr />in::<wbr />range</a>&lt;In&gt;, In&gt;)</span>
-            </dt>
-            <dd><span></span></dd>
-          </dl>
-        </section>
-        <section id="var-members">
-          <h2><a href="#var-members">Variables</a></h2>
-          <dl class="m-doc">
-            <dt>
-              <div class="m-doc-template">template&lt;typename T&gt;</div>
-              concept <a href="#a32a2a14a5334d9c6cd6a7f1a051f6f25" class="m-doc">HasConstIterator</a>
             </dt>
             <dd><span></span></dd>
           </dl>
@@ -160,17 +144,7 @@
               </div>
               using okser::<wbr />internal::<wbr /><a href="#a747b317363f447e264c9e7fb57d68cfe" class="m-doc-self">uint_bytes_to_type</a> = std::conditional_t&lt;Bytes&lt;=1, uint8_t, std::conditional_t&lt;Bytes&lt;=2, uint16_t, std::conditional_t&lt;Bytes&lt;=4, uint32_t, std::conditional_t&lt;Bytes&lt;=8, uint64_t, void&gt;&gt;&gt;&gt;
             </h3>
-            <p><span></span></p>
-          </div></section>
-          <section class="m-doc-details" id="a3874abc0518246dc38cf2a320d60cae3"><div>
-            <h3>
-              <div class="m-doc-include m-code m-inverted m-right-m m-text-right"><span class="cp">#include</span> <a class="cpf" href="utils__early_8h.html">&lt;ok-serializer/utils_early.h&gt;</a></div>
-              <div class="m-doc-template">
-                template&lt;typename T&gt;
-              </div>
-              using okser::<wbr />internal::<wbr /><a href="#a3874abc0518246dc38cf2a320d60cae3" class="m-doc-self">ConstIterator</a> = (!<a href="namespaceokser_1_1internal.html#a32a2a14a5334d9c6cd6a7f1a051f6f25" class="m-doc">HasConstIterator</a>&lt;T&gt;) typename T decltype(ConstIterator_s&lt;T&gt;())
-            </h3>
-            <p><span></span></p>
+<p>Convert from a number of bytes to the smallest unsigned integer type that can hold that many bytes.</p>
           </div></section>
         </section>
         <section>
@@ -274,7 +248,45 @@
               <span class="m-doc-wrap-bumper">auto okser::<wbr />internal::<wbr /></span><span class="m-doc-wrap"><span class="m-doc-wrap-bumper"><a href="#ade71de146896afc847a33054bd4fbb5a" class="m-doc-self">transform</a>(</span><span class="m-doc-wrap">const std::expected&lt;T, E&gt;&amp; e,
               F&amp;&amp; f) <span class="m-label m-primary">constexpr</span></span></span>
             </h3>
-            <p><span></span></p>
+            <table class="m-table m-fullwidth m-flat">
+              <thead>
+                <tr><th colspan="2">Template parameters</th></tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td style="width: 1%">T</td>
+                  <td>Type of expected value</td>
+                </tr>
+                <tr>
+                  <td>E</td>
+                  <td>Type of unexpected value</td>
+                </tr>
+                <tr>
+                  <td>F</td>
+                  <td>Type of the function to invoke</td>
+                </tr>
+              </tbody>
+              <thead>
+                <tr><th colspan="2">Parameters</th></tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>e</td>
+                  <td>The expected value</td>
+                </tr>
+                <tr>
+                  <td>f</td>
+                  <td>The function to invoke on the expected value, if it is valid</td>
+                </tr>
+              </tbody>
+              <tfoot>
+                <tr>
+                  <th>Returns</th>
+                  <td>The resulting std::expected value. The type T may have been transformed by the function F.</td>
+                </tr>
+              </tfoot>
+            </table>
+<p>Apply a function f to an expected item e if it has a value.</p><p>If e does not have a value, nothing is returned.</p><p>This is a polyfill of C++23&#x27;s std::expected::transform, which may not be implemented on many compilers.</p>
           </div></section>
           <section class="m-doc-details" id="a4fed449699ce6384cca55be0b0091f4d"><div>
             <h3>
@@ -293,19 +305,6 @@
                 template&lt;class In&gt;
               </div>
               <span class="m-doc-wrap-bumper"> okser::<wbr />internal::<wbr /></span><span class="m-doc-wrap"><span class="m-doc-wrap-bumper"><a href="#a3605d58a97b84b070f1aadc3ed84c9f8" class="m-doc-self">requires</a>(</span><span class="m-doc-wrap">std::constructible_from&lt;<a href="classokser_1_1in_1_1range.html" class="m-doc">okser::<wbr />in::<wbr />range</a>&lt;In&gt;, In&gt;)</span></span>
-            </h3>
-            <p><span></span></p>
-          </div></section>
-        </section>
-        <section>
-          <h2>Variable documentation</h2>
-          <section class="m-doc-details" id="a32a2a14a5334d9c6cd6a7f1a051f6f25"><div>
-            <h3>
-              <div class="m-doc-include m-code m-inverted m-right-m m-text-right"><span class="cp">#include</span> <a class="cpf" href="utils__early_8h.html">&lt;ok-serializer/utils_early.h&gt;</a></div>
-              <div class="m-doc-template">
-                template&lt;typename T&gt;
-              </div>
-              concept okser::<wbr />internal::<wbr /><a href="#a32a2a14a5334d9c6cd6a7f1a051f6f25" class="m-doc-self">HasConstIterator</a>
             </h3>
             <p><span></span></p>
           </div></section>
