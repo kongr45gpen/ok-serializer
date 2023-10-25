@@ -104,7 +104,7 @@ class type {
             okser::result<Unsigned> u;
 
             std::tie(u, context) = uint<Bytes, Endianness>::template deserialize<Unsigned>(context);
-            internal::transform(u, std::bit_cast<V, Unsigned>);
+            u.transform(std::bit_cast<V, Unsigned>);
 
             return {u, context};
         }
@@ -140,7 +140,7 @@ class type {
             okser::result<Unsigned> u;
             std::tie(u, context) = uint<Bytes, Endianness>::template deserialize<Unsigned>(context);
 
-            return std::make_pair(internal::transform(u, std::bit_cast<DefaultType, Unsigned>), context);
+            return std::make_pair(u.transform(std::bit_cast<DefaultType, Unsigned>), context);
         }
     };
 
@@ -185,7 +185,7 @@ class type {
         static std::pair<okser::result<Enum>, Context> deserialize(Context context) {
             auto [result, new_context] = uint<Bytes, Endianness>::template deserialize<Underlying>(context);
 
-            return {internal::transform(result, [](const auto u) { return static_cast<Enum>(u); }), new_context};
+            return {result.transform([](const auto u) { return static_cast<Enum>(u); }), new_context};
         }
     };
 }

@@ -44,33 +44,6 @@ using uint_bytes_to_type = std::conditional_t<Bytes <= 1, uint8_t,
                         std::conditional_t<Bytes <= 8, uint64_t,
                                 void>>>>;
 
-/**
- * Apply a function f to an expected item e if it has a value.
- *
- * If e does not have a value, nothing is returned.
- *
- * This is a polyfill of C++23's std::expected::transform, which may not be implemented on many compilers.
- *
- * @tparam T Type of expected value
- * @tparam E Type of unexpected value
- * @tparam F Type of the function to invoke
- * @param e The expected value
- * @param f The function to invoke on the expected value, if it is valid
- * @return The resulting std::expected value. The type T may have been transformed by the function F.
- */
-template<typename T, typename E, typename F>
-constexpr auto transform(const std::expected<T, E> &e, F &&f) {
-    using FunctionReturn = std::invoke_result_t<F, T>;
-    using ExpectedReturn = std::expected<FunctionReturn, E>;
-
-    if (e) {
-        return ExpectedReturn(f(std::move(e.value())));
-    } else {
-        return ExpectedReturn(std::unexpected(std::move(e.error())));
-    }
-}
-
-
 } // namespace internal
 
 }
