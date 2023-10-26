@@ -30,162 +30,162 @@ namespace internal {
  */
 class type {
 };
+}
+
+/**
+ * Unsigned integer type
+ * @tparam Bytes The number of bytes in the binary representation of the integer
+ * @tparam Endianness
+ */
+template<int Bytes, end Endianness = end::be> requires (Bytes > 0 && Bytes <= 8)
+struct uint : public internal::type {
+    using DefaultType = okser::internal::uint_bytes_to_type<Bytes>;
+
+    template<typename V, Output Out>
+    constexpr static void serialize(const V &v, Out &&o) {
+        if constexpr (Endianness == end::le) {
+            for (int i = 0; i < Bytes; i++) {
+                o.add(static_cast<uint8_t>((v >> (8 * i)) & 0xFFU));
+            }
+        } else {
+            for (int i = 0; i < Bytes; i++) {
+                o.add(static_cast<uint8_t>((v >> (8 * (Bytes - i - 1))) & 0xFFU));
+            }
+        }
     }
 
-    /**
-     * Unsigned integer type
-     * @tparam Bytes The number of bytes in the binary representation of the integer
-     * @tparam Endianness
-     */
-    template<int Bytes, end Endianness = end::be>
-    requires (Bytes > 0 && Bytes <= 8)
-    struct uint : public internal::type {
-        using DefaultType = okser::internal::uint_bytes_to_type<Bytes>;
+    template<typename V, InputContext Context>
+    constexpr static std::pair<okser::result<V>, Context> deserialize(Context context) {
+        auto [result, input] = context.input.template get<Bytes>();
+        context.input = input;
 
-        template<typename V, Output Out>
-        constexpr static void serialize(const V &v, Out &&o) {
-            if constexpr (Endianness == end::le) {
-                for (int i = 0; i < Bytes; i++) {
-                    o.add(static_cast<uint8_t>((v >> (8 * i)) & 0xFFU));
-                }
-            } else {
-                for (int i = 0; i < Bytes; i++) {
-                    o.add(static_cast<uint8_t>((v >> (8 * (Bytes - i - 1))) & 0xFFU));
-                }
+        if (!result) {
+            return {0, context};
+        }
+
+        V value = 0;
+        if constexpr (Endianness == end::le) {
+            for (int i = 0; i < Bytes; i++) {
+                value |= static_cast<V>(result.value()[i]) << (8 * i);
+            }
+        } else {
+            for (int i = 0; i < Bytes; i++) {
+                value |= static_cast<V>(result.value()[i]) << (8 * (Bytes - i - 1));
             }
         }
 
-        template<typename V, InputContext Context>
-        constexpr static std::pair<okser::result<V>, Context> deserialize(Context context) {
-            auto [result, input] = context.input.template get<Bytes>();
-            context.input = input;
+        return {value, context};
+    }
+};
 
-            if (!result) {
-                return {0, context};
-            }
+/**
+ * Signed integer type
+ *
+ * Implemented using 2's complement
+ *
+ * @tparam Bytes The number of bytes in the binary representation of the integer
+ * @tparam Endianness
+ */
+template<int Bytes, end Endianness = end::be>
+struct sint : public internal::type {
+    using DefaultType = std::make_signed_t<okser::internal::uint_bytes_to_type<Bytes>>;
 
-            V value = 0;
-            if constexpr (Endianness == end::le) {
-                for (int i = 0; i < Bytes; i++) {
-                    value |= static_cast<V>(result.value()[i]) << (8 * i);
-                }
-            } else {
-                for (int i = 0; i < Bytes; i++) {
-                    value |= static_cast<V>(result.value()[i]) << (8 * (Bytes - i - 1));
-                }
-            }
+    template<typename V, Output Out>
+    static void serialize(const V &v, Out &&o) {
+        using Unsigned = std::make_unsigned_t<V>;
+        Unsigned u = std::bit_cast<Unsigned>(v);
+        uint<Bytes, Endianness>::serialize(u, o);
+    }
 
-            return {value, context};
-        }
-    };
+    template<typename V, InputContext Context>
+    static std::pair<okser::result<V>, Context> deserialize(Context context) {
+        using Unsigned = std::make_unsigned_t<V>;
+        okser::result<Unsigned> u;
 
-    /**
-     * Signed integer type
-     *
-     * Implemented using 2's complement
-     *
-     * @tparam Bytes The number of bytes in the binary representation of the integer
-     * @tparam Endianness
-     */
-    template<int Bytes, end Endianness = end::be>
-    struct sint : public internal::type {
-        using DefaultType = std::make_signed_t<okser::internal::uint_bytes_to_type<Bytes>>;
+        std::tie(u, context) = uint<Bytes, Endianness>::template deserialize<Unsigned>(context);
+        u.transform(std::bit_cast<V, Unsigned>);
 
-        template<typename V, Output Out>
-        static void serialize(const V &v, Out &&o) {
-            using Unsigned = std::make_unsigned_t<V>;
-            Unsigned u = std::bit_cast<Unsigned>(v);
-            uint<Bytes, Endianness>::serialize(u, o);
-        }
+        return {u, context};
+    }
+};
 
-        template<typename V, InputContext Context>
-        static std::pair<okser::result<V>, Context> deserialize(Context context) {
-            using Unsigned = std::make_unsigned_t<V>;
-            okser::result<Unsigned> u;
+/**
+ * IEEE 754 floating point number
+ * @tparam Bytes The number of bytes in the binary representation of the number,
+ *               either 4 (single-precision, equivalent to C's `float`), or 8
+ *               (double-precision, equivalent to C's `double`)
+ * @tparam Endianness
+ */
+template<int Bytes = 4, end Endianness = end::be> requires (Bytes == 4 || Bytes == 8)
+struct floatp : public internal::type {
+    using DefaultType = std::conditional_t<Bytes == 4, float, double>;
 
-            std::tie(u, context) = uint<Bytes, Endianness>::template deserialize<Unsigned>(context);
-            u.transform(std::bit_cast<V, Unsigned>);
+    template<typename V, Output Out>
+    requires(std::is_floating_point_v<V>)
+    static void serialize(const V &v, Out &&o) {
+        using Unsigned = std::conditional_t<Bytes == 4, uint32_t, uint64_t>;
 
-            return {u, context};
-        }
-    };
+        Unsigned u = std::bit_cast<Unsigned>(static_cast<DefaultType>(v));
 
-    /**
-     * IEEE 754 floating point number
-     * @tparam Bytes The number of bytes in the binary representation of the number,
-     *               either 4 (single-precision, equivalent to C's `float`), or 8
-     *               (double-precision, equivalent to C's `double`)
-     * @tparam Endianness
-     */
-    template<int Bytes = 4, end Endianness = end::be>
-    requires (Bytes == 4 || Bytes == 8)
-    struct floatp : public internal::type {
-        using DefaultType = std::conditional_t<Bytes == 4, float, double>;
+        uint<Bytes, Endianness>::serialize(u, o);
+    }
 
-        template<typename V, Output Out>
-        requires(std::is_floating_point_v<V>)
-        static void serialize(const V &v, Out &&o) {
-            using Unsigned = std::conditional_t<Bytes == 4, uint32_t, uint64_t>;
+    template<typename V = DefaultType, InputContext Context>
+    requires(std::is_floating_point_v<V>)
+    static constexpr auto deserialize(Context context) {
+        using Unsigned = std::conditional_t<Bytes == 4, uint32_t, uint64_t>;
 
-            Unsigned u = std::bit_cast<Unsigned>(static_cast<DefaultType>(v));
+        okser::result<Unsigned> u;
+        std::tie(u, context) = uint<Bytes, Endianness>::template deserialize<Unsigned>(context);
 
-            uint<Bytes, Endianness>::serialize(u, o);
-        }
+        return std::make_pair(u.transform(std::bit_cast<DefaultType, Unsigned>), context);
+    }
+};
 
-        template<typename V = DefaultType, InputContext Context>
-        requires(std::is_floating_point_v<V>)
-        static constexpr auto deserialize(Context context) {
-            using Unsigned = std::conditional_t<Bytes == 4, uint32_t, uint64_t>;
+/**
+ * Shortcut to a double-precision floating point number
+ */
+template<end Endianness = end::be>
+using doublep = floatp<8, Endianness>;
 
-            okser::result<Unsigned> u;
-            std::tie(u, context) = uint<Bytes, Endianness>::template deserialize<Unsigned>(context);
+/**
+ * Enumeration value
+ *
+ * This class provides a convenient translation from an enum to an integer, without the need to
+ * mess with casts and conversions.
+ *
+ * The enumeration value is first converted to its scalar underlying type, and then serialized as
+ * a normal number.
+ *
+ * @todo Check what happens with negative enum values
+ * @todo Check what happens when bytes < sizeof(Enum)
+ *
+ * @tparam Enum The enumeration type
+ * @tparam Bytes Number of bytes to use for the representation. Defaults to the size of the underlying
+ *               type of the Enum.
+ * @tparam Endianness
+ */
+template<typename Enum, int Bytes = sizeof(std::underlying_type<Enum>), end Endianness = end::be> requires (Bytes > 0 &&
+                                                                                                            Bytes <=
+                                                                                                            8 &&
+                                                                                                            std::is_enum_v<Enum>)
+struct enumv : public internal::type {
+protected:
+    using Underlying = std::underlying_type_t<Enum>;
+public:
+    using DefaultType = Enum;
 
-            return std::make_pair(u.transform(std::bit_cast<DefaultType, Unsigned>), context);
-        }
-    };
+    template<Output Out>
+    static void serialize(const Enum &e, Out &&o) {
+        uint<Bytes, Endianness>::serialize(static_cast<Underlying>(e), o);
+    }
 
-    /**
-     * Shortcut to a double-precision floating point number
-     */
-    template<end Endianness = end::be>
-    using doublep = floatp<8, Endianness>;
+    template<typename E = Enum, InputContext Context>
+    requires(std::is_same_v<E, Enum>)
+    static std::pair<okser::result<Enum>, Context> deserialize(Context context) {
+        auto [result, new_context] = uint<Bytes, Endianness>::template deserialize<Underlying>(context);
 
-    /**
-     * Enumeration value
-     *
-     * This class provides a convenient translation from an enum to an integer, without the need to
-     * mess with casts and conversions.
-     *
-     * The enumeration value is first converted to its scalar underlying type, and then serialized as
-     * a normal number.
-     *
-     * @todo Check what happens with negative enum values
-     * @todo Check what happens when bytes < sizeof(Enum)
-     *
-     * @tparam Enum The enumeration type
-     * @tparam Bytes Number of bytes to use for the representation. Defaults to the size of the underlying
-     *               type of the Enum.
-     * @tparam Endianness
-     */
-    template<typename Enum, int Bytes = sizeof(std::underlying_type<Enum>), end Endianness = end::be>
-    requires (Bytes > 0 && Bytes <= 8 && std::is_enum_v<Enum>)
-    struct enumv : public internal::type {
-    protected:
-        using Underlying = std::underlying_type_t<Enum>;
-    public:
-        using DefaultType = Enum;
-
-        template<Output Out>
-        static void serialize(const Enum &e, Out &&o) {
-            uint<Bytes, Endianness>::serialize(static_cast<Underlying>(e), o);
-        }
-
-        template<typename E = Enum, InputContext Context>
-        requires (std::is_same_v<E, Enum>)
-        static std::pair<okser::result<Enum>, Context> deserialize(Context context) {
-            auto [result, new_context] = uint<Bytes, Endianness>::template deserialize<Underlying>(context);
-
-            return {result.transform([](const auto u) { return static_cast<Enum>(u); }), new_context};
-        }
-    };
+        return {result.transform([](const auto u) { return static_cast<Enum>(u); }), new_context};
+    }
+};
 }

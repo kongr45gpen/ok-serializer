@@ -26,6 +26,7 @@ GENERATE_HTML = NO
 GENERATE_LATEX = NO
 XML_PROGRAMLISTING = NO
 CREATE_SUBDIRS = NO
+GENERATE_TODOLIST = NO
 
 # Include all directories, files and namespaces in the documentation
 # Disable to include only explicitly documented objects
