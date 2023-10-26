@@ -1,8 +1,11 @@
 #include <catch2/catch_test_macros.hpp>
 #include <catch2/matchers/catch_matchers_string.hpp>
+#include <catch2/matchers/catch_matchers_range_equals.hpp>
 #include "ok-serializer/ok-serializer.hpp"
 
 using Catch::Matchers::Equals;
+using Catch::Matchers::RangeEquals;
+using namespace std::string_literals;
 
 template<typename T, typename U>
 constexpr auto is_result = std::is_same_v<T, okser::result<U>>;
@@ -51,6 +54,45 @@ TEST_CASE("uint decoding") {
         static_assert(is_result<decltype(number), uint32_t>);
 
         CHECK(number == 359352);
+    }
+}
+
+TEST_CASE("null-terminated string decoding") {
+    std::string str = "Burgebrach\0"s;
+
+    SECTION("null-terminated to fixed string, equal size") {
+        std::array<uint8_t, 10> expected_result = {'B', 'u', 'r', 'g', 'e', 'b', 'r', 'a', 'c', 'h'};
+
+        auto result = okser::deserialize<okser::null_string, std::array<uint8_t, 10>>(str);
+
+        CHECK_THAT(*result, RangeEquals(expected_result));
+    }
+
+    SECTION("null-terminated to larger fixed string") {
+        std::array<uint8_t, 15> expected_result = {'B', 'u', 'r', 'g', 'e', 'b', 'r', 'a', 'c', 'h', 0, 0, 0, 0, 0};
+
+        auto result = okser::deserialize<okser::null_string, std::array<uint8_t, 15>>(str);
+
+        CHECK_THAT(*result, RangeEquals(expected_result));
+    }
+
+    SECTION("null-terminated to smaller fixed string") {
+        auto result_small = okser::deserialize<okser::null_string, std::array<uint8_t, 9>>(str);
+        auto result_smaller = okser::deserialize<okser::null_string, std::array<uint8_t, 8>>(str);
+
+        REQUIRE_FALSE(result_small.has_value());
+        REQUIRE_FALSE(result_smaller.has_value());
+
+        CHECK(result_small.error().type == okser::error_type::not_enough_output_bytes);
+        CHECK(result_smaller.error().type == okser::error_type::not_enough_output_bytes);
+    }
+
+    SECTION("null-terminated string without terminator") {
+        auto error_str = "Burgebrach"s;
+        auto result = okser::deserialize<okser::null_string, std::array<uint8_t, 15>>(error_str);
+
+        REQUIRE_FALSE(result.has_value());
+        CHECK(result.error().type == okser::error_type::not_enough_input_bytes);
     }
 }
 

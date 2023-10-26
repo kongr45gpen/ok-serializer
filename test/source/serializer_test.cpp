@@ -3,6 +3,7 @@
 #include "ok-serializer/ok-serializer.hpp"
 
 using Catch::Matchers::Equals;
+using namespace std::string_literals;
 
 TEST_CASE("uint encoding") {
     SECTION("uint8_t") {
@@ -126,6 +127,23 @@ TEST_CASE("enum encoding") {
                 okser::out::stdstring{out}, TestEnum::B);
         CHECK(out[0] == 0x00);
         CHECK(out[1] == 0x02);
+    }
+}
+
+TEST_CASE("null-terminated string encoding") {
+    std::array<uint8_t, 5> fixed_string = {'T', 'o', 'a', 's', 't'};
+    std::string dynamic_string = "Abington";
+
+    SECTION("fixed string serialisation") {
+        std::string out;
+        okser::serialize<okser::bundle<okser::null_string>>(okser::out::stdstring{out}, fixed_string);
+        CHECK_THAT(out, Equals("Toast\x00"s));
+    }
+
+    SECTION("std::string serialisation") {
+        std::string out;
+        okser::serialize<okser::bundle<okser::null_string>>(okser::out::stdstring{out}, dynamic_string);
+        CHECK_THAT(out, Equals("Abington\x00"s));
     }
 }
 

@@ -30,7 +30,7 @@ public:
     constexpr range(const R &_range) : begin(_range.begin()), end(_range.end()) {}
 
     constexpr std::pair<okser::result<uint8_t>, range<R>> get() const {
-        okser::result<uint8_t> result = std::unexpected(okser::error_type::not_enough_bytes);
+        okser::result<uint8_t> result = std::unexpected(okser::error_type::not_enough_input_bytes);
 
         if (begin != end) {
             result = *begin;
@@ -42,7 +42,7 @@ public:
     template<size_t N, std::ranges::input_range Array = std::array<uint8_t, N>>
     requires (N > 0, std::tuple_size_v<Array> >= N)
     constexpr std::pair<okser::result<Array>, range<R>> get() const {
-        okser::result<Array> result = std::unexpected(okser::error_type::not_enough_bytes);
+        okser::result<Array> result = std::unexpected(okser::error_type::not_enough_input_bytes);
         if (std::ranges::distance(begin, end) >= N) {
             result.emplace();
             std::copy(begin, begin + N, result->begin());
@@ -52,7 +52,7 @@ public:
 
     template<std::ranges::input_range Vector = std::string>
     constexpr std::pair<okser::result<Vector>, range<R>> get(size_t N) const {
-        okser::result<Vector> result = std::unexpected(okser::error_type::not_enough_bytes);
+        okser::result<Vector> result = std::unexpected(okser::error_type::not_enough_input_bytes);
         auto current = begin;
         if (std::ranges::distance(begin, end) >= N) {
             result.emplace();
@@ -95,6 +95,11 @@ public:
 
 template<>
 inline void stdstring::add(const unsigned char &value) {
+    str.get().push_back(value);
+}
+
+template<>
+inline void stdstring::add(const char &value) {
     str.get().push_back(value);
 }
 

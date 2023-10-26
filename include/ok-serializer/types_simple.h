@@ -188,4 +188,58 @@ public:
         return {result.transform([](const auto u) { return static_cast<Enum>(u); }), new_context};
     }
 };
+
+
+struct null_string : public internal::type {
+    using DefaultType = std::string;
+
+    template<std::ranges::input_range S, Output Out>
+    static void serialize(const S &string, Out &&o) {
+        for (const auto &c: string) {
+            o.add(c);
+        }
+        o.add('\0');
+    }
+
+    template<std::ranges::sized_range S, InputContext Context>
+    static std::pair<okser::result<S>, Context> deserialize(Context context) {
+        S result{0};
+        auto it = std::ranges::begin(result);
+
+        bool ran_out_of_output = false;
+
+        while (true) {
+            auto [c, input] = context.input.get();
+            context.input = input;
+
+            if (!c) {
+                // Error returned by input, return it and stop processing
+                return {std::unexpected(c.error()), context};
+            }
+
+            if (*c == '\0') {
+                // Input string ran out
+                break;
+            }
+
+            if (!ran_out_of_output) {
+                if (it == std::ranges::end(result)) [[unlikely]] {
+                    // We do not break out of the loop, since we still need to consume the rest of the input for the
+                    // next deserialisation
+                    ran_out_of_output = true;
+                } else {
+                    *it = *c;
+                    it++;
+                }
+            }
+        }
+
+        if (ran_out_of_output) {
+            return {std::unexpected(okser::error_type::not_enough_output_bytes), context};
+        }
+
+        return {result, context};
+    }
+};
+
 }
