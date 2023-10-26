@@ -60,7 +60,7 @@ TEST_CASE("uint decoding") {
 TEST_CASE("null-terminated string decoding") {
     std::string str = "Burgebrach\0"s;
 
-    SECTION("null-terminated to dynamic, equal size") {
+    SECTION("null-terminated to dynamic string") {
         auto result = okser::deserialize<okser::null_string, std::string>(str);
 
         CHECK_THAT(*result, Equals("Burgebrach"));
@@ -95,10 +95,16 @@ TEST_CASE("null-terminated string decoding") {
 
     SECTION("null-terminated string without terminator") {
         auto error_str = "Burgebrach"s;
-        auto result = okser::deserialize<okser::null_string, std::array<uint8_t, 15>>(error_str);
+        auto result = okser::deserialize<okser::terminated_string<>, std::array<uint8_t, 15>>(error_str);
 
         REQUIRE_FALSE(result.has_value());
         CHECK(result.error().type == okser::error_type::not_enough_input_bytes);
+    }
+
+    SECTION("arbitrary-terminated to dynamic string") {
+        auto result = okser::deserialize<okser::terminated_string<'b'>, std::string>(str);
+
+        CHECK_THAT(*result, Equals("Burge"));
     }
 }
 

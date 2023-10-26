@@ -189,8 +189,12 @@ public:
     }
 };
 
-
-struct null_string : public internal::type {
+/**
+ * A null-terminated string
+ * @tparam Terminator Allows overriding the default terminator character, which is `\0`
+ */
+template<uint8_t Terminator = 0>
+struct terminated_string : public internal::type {
     using DefaultType = std::string;
 
     template<std::ranges::input_range S, Output Out>
@@ -217,7 +221,7 @@ struct null_string : public internal::type {
                 return {std::unexpected(c.error()), context};
             }
 
-            if (*c == '\0') {
+            if (*c == Terminator) {
                 // Input string ran out
                 break;
             }
@@ -239,5 +243,7 @@ struct null_string : public internal::type {
         return {output, context};
     }
 };
+
+using null_string = terminated_string<>;
 
 }
