@@ -34,6 +34,42 @@ constexpr auto apply(F f, std::index_sequence<Is...>) {
     return std::tuple{f(std::integral_constant<std::size_t, Is>{})...};
 }
 
+template<class R>
+concept dynamic_range = requires(R r)
+{
+    std::ranges::range<R>;
+    { r.push_back(*std::ranges::begin(r)) };
+};
+
+/**
+ * Get an iterator for a range. If the range is sized, returns a normal iterator to the beginning of the range.
+ * Otherwise, returns an [std::back_insert_iterator](https://en.cppreference.com/w/cpp/iterator/back_insert_iterator)
+ * that will append new elements to the range when assigned to.
+ * @tparam R The range type
+ * @param input The range to get the iterators from
+ * @return An std::iterator
+ */
+template<std::ranges::range R>
+constexpr auto get_fixed_or_dynamic_iterator(auto &input) {
+    if constexpr (dynamic_range<R>) {
+        return std::back_inserter(input);
+    } else {
+        return std::ranges::begin(input);
+    }
+}
+
+template<std::ranges::range R, class I>
+requires (std::incrementable<I>)
+constexpr bool is_range_end(const R &range, const I &it) {
+    return it == std::ranges::end(range);
+}
+
+template<std::ranges::range R, class I>
+requires (!std::incrementable<I>)
+constexpr bool is_range_end(const R &, const I &) {
+    return false;
+}
+
 /**
  * Convert from a number of bytes to the smallest unsigned integer type that can hold that many bytes.
  */

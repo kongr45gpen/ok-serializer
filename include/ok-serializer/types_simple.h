@@ -201,10 +201,10 @@ struct null_string : public internal::type {
         o.add('\0');
     }
 
-    template<std::ranges::sized_range S, InputContext Context>
+    template<std::ranges::range S, InputContext Context>
     static std::pair<okser::result<S>, Context> deserialize(Context context) {
-        S result{0};
-        auto it = std::ranges::begin(result);
+        S output = S();
+        auto it = okser::internal::get_fixed_or_dynamic_iterator<S>(output);
 
         bool ran_out_of_output = false;
 
@@ -223,9 +223,7 @@ struct null_string : public internal::type {
             }
 
             if (!ran_out_of_output) {
-                if (it == std::ranges::end(result)) [[unlikely]] {
-                    // We do not break out of the loop, since we still need to consume the rest of the input for the
-                    // next deserialisation
+                if (internal::is_range_end(output, it)) {
                     ran_out_of_output = true;
                 } else {
                     *it = *c;
@@ -238,7 +236,7 @@ struct null_string : public internal::type {
             return {std::unexpected(okser::error_type::not_enough_output_bytes), context};
         }
 
-        return {result, context};
+        return {output, context};
     }
 };
 

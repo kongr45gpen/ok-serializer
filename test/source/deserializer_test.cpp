@@ -60,6 +60,12 @@ TEST_CASE("uint decoding") {
 TEST_CASE("null-terminated string decoding") {
     std::string str = "Burgebrach\0"s;
 
+    SECTION("null-terminated to dynamic, equal size") {
+        auto result = okser::deserialize<okser::null_string, std::string>(str);
+
+        CHECK_THAT(*result, Equals("Burgebrach"));
+    }
+
     SECTION("null-terminated to fixed string, equal size") {
         std::array<uint8_t, 10> expected_result = {'B', 'u', 'r', 'g', 'e', 'b', 'r', 'a', 'c', 'h'};
 
