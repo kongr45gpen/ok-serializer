@@ -74,11 +74,11 @@ constexpr result<Tuple> deserialize(In &&input) {
  * >(-5, 15);
  * \endcode
  */
-template<Serializer... Types, typename... Values, class Output = std::string>
-Output serialize_to_string(Values... values) {
-    Output output;
-    [[maybe_unused]] auto status = bundle<Types...>::serialize(out::dynamic{output}, values...);
-    return output;
+template<Serializer... Types, typename... Values, class String = std::string>
+constexpr String serialize_to_string(Values... values) {
+    String string;
+    [[maybe_unused]] auto status = bundle<Types...>::serialize(out::dynamic(string), values...);
+    return string;
 }
 
 } // namespace okser

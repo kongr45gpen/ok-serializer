@@ -135,7 +135,7 @@ class dynamic {
 public:
     std::reference_wrapper<String> str;
 
-    explicit dynamic(String &str) : str(str) {}
+    explicit constexpr dynamic(String &str) : str(str) {}
 
     /**
      * Add one or more bytes to the output
@@ -143,7 +143,7 @@ public:
      * @param value The value to append to the output
      */
     template<typename T>
-    empty_result add(const T &value) {
+    constexpr empty_result add(const T &value) {
         str.get().append(value);
 
         return {};
@@ -152,7 +152,7 @@ public:
     /**
      * Template specialisation to a single character to the output
      */
-    empty_result add(const unsigned char &value) {
+    constexpr empty_result add(const unsigned char &value) {
         str.get().push_back(value);
 
         return {};
@@ -161,7 +161,7 @@ public:
     /**
      * Template specialisation to a single character to the output
      */
-    empty_result add(const char &value) {
+    constexpr empty_result add(const char &value) {
         str.get().push_back(value);
 
         return {};
