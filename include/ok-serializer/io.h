@@ -14,6 +14,23 @@ namespace okser {
  * Useful output classes for serialized results
  */
 namespace in {
+
+/**
+ * Input for data to be deserialized from any std-compatible range.
+ *
+ * ## Example
+ * \code
+ * std::string input = "Hello world";
+ * auto range = okser::in::range{input};
+ *
+ * // If you have a C-style buffer and want to read some bytes off it
+ * char buffer[1000] = ...
+ * auto range = okser::in::range(std::span(buffer + 400, buffer + 500)); // or
+ * auto range = okser::in::range(std::span(buffer + 400, 100));
+ * \endcode
+ *
+ * @tparam R The input range type. It can be a string, an STL container, an std::span, or any other range.
+ */
 template<std::ranges::input_range R = std::string>
 class range {
 private:
@@ -27,8 +44,20 @@ private:
 public:
     using ContainedType = R;
 
+    /**
+     * Construct a range input from a container.
+     *
+     * You can use std::span to control the range of the container to be used more accurately.
+     */
     constexpr range(const R &_range) : begin(_range.begin()), end(_range.end()) {}
 
+    /**
+     * Get a single byte from the input.
+     *
+     * Returns okser::error_type::not_enough_input_bytes if the input range runs out.
+     *
+     * @return A pair with the byte and a new range with this byte taken away.
+     */
     constexpr std::pair<okser::result<uint8_t>, range<R>> get() const {
         okser::result<uint8_t> result = std::unexpected(okser::error_type::not_enough_input_bytes);
 
@@ -39,6 +68,15 @@ public:
         return {result, range<R>{begin + 1, end}};
     }
 
+    /**
+     * Get a number of bytes (specified at compile-time) from the input.
+     *
+     * Returns okser::error_type::not_enough_input_bytes if the input range runs out.
+     *
+     * @tparam N The number of bytes to get
+     * @tparam Array The container to store the output in
+     * @return A pair with the Array and a new range with the bytes taken away.
+     */
     template<size_t N, std::ranges::input_range Array = std::array<uint8_t, N>>
     requires (N > 0, std::tuple_size_v<Array> >= N)
     constexpr std::pair<okser::result<Array>, range<R>> get() const {
@@ -50,6 +88,15 @@ public:
         return {result, range<R>{begin + N, end}};
     }
 
+    /**
+     * Get a number of bytes (specified at runtime) from the input.
+     *
+     * Returns okser::error_type::not_enough_input_bytes if the input range runs out.
+     *
+     * @param N The number of bytes to get
+     * @tparam Vector The container to store the output in
+     * @return A pair with the Array and a new range with the bytes taken away.
+     */
     template<std::ranges::input_range Vector = std::string>
     constexpr std::pair<okser::result<Vector>, range<R>> get(size_t N) const {
         okser::result<Vector> result = std::unexpected(okser::error_type::not_enough_input_bytes);
@@ -87,6 +134,11 @@ class stdstring {
 public:
     std::reference_wrapper<std::string> str;
 
+    /**
+     * Add one or more bytes to the output
+     * @tparam T The type of value to add.
+     * @param value The value to append to the output
+     */
     template<typename T>
     void add(const T &value) {
         str.get().append(value);
@@ -128,6 +180,11 @@ private:
 public:
     explicit fixed_container(C &container) : current(container.begin()), last(container.end()) {}
 
+    /**
+     * Add a single byte to the output
+     * @tparam T
+     * @param value
+     */
     template<typename T>
     void add(const T &value) {
         if (current == last) {
@@ -164,11 +221,17 @@ public:
      */
     size_t size = 0;
 
+    /**
+     * Add a single character to the buffer
+     */
     void add(char value) {
         buf[size] = value;
         size++;
     }
 
+    /**
+     * Add a single character to the buffer
+     */
     void add(uint8_t value) {
         buf[size] = value;
         size++;

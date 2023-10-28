@@ -93,4 +93,50 @@ serialize_to_string<enumv<Fox>>(fox); // Output: 0x01
 serialize_to_string<enumv<Fox, 2, end::le>>(fox); // Output: 0x0001
 ```
 
+@section simple-types-string Strings
+
+ok-serializer supports different types of string representations out of the box.
+
+C++ string types, std::arrays and all kinds of ranges are accepted in the serializer.
+C-style strings need to be explicitly converted to an `std::ranges::range` before being passed
+through:
+
+```cpp
+std::string str = "Hello world!"; // OK
+std::array<char, 12> str = "Hello world!"; // OK
+other_library::buffer str = ... // OK if it is std::ranges::range
+
+char cstring[] = "Hello world!"; // Not OK
+std::string_view(cstring); // OK!
+
+// To explicitly specify the size:
+char weird_binary_buffer[] = ...; // Not OK
+std::string_view(weird_binary_buffer, 45); // OK!
+```
+
+Deserialization can happen into any range with a fixed size or a `push_back` function. Arrays and strings are
+therefore supported out of the box.
+
+@subsection simple-types-string-terminated Terminated strings
+
+C-style strings with a null (`\0`) termination are supported:
+
+```cpp
+using namespace okser;
+
+std:string str = "Hello world!";
+serialize_to_string<null_string>(str);
+```
+
+Alternatively, you can specify your own termination:
+
+```cpp
+using namespace okser;
+
+std:string str = "repository/name";
+deserialize_from_string<terminated_string<'/'>>(str); // Output: "repository"
+```
+
+@warning
+For various reasons, it is suggested to avoid null-terminated strings.
 

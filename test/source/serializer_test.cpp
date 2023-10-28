@@ -134,6 +134,18 @@ TEST_CASE("null-terminated string encoding") {
         okser::serialize<okser::null_string>(okser::out::stdstring{out}, dynamic_string);
         CHECK_THAT(out, Equals("Abington\x00"s));
     }
+
+    SECTION("C string serialisation") {
+        char c_string[] = "wind";
+
+        std::string out;
+        okser::serialize<okser::null_string>(okser::out::stdstring{out}, std::string_view(c_string));
+        CHECK_THAT(out, Equals("wind\x00"s));
+
+        out.clear();
+        okser::serialize<okser::null_string>(okser::out::stdstring{out}, std::string_view(c_string, 2));
+        CHECK_THAT(out, Equals("wi\x00"s));
+    }
 }
 
 TEST_CASE("redundant encoding") {
