@@ -75,7 +75,7 @@ constexpr void serialize_struct(Out &&output, const T &object) {
 template<class T, auto config = internal::empty{}>
 constexpr std::string serialize_struct_to_string(const T &object) {
     std::string out;
-    serialize_struct<T, out::stdstring, config>({out}, object);
+    serialize_struct<T, out::dynamic<>, config>(out::dynamic(out), object);
 
     return out;
 }

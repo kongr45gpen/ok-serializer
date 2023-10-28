@@ -77,7 +77,7 @@ constexpr result<Tuple> deserialize(In &&input) {
 template<Serializer... Types, typename... Values, class Output = std::string>
 Output serialize_to_string(Values... values) {
     Output output;
-    bundle<Types...>::serialize(out::stdstring{output}, values...);
+    bundle<Types...>::serialize(out::dynamic{output}, values...);
     return output;
 }
 

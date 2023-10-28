@@ -10,7 +10,7 @@ using namespace okser;
 
 TEST_CASE("uint idempotence") {
     std::string str;
-    okser::out::stdstring out{str};
+    okser::out::dynamic out{str};
 
     SECTION("uint8_t") {
         auto i = GENERATE(range(0, 255));
@@ -49,7 +49,7 @@ TEST_CASE("floatp idempotence") {
 
         std::string str("");
         uint8_t *u8str = reinterpret_cast<uint8_t *>(str.data());
-        okser::out::stdstring out{str};
+        okser::out::dynamic out{str};
 
         serialize<bundle<okser::floatp<4>>>(out, i);
 

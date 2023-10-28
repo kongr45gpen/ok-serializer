@@ -118,21 +118,24 @@ public:
  */
 namespace out {
 /**
- * A simple output to a C++ std::string
+ * An output to a dynamic C++ container, such as an std::vector or an std::string
  *
  * ## Example
  * \code
  * std::string result;
- * auto output = okser::out::stdstring{result};
+ * auto output = okser::out::dynamic{result};
  *
  * // ...
  *
  * okser::serialize<bundle>(output, 100, 200, 300);
  * \endcode
  */
-class stdstring {
+template<class String = std::string>
+class dynamic {
 public:
-    std::reference_wrapper<std::string> str;
+    std::reference_wrapper<String> str;
+
+    explicit dynamic(String &str) : str(str) {}
 
     /**
      * Add one or more bytes to the output
@@ -143,17 +146,26 @@ public:
     void add(const T &value) {
         str.get().append(value);
     }
+
+    /**
+     * Template specialisation to a single character to the output
+     */
+    void add(const unsigned char &value) {
+        str.get().push_back(value);
+    }
+
+    /**
+     * Template specialisation to a single character to the output
+     */
+    void add(const char &value) {
+        str.get().push_back(value);
+    }
 };
 
-template<>
-inline void stdstring::add(const unsigned char &value) {
-    str.get().push_back(value);
-}
-
-template<>
-inline void stdstring::add(const char &value) {
-    str.get().push_back(value);
-}
+/**
+ * Alias for okser::out::dynamic<std::string>
+ */
+using stdstring = dynamic<std::string>;
 
 /**
  * An output to a pre-allocated C++ range, such as an std::array

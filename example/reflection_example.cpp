@@ -22,7 +22,7 @@ auto main() -> int {
               << std::endl;
 
     std::string result;
-    okser::out::stdstring out(result);
+    okser::out::dynamic out(result);
 
     okser::serialize_struct(out, s);
 
