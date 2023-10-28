@@ -16,5 +16,5 @@ auto main() -> int {
     serialize<bundle>(output, 104, 26913);
 
     // If you don't want to explicitly define an output, you can simple_serialize to an std::string
-    std::cout << result << " " << simple_serialize<sint<1>, okser::uint<2>>(104, 26913) << std::endl;
+    std::cout << result << " " << serialize_to_string<sint<1>, okser::uint<2>>(104, 26913) << std::endl;
 }

@@ -68,15 +68,15 @@ constexpr result<Tuple> deserialize(In &&input) {
  *
  * ## Example
  * \code
- * std::string out = okser::simple_serialize<
+ * std::string out = okser::serialize_to_string<
  *     okser::sint<1>,
  *     okser::uint<2>
  * >(-5, 15);
  * \endcode
  */
-template<Serializer... Types, typename... Values>
-std::string simple_serialize(Values... values) {
-    std::string output;
+template<Serializer... Types, typename... Values, class Output = std::string>
+Output serialize_to_string(Values... values) {
+    Output output;
     bundle<Types...>::serialize(out::stdstring{output}, values...);
     return output;
 }
