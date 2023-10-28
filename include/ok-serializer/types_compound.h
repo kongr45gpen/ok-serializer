@@ -106,10 +106,13 @@ public:
     requires(Serializer<T>)
     constexpr static empty_result serialize(Context &&output, const Value &value) {
         for (int i = 0; i < N; i++) {
-            T::template serialize<Value, Context>(output, value);
+            auto result = T::template serialize<Value, Context>(output, value);
+
+            if (!result) {
+                return result;
+            }
         }
 
-        // TODO propagate errors
         return {};
     }
 
@@ -118,13 +121,17 @@ public:
     constexpr static okser::result<Value> deserialize(Context &context) {
         auto value = T::template deserialize<Value>(context);
 
-        bool ok = true;
+        if (!value) return value;
 
+        bool ok = true;
         for (int i = 1; i < N; i++) {
             auto nextValue = T::template deserialize<Value>(context);
-            // TODO propagate errors?
-            if (!nextValue || !value || nextValue.value() != value.value()) {
+
+            if (!nextValue) return nextValue;
+
+            if (*nextValue != *value || !ok) {
                 ok = false;
+                // We still need to continue de-serialising values, so that the adequate amount of bytes is skipped
             }
         }
 
