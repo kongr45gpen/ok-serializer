@@ -14,7 +14,15 @@ namespace internal {
  */
 template<class Pair, OutputContext Context>
 constexpr void serialize_one(Context &&out, Pair p) {
-    Pair::SerializerType::serialize(out, p.value);
+    if (out.error) {
+        return;
+    }
+
+    auto result = Pair::SerializerType::serialize(out, p.value);
+
+    if (!result) {
+        out.error = result.error();
+    }
 }
 
 /**

@@ -48,7 +48,10 @@ public:
                 [&output](auto &&...v) { ((internal::serialize_one(output, v)), ...); },
                 typeValues);
 
-        // TODO: Actually parse errors occurred during serialization
+        if (output.error) {
+            return std::unexpected(output.error.value());
+        }
+
         return {};
     }
 
@@ -106,10 +109,13 @@ public:
 
     template<OutputContext Context, typename Value>
     requires(Serializer<T>)
-    constexpr static void serialize(Context &&output, const Value &value) {
+    constexpr static empty_result serialize(Context &&output, const Value &value) {
         for (int i = 0; i < N; i++) {
             T::template serialize<Value, Context>(output, value);
         }
+
+        // TODO propagate errors
+        return {};
     }
 
     template<class Value, InputContext Context>
