@@ -27,7 +27,7 @@ namespace okser {
  * @param values The values to serialize. This needs to match the number and order of @p Values.
  */
 template<class Bundle, Output Out, typename... Values>
-constexpr void serialize(Out &&output, Values... values) {
+[[nodiscard]] constexpr empty_result serialize(Out &&output, Values... values) {
     return Bundle::serialize(output, values...);
 }
 
@@ -77,7 +77,7 @@ constexpr result<Tuple> deserialize(In &&input) {
 template<Serializer... Types, typename... Values, class Output = std::string>
 Output serialize_to_string(Values... values) {
     Output output;
-    bundle<Types...>::serialize(out::dynamic{output}, values...);
+    [[maybe_unused]] auto status = bundle<Types...>::serialize(out::dynamic{output}, values...);
     return output;
 }
 

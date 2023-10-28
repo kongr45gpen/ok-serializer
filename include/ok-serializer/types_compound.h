@@ -40,12 +40,16 @@ public:
 
     template<Output Out, typename... Values>
     requires (Serializer<Types>, ...)
-    constexpr static void serialize(Out &&output, Values... values) {
+
+    constexpr static empty_result serialize(Out &&output, Values... values) {
         std::tuple<serializable_value<Types, Values>...> typeValues{values...};
 
         std::apply(
                 [&output](auto &&...v) { ((internal::serialize_one(output, v)), ...); },
                 typeValues);
+
+        // TODO: Actually parse errors occurred during serialization
+        return {};
     }
 
     template<class Tuple, InputContext Context>

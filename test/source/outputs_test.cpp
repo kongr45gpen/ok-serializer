@@ -16,6 +16,27 @@ TEST_CASE("stdstring output") {
   }
 }
 
+TEST_CASE("fixed-size output") {
+    SECTION("within range") {
+        std::string string = "   ";
+
+        auto result = okser::serialize<okser::uint<2>>(okser::out::fixed_container(string), 0x6869);
+
+        CHECK(result);
+        CHECK_THAT(string, Equals("hi "));
+    }
+
+    SECTION("outside range") {
+        std::string string = "   ";
+
+        auto result = okser::serialize<okser::uint<4>>(okser::out::fixed_container(string), 0x68697961);
+
+        CHECK(!result);
+        CHECK(result.error()() == okser::error_type::not_enough_output_bytes);
+        CHECK_THAT(string, Equals("hiy"));
+    }
+}
+
 TEST_CASE("stdstring input") {
     SECTION("to uint8_t") {
         std::string string("\x70\xAF");

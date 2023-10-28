@@ -32,4 +32,6 @@ struct parse_error {
 template<class T>
 using result = std::expected<T, parse_error>;
 
+using empty_result = std::expected<void, parse_error>;
+
 }

@@ -143,22 +143,28 @@ public:
      * @param value The value to append to the output
      */
     template<typename T>
-    void add(const T &value) {
+    empty_result add(const T &value) {
         str.get().append(value);
+
+        return {};
     }
 
     /**
      * Template specialisation to a single character to the output
      */
-    void add(const unsigned char &value) {
+    empty_result add(const unsigned char &value) {
         str.get().push_back(value);
+
+        return {};
     }
 
     /**
      * Template specialisation to a single character to the output
      */
-    void add(const char &value) {
+    empty_result add(const char &value) {
         str.get().push_back(value);
+
+        return {};
     }
 };
 
@@ -184,7 +190,7 @@ using stdstring = dynamic<std::string>;
  * an empty vector with 0 elements will thrown an error, while a vector with N elements will have those elements
  * replaced.
  */
-template<std::ranges::output_range<uint8_t> C>
+template<std::ranges::output_range<uint8_t> C> requires (std::ranges::forward_range<C>)
 class fixed_container {
 private:
     typename C::iterator current;
@@ -198,12 +204,14 @@ public:
      * @param value
      */
     template<typename T>
-    void add(const T &value) {
+    empty_result add(const T &value) {
         if (current == last) {
-//                        throw std::out_of_range("okser::out::fixed_container: container is full");
+            return std::unexpected(error_type::not_enough_output_bytes);
         }
         *current = value;
         current++;
+
+        return {};
     }
 };
 
@@ -236,17 +244,21 @@ public:
     /**
      * Add a single character to the buffer
      */
-    void add(char value) {
+    empty_result add(char value) {
         buf[size] = value;
         size++;
+
+        return {};
     }
 
     /**
      * Add a single character to the buffer
      */
-    void add(uint8_t value) {
+    empty_result add(uint8_t value) {
         buf[size] = value;
         size++;
+
+        return {};
     }
 };
 }
