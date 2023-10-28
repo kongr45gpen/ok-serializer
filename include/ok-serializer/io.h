@@ -58,14 +58,15 @@ public:
      *
      * @return A pair with the byte and a new range with this byte taken away.
      */
-    constexpr std::pair<okser::result<uint8_t>, range<R>> get() const {
+    constexpr okser::result<uint8_t> get() {
         okser::result<uint8_t> result = std::unexpected(okser::error_type::not_enough_input_bytes);
 
         if (begin != end) {
             result = *begin;
+            begin++;
         }
 
-        return {result, range<R>{begin + 1, end}};
+        return result;
     }
 
     /**
@@ -79,13 +80,16 @@ public:
      */
     template<size_t N, std::ranges::input_range Array = std::array<uint8_t, N>>
     requires (N > 0, std::tuple_size_v<Array> >= N)
-    constexpr std::pair<okser::result<Array>, range<R>> get() const {
+    constexpr okser::result<Array> get() {
         okser::result<Array> result = std::unexpected(okser::error_type::not_enough_input_bytes);
+
         if (std::ranges::distance(begin, end) >= N) {
             result.emplace();
             std::copy(begin, begin + N, result->begin());
+            begin += N;
         }
-        return {result, range<R>{begin + N, end}};
+
+        return result;
     }
 
     /**
@@ -98,17 +102,20 @@ public:
      * @return A pair with the Array and a new range with the bytes taken away.
      */
     template<std::ranges::input_range Vector = std::string>
-    constexpr std::pair<okser::result<Vector>, range<R>> get(size_t N) const {
+    constexpr okser::result<Vector> get(size_t N) {
         okser::result<Vector> result = std::unexpected(okser::error_type::not_enough_input_bytes);
-        auto current = begin;
+
         if (std::ranges::distance(begin, end) >= N) {
             result.emplace();
+            auto current = begin;
             for (int i = 0; i < N; i++) {
                 result->push_back(*current);
                 current++;
             }
+            begin = current;
         }
-        return {result, range<R>{current, end}};
+
+        return result;
     }
 };
 }

@@ -57,13 +57,12 @@ public:
 
     template<class Tuple, InputContext Context>
     requires (Deserializer<Types>, ...)
-    constexpr static std::pair<okser::result<Tuple>, Context> deserialize(Context context) {
+
+    constexpr static okser::result<Tuple> deserialize(Context &context) {
         using ValuesTuple = Tuple;
 
-        std::optional<Context> in = context;
-
         // Loop through all elements of the tuple at compile time
-        auto values = internal::apply([&in](const auto i) {
+        auto values = internal::apply([&context](const auto i) {
             // i cannot be defined as `constexpr`, so its value (i.e. the loop index)
             // is stored in a class type (std::integral_constant). Here we fetch the
             // loop index from this type, and store it in a constexpr variable.
@@ -73,31 +72,27 @@ public:
             using Value = std::tuple_element_t<Index, ValuesTuple>;
 
             // If a previous field showed an error, do not parse this field
-            if (in->error) {
-                return okser::result<Value>(std::unexpected(*(in->error)));
+            if (context.error) {
+                return okser::result<Value>(std::unexpected(*(context.error)));
             }
 
-            auto [value, newIn] = Serializer::template deserialize<Value>(*in);
-
-            // Forces using the copy constructor, instead of the copy assignment operator, which might not be usable
-            // in constant environments.
-            in.emplace(newIn);
+            auto value = Serializer::template deserialize<Value>(context);
 
             if (!value) {
-                in->error = value.error();
+                context.error = value.error();
             }
 
             return value;
         }, IndexSequence());
 
-        if (!in->error) {
+        if (!context.error) {
             ValuesTuple raw_values = std::apply([](auto &&...r) {
                 return std::make_tuple((*r)...);
             }, values);
 
-            return std::make_pair(raw_values, *in);
+            return raw_values;
         } else {
-            return std::make_pair(std::unexpected(*(in->error)), *in);
+            return std::unexpected(*(context.error));
         }
     }
 };
@@ -120,24 +115,23 @@ public:
 
     template<class Value, InputContext Context>
     requires(Deserializer<T>)
-    constexpr static std::pair<okser::result<Value>, Context> deserialize(Context context) {
-        auto [value, newContext] = T::template deserialize<Value>(context);
+    constexpr static okser::result<Value> deserialize(Context &context) {
+        auto value = T::template deserialize<Value>(context);
 
         bool ok = true;
 
         for (int i = 1; i < N; i++) {
-            auto [nextValue, nextContext] = T::template deserialize<Value>(newContext);
+            auto nextValue = T::template deserialize<Value>(context);
             // TODO propagate errors?
             if (!nextValue || !value || nextValue.value() != value.value()) {
                 ok = false;
             }
-            newContext = nextContext;
         }
 
         if (ok) {
-            return std::make_pair(value, newContext);
+            return value;
         } else {
-            return std::make_pair(std::unexpected(okser::error_type::redundant_mismatch), newContext);
+            return std::unexpected(okser::error_type::redundant_mismatch);
         }
     };
 };

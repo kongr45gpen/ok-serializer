@@ -54,7 +54,7 @@ constexpr result<Value> deserialize(In &&input) {
     auto contained_input = internal::convert_input_to_okser(std::forward<In>(input));
     input_context context(contained_input);
 
-    return Type::template deserialize<Value>(context).first;
+    return Type::template deserialize<Value>(context);
 }
 
 // Multiple argument deserialisation, converts many elements to bundles

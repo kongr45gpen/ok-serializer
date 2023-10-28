@@ -103,8 +103,7 @@ constexpr T deserialize_struct(In &&input) {
 
         // TODO: Error handling
         auto deserialized_result = deserializer::template deserialize<type>(*context);
-        reference = deserialized_result.first.value();
-        context.emplace(deserialized_result.second);
+        reference = deserialized_result.value();
 
         std::cout << "Member:" << get_name(member) << "\t Type: " << get_name(get_type(member))
                   << " \t Value: "

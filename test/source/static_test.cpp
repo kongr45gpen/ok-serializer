@@ -19,3 +19,5 @@ static_assert(serialize_to_string<okser::uint<1>, okser::uint<1>>(15, 32) == "\x
 // Deserialization at compile-time
 static_assert(deserialize<okser::uint<1>>("\x0A"s).value() == 10);
 static_assert(std::get<1>(deserialize<okser::bundle<okser::uint<1>, okser::uint<1>>>("\x0F\x20"s).value()) == 32);
+static_assert(deserialize<okser::bundle<okser::uint<1>, okser::uint<1>>>("\x0F"s).error().type ==
+              error_type::not_enough_input_bytes);

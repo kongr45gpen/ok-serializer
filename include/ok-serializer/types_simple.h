@@ -65,12 +65,11 @@ struct uint : public internal::type {
     }
 
     template<typename V, InputContext Context>
-    constexpr static std::pair<okser::result<V>, Context> deserialize(Context context) {
-        auto [result, input] = context.input.template get<Bytes>();
-        context.input = input;
+    constexpr static okser::result<V> deserialize(Context &context) {
+        auto result = context->template get<Bytes>();
 
         if (!result) {
-            return {0, context};
+            return std::unexpected(result.error());
         }
 
         V value = 0;
@@ -84,7 +83,7 @@ struct uint : public internal::type {
             }
         }
 
-        return {value, context};
+        return value;
     }
 };
 
@@ -108,14 +107,13 @@ struct sint : public internal::type {
     }
 
     template<typename V, InputContext Context>
-    static std::pair<okser::result<V>, Context> deserialize(Context context) {
+    static okser::result<V> deserialize(Context &context) {
         using Unsigned = std::make_unsigned_t<V>;
-        okser::result<Unsigned> u;
 
-        std::tie(u, context) = uint<Bytes, Endianness>::template deserialize<Unsigned>(context);
-        u.transform(std::bit_cast<V, Unsigned>);
+        auto value = uint<Bytes, Endianness>::template deserialize<Unsigned>(context);
+        value.transform(std::bit_cast<V, Unsigned>);
 
-        return {u, context};
+        return value;
     }
 };
 
@@ -142,13 +140,12 @@ struct floatp : public internal::type {
 
     template<typename V = DefaultType, InputContext Context>
     requires(std::is_floating_point_v<V>)
-    static constexpr auto deserialize(Context context) {
+    static constexpr okser::result<V> deserialize(Context &context) {
         using Unsigned = std::conditional_t<Bytes == 4, uint32_t, uint64_t>;
 
-        okser::result<Unsigned> u;
-        std::tie(u, context) = uint<Bytes, Endianness>::template deserialize<Unsigned>(context);
+        auto value = uint<Bytes, Endianness>::template deserialize<Unsigned>(context);
 
-        return std::make_pair(u.transform(std::bit_cast<DefaultType, Unsigned>), context);
+        return value.transform(std::bit_cast<DefaultType, Unsigned>);
     }
 };
 
@@ -192,10 +189,10 @@ public:
 
     template<typename E = Enum, InputContext Context>
     requires(std::is_same_v<E, Enum>)
-    static std::pair<okser::result<Enum>, Context> deserialize(Context context) {
-        auto [result, new_context] = uint<Bytes, Endianness>::template deserialize<Underlying>(context);
+    static okser::result<Enum> deserialize(Context &context) {
+        auto result = uint<Bytes, Endianness>::template deserialize<Underlying>(context);
 
-        return {result.transform([](const auto u) { return static_cast<Enum>(u); }), new_context};
+        return result.transform([](const auto u) { return static_cast<Enum>(u); });
     }
 };
 
@@ -220,19 +217,18 @@ struct terminated_string : public internal::type {
     }
 
     template<std::ranges::range S, InputContext Context>
-    static std::pair<okser::result<S>, Context> deserialize(Context context) {
+    static okser::result<S> deserialize(Context &context) {
         S output = S();
         auto it = okser::internal::get_fixed_or_dynamic_iterator<S>(output);
 
         bool ran_out_of_output = false;
 
         while (true) {
-            auto [c, input] = context.input.get();
-            context.input = input;
+            auto c = context->get();
 
             if (!c) {
                 // Error returned by input, return it and stop processing
-                return {std::unexpected(c.error()), context};
+                return std::unexpected(c.error());
             }
 
             if (*c == Terminator) {
@@ -251,10 +247,10 @@ struct terminated_string : public internal::type {
         }
 
         if (ran_out_of_output) {
-            return {std::unexpected(okser::error_type::not_enough_output_bytes), context};
+            return std::unexpected(okser::error_type::not_enough_output_bytes);
         }
 
-        return {output, context};
+        return output;
     }
 };
 

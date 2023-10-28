@@ -54,13 +54,13 @@ TEST_CASE("stdstring input") {
         okser::in::range in{string};
         okser::result<uint8_t> value;
 
-        std::tie(value, in) = in.get();
+        value = in.get();
         CHECK(*value == 0x70);
 
-        std::tie(value, in) = in.get();
+        value = in.get();
         CHECK(*value == 0xAF);
 
-        std::tie(value, in) = in.get();
+        value = in.get();
         CHECK_FALSE(value);
     }
 
@@ -69,7 +69,7 @@ TEST_CASE("stdstring input") {
 
         {
             okser::in::range in{string};
-            auto [success_array, _] = in.get<2>();
+            auto success_array = in.get<2>();
 
             CHECK(success_array->at(0) == 0x70);
             CHECK(success_array->at(1) == 0xAF);
@@ -77,14 +77,14 @@ TEST_CASE("stdstring input") {
 
         {
             okser::in::range in{string};
-            auto [fail_array, _] = in.get<3>();
+            auto fail_array = in.get<3>();
 
             CHECK_FALSE(fail_array);
         }
 
         {
             okser::in::range in{string};
-            auto [small_array, _] = in.get<1>();
+            auto small_array = in.get<1>();
 
             CHECK(small_array->at(0) == 0x70);
         }
@@ -95,7 +95,7 @@ TEST_CASE("stdstring input") {
 
         {
             okser::in::range in{string};
-            auto [success_string, _] = in.get<std::string>(2);
+            auto success_string = in.get<std::string>(2);
 
             CHECK(success_string);
             CHECK_THAT(*success_string, Equals(string));

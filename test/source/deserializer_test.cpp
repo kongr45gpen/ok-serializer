@@ -150,10 +150,6 @@ TEST_CASE("static-time deserialization") {
         constexpr okser::in::range<std::string_view> in(str);
         using Bundle = okser::bundle<okser::uint<2, okser::end::le>>;
 
-        constexpr auto output_tuple = in.get();
-        CHECK(output_tuple.first.has_value());
-        CHECK(output_tuple.first.value() == 0xB0);
-
         constexpr auto output = okser::deserialize<Bundle, std::tuple<uint16_t>>(in);
         CHECK(std::get<0>(*output) == 17328);
     }
