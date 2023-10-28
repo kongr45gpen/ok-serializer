@@ -67,7 +67,7 @@ concept Input = requires(T t)
 template<typename T>
 concept Serializer = requires(typename T::DefaultType v, internal::DummyInOut o)
 {
-    T::serialize(v, o);
+    T::serialize(o, v);
 };
 
 /**

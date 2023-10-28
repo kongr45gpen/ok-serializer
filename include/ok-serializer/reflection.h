@@ -68,7 +68,7 @@ constexpr void serialize_struct(Out &&output, const T &object) {
 
         using serializer = default_serializers<type, populated_config>::ser;
 
-        serializer::serialize(value, output);
+        serializer::serialize(output, value);
     });
 }
 

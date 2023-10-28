@@ -42,7 +42,7 @@ struct uint : public internal::type {
     using DefaultType = okser::internal::uint_bytes_to_type<Bytes>;
 
     template<typename V, Output Out>
-    constexpr static void serialize(const V &v, Out &&o) {
+    constexpr static void serialize(Out &&o, const V &v) {
         if constexpr (Endianness == end::le) {
             for (int i = 0; i < Bytes; i++) {
                 o.add(static_cast<uint8_t>((v >> (8 * i)) & 0xFFU));
@@ -91,10 +91,10 @@ struct sint : public internal::type {
     using DefaultType = std::make_signed_t<okser::internal::uint_bytes_to_type<Bytes>>;
 
     template<typename V, Output Out>
-    static void serialize(const V &v, Out &&o) {
+    static void serialize(Out &&o, const V &v) {
         using Unsigned = std::make_unsigned_t<V>;
         Unsigned u = std::bit_cast<Unsigned>(v);
-        uint<Bytes, Endianness>::serialize(u, o);
+        uint<Bytes, Endianness>::serialize(o, u);
     }
 
     template<typename V, InputContext Context>
@@ -122,12 +122,12 @@ struct floatp : public internal::type {
 
     template<typename V, Output Out>
     requires(std::is_floating_point_v<V>)
-    static void serialize(const V &v, Out &&o) {
+    static void serialize(Out &&o, const V &v) {
         using Unsigned = std::conditional_t<Bytes == 4, uint32_t, uint64_t>;
 
         Unsigned u = std::bit_cast<Unsigned>(static_cast<DefaultType>(v));
 
-        uint<Bytes, Endianness>::serialize(u, o);
+        uint<Bytes, Endianness>::serialize(o, u);
     }
 
     template<typename V = DefaultType, InputContext Context>
@@ -176,8 +176,8 @@ public:
     using DefaultType = Enum;
 
     template<Output Out>
-    static void serialize(const Enum &e, Out &&o) {
-        uint<Bytes, Endianness>::serialize(static_cast<Underlying>(e), o);
+    static void serialize(Out &&o, const Enum &e) {
+        uint<Bytes, Endianness>::serialize(o, static_cast<Underlying>(e));
     }
 
     template<typename E = Enum, InputContext Context>
@@ -198,7 +198,7 @@ struct terminated_string : public internal::type {
     using DefaultType = std::string;
 
     template<std::ranges::input_range S, Output Out>
-    static void serialize(const S &string, Out &&o) {
+    static void serialize(Out &&o, const S &string) {
         for (const auto &c: string) {
             o.add(c);
         }

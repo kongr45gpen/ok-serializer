@@ -13,8 +13,8 @@ namespace internal {
  * @param o The output
  */
 template<class Pair, Output Out>
-constexpr void serialize_one(Pair p, Out &&o) {
-    Pair::SerializerType::serialize(p.value, o);
+constexpr void serialize_one(Out &&o, Pair p) {
+    Pair::SerializerType::serialize(o, p.value);
 }
 
 /**

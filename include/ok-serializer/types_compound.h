@@ -44,7 +44,7 @@ public:
         std::tuple<serializable_value<Types, Values>...> typeValues{values...};
 
         std::apply(
-                [&output](auto &&...v) { ((internal::serialize_one(v, output)), ...); },
+                [&output](auto &&...v) { ((internal::serialize_one(output, v)), ...); },
                 typeValues);
     }
 
@@ -103,9 +103,9 @@ public:
 
     template<Output Out, typename Value>
     requires(Serializer<T>)
-    constexpr static void serialize(const Value &value, Out &&output) {
+    constexpr static void serialize(Out &&output, const Value &value) {
         for (int i = 0; i < N; i++) {
-            T::template serialize<Value, Out>(value, output);
+            T::template serialize<Value, Out>(output, value);
         }
     }
 
