@@ -12,9 +12,9 @@ namespace internal {
  * @param p The serializable_value
  * @param o The output
  */
-template<class Pair, Output Out>
-constexpr void serialize_one(Out &&o, Pair p) {
-    Pair::SerializerType::serialize(o, p.value);
+template<class Pair, OutputContext Context>
+constexpr void serialize_one(Context &&out, Pair p) {
+    Pair::SerializerType::serialize(out, p.value);
 }
 
 /**

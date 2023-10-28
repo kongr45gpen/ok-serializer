@@ -38,10 +38,10 @@ public:
     using TypesTuple = std::tuple<Types...>;
     using DefaultType = std::tuple<typename Types::DefaultType...>;
 
-    template<Output Out, typename... Values>
+    template<OutputContext Context, typename... Values>
     requires (Serializer<Types>, ...)
 
-    constexpr static empty_result serialize(Out &&output, Values... values) {
+    constexpr static empty_result serialize(Context &&output, Values... values) {
         std::tuple<serializable_value<Types, Values>...> typeValues{values...};
 
         std::apply(
@@ -61,7 +61,6 @@ public:
 
         // Loop through all elements of the tuple at compile time
         auto values = internal::apply([&in](const auto i) {
-
             // i cannot be defined as `constexpr`, so its value (i.e. the loop index)
             // is stored in a class type (std::integral_constant). Here we fetch the
             // loop index from this type, and store it in a constexpr variable.
@@ -105,11 +104,11 @@ class redundant {
 public:
     using DefaultType = typename T::DefaultType;
 
-    template<Output Out, typename Value>
+    template<OutputContext Context, typename Value>
     requires(Serializer<T>)
-    constexpr static void serialize(Out &&output, const Value &value) {
+    constexpr static void serialize(Context &&output, const Value &value) {
         for (int i = 0; i < N; i++) {
-            T::template serialize<Value, Out>(output, value);
+            T::template serialize<Value, Context>(output, value);
         }
     }
 

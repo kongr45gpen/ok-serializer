@@ -65,7 +65,7 @@ concept Input = requires(T t)
  * \endcode
  */
 template<typename T>
-concept Serializer = requires(typename T::DefaultType v, internal::DummyInOut o)
+concept Serializer = requires(typename T::DefaultType v, internal::DummyContext o)
 {
     T::serialize(o, v);
 };

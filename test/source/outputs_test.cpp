@@ -35,6 +35,17 @@ TEST_CASE("fixed-size output") {
         CHECK(result.error()() == okser::error_type::not_enough_output_bytes);
         CHECK_THAT(string, Equals("hiy"));
     }
+
+    SECTION("bundle outside range") {
+        std::string string = "   ";
+
+        auto result = okser::serialize<okser::bundle<okser::uint<2>, okser::uint<2>>>(
+                okser::out::fixed_container(string), 0x6869, 0x7961);
+
+        CHECK(!result);
+        CHECK(result.error()() == okser::error_type::not_enough_output_bytes);
+        CHECK_THAT(string, Equals("hiy"));
+    }
 }
 
 TEST_CASE("stdstring input") {

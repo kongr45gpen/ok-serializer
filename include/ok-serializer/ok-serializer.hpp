@@ -28,7 +28,8 @@ namespace okser {
  */
 template<class Bundle, Output Out, typename... Values>
 [[nodiscard]] constexpr empty_result serialize(Out &&output, Values... values) {
-    return Bundle::serialize(output, values...);
+    auto context = output_context(std::forward<Out>(output));
+    return Bundle::serialize(context, values...);
 }
 
 /**
@@ -77,7 +78,9 @@ constexpr result<Tuple> deserialize(In &&input) {
 template<Serializer... Types, typename... Values, class String = std::string>
 constexpr String serialize_to_string(Values... values) {
     String string;
-    [[maybe_unused]] auto status = bundle<Types...>::serialize(out::dynamic(string), values...);
+    auto context = output_context(out::dynamic(string));
+    [[maybe_unused]] auto status = bundle<Types...>::template serialize<decltype(context), Values...>(
+            std::move(context), values...);
     return string;
 }
 

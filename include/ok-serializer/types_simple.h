@@ -41,11 +41,11 @@ template<int Bytes, end Endianness = end::be> requires (Bytes > 0 && Bytes <= 8)
 struct uint : public internal::type {
     using DefaultType = okser::internal::uint_bytes_to_type<Bytes>;
 
-    template<typename V, Output Out>
-    constexpr static empty_result serialize(Out &&o, const V &v) {
+    template<typename V, OutputContext Context>
+    constexpr static empty_result serialize(Context &&out, const V &v) {
         if constexpr (Endianness == end::le) {
             for (int i = 0; i < Bytes; i++) {
-                auto result = o.add(static_cast<uint8_t>((v >> (8 * i)) & 0xFFU));
+                auto result = out->add(static_cast<uint8_t>((v >> (8 * i)) & 0xFFU));
 
                 if (!result) {
                     return result;
@@ -53,7 +53,7 @@ struct uint : public internal::type {
             }
         } else {
             for (int i = 0; i < Bytes; i++) {
-                auto result = o.add(static_cast<uint8_t>((v >> (8 * (Bytes - i - 1))) & 0xFFU));
+                auto result = out->add(static_cast<uint8_t>((v >> (8 * (Bytes - i - 1))) & 0xFFU));
 
                 if (!result) {
                     return result;
@@ -100,11 +100,11 @@ template<int Bytes, end Endianness = end::be>
 struct sint : public internal::type {
     using DefaultType = std::make_signed_t<okser::internal::uint_bytes_to_type<Bytes>>;
 
-    template<typename V, Output Out>
-    static empty_result serialize(Out &&o, const V &v) {
+    template<typename V, OutputContext Context>
+    static empty_result serialize(Context &&out, const V &v) {
         using Unsigned = std::make_unsigned_t<V>;
         Unsigned u = std::bit_cast<Unsigned>(v);
-        return uint<Bytes, Endianness>::serialize(o, u);
+        return uint<Bytes, Endianness>::serialize(out, u);
     }
 
     template<typename V, InputContext Context>
@@ -130,14 +130,14 @@ template<int Bytes = 4, end Endianness = end::be> requires (Bytes == 4 || Bytes 
 struct floatp : public internal::type {
     using DefaultType = std::conditional_t<Bytes == 4, float, double>;
 
-    template<typename V, Output Out>
+    template<typename V, OutputContext Context>
     requires(std::is_floating_point_v<V>)
-    static empty_result serialize(Out &&o, const V &v) {
+    static empty_result serialize(Context &&out, const V &v) {
         using Unsigned = std::conditional_t<Bytes == 4, uint32_t, uint64_t>;
 
         Unsigned u = std::bit_cast<Unsigned>(static_cast<DefaultType>(v));
 
-        return uint<Bytes, Endianness>::serialize(o, u);
+        return uint<Bytes, Endianness>::serialize(out, u);
     }
 
     template<typename V = DefaultType, InputContext Context>
@@ -185,9 +185,9 @@ protected:
 public:
     using DefaultType = Enum;
 
-    template<Output Out>
-    static empty_result serialize(Out &&o, const Enum &e) {
-        return uint<Bytes, Endianness>::serialize(o, static_cast<Underlying>(e));
+    template<OutputContext Context>
+    static empty_result serialize(Context &&out, const Enum &e) {
+        return uint<Bytes, Endianness>::serialize(out, static_cast<Underlying>(e));
     }
 
     template<typename E = Enum, InputContext Context>
@@ -207,14 +207,16 @@ template<uint8_t Terminator = 0>
 struct terminated_string : public internal::type {
     using DefaultType = std::string;
 
-    template<std::ranges::input_range S, Output Out>
-    static empty_result serialize(Out &&o, const S &string) {
+    template<std::ranges::input_range S, OutputContext Context>
+    static empty_result serialize(Context &&out, const S &string) {
         for (const auto &c: string) {
-            if (auto result = o.add(c); !result) {
+            if (auto result = out->add(c); !result) {
                 return result;
             }
         }
-        return o.add('\0');
+
+        auto result = out->add('\0');
+        return result;
     }
 
     template<std::ranges::range S, InputContext Context>
