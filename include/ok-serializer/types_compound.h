@@ -97,6 +97,103 @@ public:
     }
 };
 
+template<typename T, typename Size = okser::uint<1>>
+class length_prefixed_vector {
+public:
+    using DefaultType = std::vector<typename T::DefaultType>;
+
+    template<OutputContext Context, std::ranges::range Range>
+    requires(Serializer<T>)
+    constexpr static empty_result serialize(Context &&output, const Range &range) {
+        auto size = std::ranges::size(range);
+
+        if (size > std::numeric_limits<typename Size::DefaultType>::max()) {
+            return std::unexpected(okser::error_type::overflow);
+        }
+
+        if (auto result = Size::serialize(output, size); !result) {
+            return result;
+        }
+
+        for (const auto &r: range) {
+            if (auto result = T::serialize(output, r); !result) {
+                return result;
+            }
+        }
+
+        return {};
+    }
+
+    template<std::ranges::range Range, InputContext Context>
+    requires Deserializer<Size>
+    constexpr static okser::result<Range> deserialize(Context &context) {
+        using ValueType = typename Range::value_type;
+
+        auto size = Size::template deserialize<size_t>(context);
+
+        if (!size) {
+            return std::unexpected(size.error());
+        }
+
+        if (size == std::numeric_limits<size_t>::max()) {
+            return std::unexpected(okser::error_type::overflow);
+        }
+
+        // TODO: It might be possible to preallocate the output
+        Range output = Range();
+        auto it = okser::internal::get_fixed_or_dynamic_iterator<Range>(output);
+
+        if constexpr (!internal::dynamic_range<Range>) {
+            if (size.value() > std::ranges::size(output)) {
+                return std::unexpected(okser::error_type::not_enough_output_bytes);
+            }
+        }
+
+        for (size_t i = 0; i < *size; i++) {
+            auto v = T::template deserialize<ValueType>(context);
+
+            if (!v) {
+                // Error returned by input, return it and stop processing
+                return std::unexpected(v.error());
+            }
+
+            *it = *v;
+            it++;
+        }
+
+        return output;
+    }
+};
+
+/**
+ * A string prefixed by its number of bytes
+ * @ingroup simple_types
+ * @tparam Size a Serializer or Deserializer for the field representing the size of the string
+ */
+template<class Size = okser::uint<1>>
+struct pascal_string : public internal::type {
+    using DefaultType = std::string;
+
+    template<std::ranges::input_range S, OutputContext Context>
+    requires Serializer<Size>
+    constexpr static empty_result serialize(Context &&out, const S &string) {
+        return length_prefixed_vector<charp, Size>::serialize(out, string);
+    }
+
+    template<std::ranges::range S = DefaultType, InputContext Context>
+    requires Deserializer<Size>
+    constexpr static okser::result<S> deserialize(Context &context) {
+        return length_prefixed_vector<charp, Size>::template deserialize<S>(context);
+    }
+};
+
+/**
+ * A fixed-size array of identical values.
+ *
+ * Serialization just repeats the same value N times.
+ *
+ * Deserialization fails if any of the values does not match.
+ */
 template<class T, int N> requires (N >= 1)
 class redundant {
 public:

@@ -84,4 +84,12 @@ constexpr String serialize_to_string(Values... values) {
     return string;
 }
 
+template<Serializer OneType, typename OneValue, class String = std::array<char, 256>>
+constexpr String serialize_one_fixed(OneValue value) {
+    String string = String();
+    auto context = output_context(out::fixed_container(string));
+    [[maybe_unused]] auto status = OneType::template serialize<OneValue, decltype(context)>(std::move(context), value);
+    return string;
+}
+
 } // namespace okser

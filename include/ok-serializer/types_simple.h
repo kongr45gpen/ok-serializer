@@ -106,20 +106,27 @@ struct sint : public internal::type {
     using DefaultType = std::make_signed_t<okser::internal::uint_bytes_to_type<Bytes>>;
 
     template<typename V, OutputContext Context>
-    static empty_result serialize(Context &&out, const V &v) {
+    constexpr static empty_result serialize(Context &&out, const V &v) {
         using Unsigned = std::make_unsigned_t<V>;
         Unsigned u = std::bit_cast<Unsigned>(v);
         return uint<Bytes, Endianness>::serialize(out, u);
     }
 
     template<typename V, InputContext Context>
-    static okser::result<V> deserialize(Context &context) {
+    constexpr static okser::result<V> deserialize(Context &context) {
         using Unsigned = std::make_unsigned_t<V>;
 
         auto value = uint<Bytes, Endianness>::template deserialize<Unsigned>(context);
         return value.transform(std::bit_cast<V, Unsigned>);
     }
 };
+
+/**
+ * A single byte
+ * @ingroup simple_types
+ * @todo Investigate signedness
+ */
+using charp = sint<1>;
 
 /**
  * IEEE 754 floating point number
@@ -430,76 +437,5 @@ struct terminated_string : public internal::type {
  * @ingroup simple_types
  */
 using null_string = terminated_string<>;
-
-
-/**
- * A string prefixed by its number of bytes
- * @ingroup simple_types
- * @tparam Size a Serializer or Deserializer for the field representing the size of the string
- */
-template<class Size = okser::uint<1>>
-struct pascal_string : public internal::type {
-    using DefaultType = std::string;
-
-    template<std::ranges::input_range S, OutputContext Context>
-    requires Serializer<Size>
-    static empty_result serialize(Context &&out, const S &string) {
-        auto size = std::ranges::size(string);
-
-        if (size > std::numeric_limits<typename Size::DefaultType>::max()) {
-            return std::unexpected(okser::error_type::overflow);
-        }
-
-        if (auto result = Size::serialize(out, size); !result) {
-            return result;
-        }
-
-        for (const auto &c: string) {
-            if (auto result = out->add(c); !result) {
-                return result;
-            }
-        }
-
-        return {};
-    }
-
-    template<std::ranges::range S, InputContext Context>
-    requires Deserializer<Size>
-    static okser::result<S> deserialize(Context &context) {
-        auto size = Size::template deserialize<size_t>(context);
-
-        if (!size) {
-            return std::unexpected(size.error());
-        }
-
-        if (size == std::numeric_limits<size_t>::max()) {
-            return std::unexpected(okser::error_type::overflow);
-        }
-
-        // TODO: It might be possible to preallocate the output
-        S output = S();
-        auto it = okser::internal::get_fixed_or_dynamic_iterator<S>(output);
-
-        if constexpr (!internal::dynamic_range<S>) {
-            if (size.value() > std::ranges::size(output)) {
-                return std::unexpected(okser::error_type::not_enough_output_bytes);
-            }
-        }
-
-        for (size_t i = 0; i < *size; i++) {
-            auto c = context->get();
-
-            if (!c) {
-                // Error returned by input, return it and stop processing
-                return std::unexpected(c.error());
-            }
-
-            *it = *c;
-            it++;
-        }
-
-        return output;
-    }
-};
 
 } // namespace okser

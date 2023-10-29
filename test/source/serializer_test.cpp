@@ -1,8 +1,10 @@
 #include <catch2/catch_test_macros.hpp>
 #include <catch2/matchers/catch_matchers_string.hpp>
+#include <catch2/matchers/catch_matchers_range_equals.hpp>
 #include "ok-serializer/ok-serializer.hpp"
 
 using Catch::Matchers::Equals;
+using Catch::Matchers::RangeEquals;
 using namespace std::string_literals;
 
 TEST_CASE("uint encoding") {
@@ -192,6 +194,31 @@ TEST_CASE("pascal string encoding") {
     SECTION("large string with varint size") {
         auto out = okser::serialize_to_string<okser::pascal_string<okser::varint>>(large_string);
         CHECK_THAT(out, Equals("\xCB\x03"s + large_string));
+    }
+
+    SECTION("weird string") {
+        std::string weird_string = "\xAF\xFF\x00\xBC\x7F"s;
+
+        auto out = okser::serialize_to_string<okser::pascal_string<okser::varint>>(weird_string);
+        CHECK_THAT(out, Equals("\x05"s + weird_string));
+    }
+
+    SECTION("compile-time encoding") {
+        constexpr const std::string_view string = "lalala";
+
+        constexpr const auto out = okser::serialize_one_fixed<okser::pascal_string<okser::uint<1>>, std::string_view, std::array<uint8_t, 7>>(
+                string);
+
+        CHECK_THAT(out, RangeEquals("\x06lalala"s));
+    }
+}
+
+TEST_CASE("length-prefixed array encoding") {
+    std::vector<int16_t> vector = {15, 199, 266, -999};
+
+    SECTION("vector encoding") {
+        auto out = okser::serialize_to_string<okser::length_prefixed_vector<okser::sint<2, okser::end::be>>>(vector);
+        CHECK_THAT(out, Equals("\x04\x00\x0F\x00\xC7\x01\x0A\xFC\x19"s));
     }
 }
 

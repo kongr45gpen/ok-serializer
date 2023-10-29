@@ -203,7 +203,7 @@ private:
     typename C::iterator current;
     typename C::const_iterator last;
 public:
-    explicit fixed_container(C &container) : current(container.begin()), last(container.end()) {}
+    explicit constexpr fixed_container(C &container) : current(container.begin()), last(container.end()) {}
 
     /**
      * Add a single byte to the output
@@ -211,7 +211,7 @@ public:
      * @param value
      */
     template<typename T>
-    empty_result add(const T &value) {
+    constexpr empty_result add(const T &value) {
         if (current == last) {
             return std::unexpected(error_type::not_enough_output_bytes);
         }

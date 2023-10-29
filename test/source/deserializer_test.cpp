@@ -246,6 +246,13 @@ TEST_CASE("pascal string decoding") {
         REQUIRE_FALSE(result);
         CHECK(result.error().type == okser::error_type::not_enough_output_bytes);
     }
+
+    SECTION("weird string") {
+        std::string weird_string = "\xAF\xFF\x00\xBC\x7F"s;
+
+        auto result = okser::deserialize<okser::pascal_string<>>("\x05"s + weird_string);
+        CHECK_THAT(*result, Equals(weird_string));
+    }
 }
 
 TEST_CASE("bundle decoding") {
