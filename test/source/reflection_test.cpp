@@ -115,6 +115,12 @@ TEST_CASE("json types") {
         result = okser::serialize_to_string<okser::json::array<>>(std::make_pair(1, false));
         CHECK_THAT(result, Equals(R"([1, false])"s));
     }
+
+    SECTION("object") {
+        ThreeByteStructure object{119, 86};
+        auto result = okser::serialize_to_string<okser::json::object<>>(object);
+        CHECK_THAT(result, Equals(R"({"a": 119, "b": 86})"s));
+    }
 }
 
 #endif

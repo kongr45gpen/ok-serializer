@@ -179,6 +179,60 @@ public:
     }
 };
 
+template<class Configuration = json_configuration>
+struct object : public okser::internal::type {
+    using DefaultType = struct {
+    };
+
+#if __cpp_reflection >= 201902L
+
+    /**
+     * @todo Error handling
+     */
+    template<class S, OutputContext Context>
+    constexpr static empty_result serialize(Context &&output, const S &object) {
+        using namespace std::string_view_literals;
+
+        auto mirrored_struct = mirror(S);
+
+        output->add('{');
+
+        // TODO: This is an inexcusable hack to get the last element
+        size_t last_id = 0;
+        for_each(get_data_members(mirrored_struct), [&last_id](auto member) {
+            last_id = get_id(member);
+        });
+
+        for_each(get_data_members(mirrored_struct), [&](auto member) {
+            const auto &name = get_name(member);
+
+            string::serialize(output, name);
+
+            output->add(": "sv);
+
+            const auto &value = get_value(member, object);
+            using type = std::remove_cvref_t<decltype(value)>;
+
+            using serializer = Configuration::template default_serializers<type>::ser;
+            auto result = serializer::template serialize(output, value);
+
+            if (get_id(member) != last_id) {
+                output->add(", "sv);
+            }
+        });
+
+        return output->add('}');
+    }
+
+#else
+    template<class S, OutputContext Context>
+    constexpr static empty_result serialize(Context &&output, const S &object) {
+        // not implemented without reflection
+        return {};
+    }
+#endif
+};
+
 struct json_configuration : okser::configuration<> {
     template<class T>
     struct default_serializers;
