@@ -111,6 +111,9 @@ TEST_CASE("json types") {
 
         result = okser::serialize_to_string<okser::json::array<>>(std::vector<std::string>{"toast"s, "is"s, "nice"s});
         CHECK_THAT(result, Equals(R"(["toast", "is", "nice"])"s));
+
+        result = okser::serialize_to_string<okser::json::array<>>(std::make_pair(1, false));
+        CHECK_THAT(result, Equals(R"([1, false])"s));
     }
 }
 

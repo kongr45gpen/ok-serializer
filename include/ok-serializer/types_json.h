@@ -99,6 +99,14 @@ struct string : public okser::internal::type {
 
 template<class Configuration = json_configuration>
 struct array : public okser::internal::type {
+private:
+    template<class Type, OutputContext Context>
+    constexpr static empty_result serialize_element(Context &&output, const Type &value) {
+        using Serializer = typename Configuration::template default_serializers<Type>::ser;
+        return Serializer::template serialize(output, value);
+    }
+
+public:
     using DefaultType = std::string;
 
     /**
@@ -115,9 +123,8 @@ struct array : public okser::internal::type {
 
         for (auto it = range.cbegin(); it != range.cend(); it++) {
             using Type = std::remove_cvref_t<std::ranges::range_value_t<R>>;
-            using Serializer = typename Configuration::template default_serializers<Type>::ser;
 
-            if (auto result = Serializer::template serialize(output, *it); !result) {
+            if (auto result = serialize_element<Type>(output, *it); !result) {
                 return result;
             }
 
@@ -127,6 +134,46 @@ struct array : public okser::internal::type {
                 }
             }
         }
+
+        return output->add(']');
+    }
+
+    template<class T, OutputContext Context>
+    requires(!std::ranges::range<T>)
+    constexpr static empty_result serialize(Context &&output, const T &tuple) {
+        using namespace std::string_view_literals;
+
+        if (auto result = output->add('['); !result) {
+            return result;
+        }
+
+//        std::apply([&output](auto&&... args) {((serialize_element(output, args), output->add(", "sv)), ...);}, tuple);
+        // TODO: Handle errors
+        internal::apply([&output, &tuple](const auto i) -> empty_result {
+            constexpr auto Index = decltype(i)::value;
+            using Type = std::tuple_element_t<Index, T>;
+
+            if (output.error) {
+                return std::unexpected(*(output.error));
+            }
+
+            auto value = serialize_element<Type>(output, std::get<Index>(tuple));
+
+            if (!value) {
+                output.error = value.error();
+                return value;
+            }
+
+            //TODO: replace with value.and_then
+            if (i != std::tuple_size_v<T> - 1) {
+                value = output->add(", "sv);
+                if (!value) {
+                    output.error = value.error();
+                }
+            }
+
+            return value;
+        }, std::make_index_sequence<std::tuple_size_v<T>>());
 
         return output->add(']');
     }
