@@ -100,6 +100,26 @@ TEST_CASE("enum encoding") {
     }
 }
 
+TEST_CASE("varint encoding") {
+    SECTION("1-byte varint") {
+        // protobuf.dev example
+        auto out = okser::serialize_to_string<okser::varint>(1u);
+        CHECK_THAT(out, Equals("\x01"));
+    }
+
+    SECTION("2-byte varint") {
+        // protobuf.dev example
+        auto out = okser::serialize_to_string<okser::varint>(150u);
+        CHECK_THAT(out, Equals("\x96\x01"));
+    }
+
+    SECTION("10-byte varint") {
+        // tested with python3 construct
+        auto out = okser::serialize_to_string<okser::varint>(13183555200652522417U);
+        CHECK_THAT(out, Equals("\xB1\xE7\x96\x9D\xB0\xB3\xD9\xFA\xB6\x01"));
+    }
+}
+
 TEST_CASE("null-terminated string encoding") {
     SECTION("fixed string serialisation") {
         std::array<uint8_t, 5> fixed_string = {'T', 'o', 'a', 's', 't'};

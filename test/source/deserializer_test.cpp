@@ -57,6 +57,68 @@ TEST_CASE("uint decoding") {
     }
 }
 
+TEST_CASE("varint decoding") {
+    SECTION("1-byte varint") {
+        // protobuf.dev example
+        std::string str = "\x01";
+        auto number = okser::deserialize<okser::varint>(str);
+
+        REQUIRE(number);
+        CHECK(number == 1);
+    }
+
+    SECTION("2-byte varint") {
+        // protobuf.dev example
+        std::string str = "\x96\x01";
+        auto number = okser::deserialize<okser::varint>(str);
+
+        REQUIRE(number);
+        CHECK(number == 150);
+    }
+
+    SECTION("10-byte varint") {
+        // tested with python3 construct
+        std::string str = "\xB1\xE7\x96\x9D\xB0\xB3\xD9\xFA\xB6\x01";
+        auto number = okser::deserialize<okser::varint>(str);
+
+        REQUIRE(number);
+        CHECK(number == 13183555200652522417U);
+    }
+
+    SECTION("varint that barely fits") {
+        std::string str = "\xFE\xFF\x03";
+        auto number = okser::deserialize<okser::varint, uint16_t>(str);
+
+        REQUIRE(number);
+        CHECK(number == 65534);
+    }
+
+    SECTION("varint that barely doesn't fit") {
+        // Encoding of 2**32 + 3
+        std::string str = "\x83\x80\x80\x80\x10";
+        auto number = okser::deserialize<okser::varint, uint32_t>(str);
+
+        REQUIRE_FALSE(number);
+        CHECK(number.error().type == okser::error_type::overflow);
+    }
+
+    SECTION("varint that doesn't fit") {
+        std::string str = "\x83\x80\x80\x80\x10";
+        auto number = okser::deserialize<okser::varint, uint8_t>(str);
+
+        REQUIRE_FALSE(number);
+        CHECK(number.error().type == okser::error_type::overflow);
+    }
+
+    SECTION("malicious varint") {
+        std::string str = "\xFF\xFF\xFF\xFF\xFF\xFF\xFF\xFF\xFF\xFF";
+        auto number = okser::deserialize<okser::varint>(str);
+
+        REQUIRE_FALSE(number);
+        CHECK(number.error().type == okser::error_type::malformed_input);
+    }
+}
+
 TEST_CASE("null-terminated string decoding") {
     std::string str = "Burgebrach\0"s;
 

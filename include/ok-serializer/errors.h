@@ -11,6 +11,8 @@ enum class error_type : uint8_t {
     not_enough_input_bytes,
     not_enough_output_bytes,
     io_error,
+    malformed_input,
+    overflow,
     redundant_mismatch
 };
 

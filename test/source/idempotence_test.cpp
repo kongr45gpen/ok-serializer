@@ -51,5 +51,24 @@ TEST_CASE("floatp idempotence") {
         REQUIRE(result.has_value());
         CHECK_THAT(i, WithinRel(*result));
     }
+}
 
+TEST_CASE("varint idempotence") {
+    SECTION("uint64_t") {
+        auto i = GENERATE(take(1000, random < uint64_t > (0, std::numeric_limits<uint64_t>::max())));
+
+        auto str = serialize_to_string<okser::varint>(i);
+        auto result = deserialize<okser::varint>(str);
+
+        CHECK(i == *result);
+    }
+
+    SECTION("uint16_t") {
+        auto i = GENERATE(take(1000, random < uint16_t > (0, std::numeric_limits<uint16_t>::max())));
+
+        auto str = serialize_to_string<okser::varint>(i);
+        auto result = deserialize<okser::varint>(str);
+
+        CHECK(i == *result);
+    }
 }

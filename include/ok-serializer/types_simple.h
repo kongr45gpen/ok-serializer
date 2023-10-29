@@ -6,6 +6,10 @@
 #include "utils_early.h"
 #include "context.h"
 
+/**
+ * @defgroup simple_types Simple Types
+ */
+
 namespace okser {
 /**
  * Enum to represent endianness
@@ -34,6 +38,7 @@ class type {
 
 /**
  * Unsigned integer type
+ * @ingroup simple_types
  * @tparam Bytes The number of bytes in the binary representation of the integer
  * @tparam Endianness
  */
@@ -92,6 +97,7 @@ struct uint : public internal::type {
  *
  * Implemented using 2's complement
  *
+ * @ingroup simple_types
  * @tparam Bytes The number of bytes in the binary representation of the integer
  * @tparam Endianness
  */
@@ -119,6 +125,7 @@ struct sint : public internal::type {
 
 /**
  * IEEE 754 floating point number
+ * @ingroup simple_types
  * @tparam Bytes The number of bytes in the binary representation of the number,
  *               either 4 (single-precision, equivalent to C's `float`), or 8
  *               (double-precision, equivalent to C's `double`)
@@ -156,6 +163,79 @@ template<end Endianness = end::be>
 using doublep = floatp<8, Endianness>;
 
 /**
+ * A variable-width integer (varint) as specified by Google's Protocol Buffers
+ *
+ * Variable-width integers allow encoding integers of arbitrary size, with small values using fewer bytes.
+ * Each byte encodes 7 bits of the number, and the 8th bit is used to indicate whether the number continues.
+ *
+ * See https://protobuf.dev/programming-guides/encoding/#varints for implementation details.
+ *
+ * Varints are always encoded with big endianness.
+ *
+ * @ingroup simple_types
+ * @todo Implement signed protobuf implementation
+ */
+struct varint : public internal::type {
+    using DefaultType = uint64_t;
+
+    template<typename V, OutputContext Context>
+    requires(std::is_integral_v<V> && std::is_unsigned_v<V> && sizeof(V) <= 8)
+    static constexpr empty_result serialize(Context &&out, V v) {
+        for (int i = 0; i < 10; i++) {
+            auto byte = static_cast<uint8_t>(v & 0b0111'1111);
+            v >>= 7;
+
+            if (v != 0) {
+                byte |= 0b1000'0000;
+            }
+
+            if (auto result = out->add(byte); !result) {
+                return result;
+            }
+
+            if (v == 0) {
+                break;
+            }
+        }
+
+        return {};
+    }
+
+    template<typename V = DefaultType, InputContext Context>
+    requires(std::is_integral_v<V> && std::is_unsigned_v<V> && sizeof(V) <= 8)
+    static constexpr okser::result<V> deserialize(Context &context) {
+        V value = 0;
+
+        // Must keep an upper bound on number of bytes read to prevent reading out-of-bounds
+        for (uint32_t i = 0; i < 10; i++) {
+            auto byte = context->get();
+
+            if (!byte) {
+                return std::unexpected(byte.error());
+            }
+
+            if (i == 9 && (*byte & 0b1000'0000) != 0) [[unlikely]] {
+                return std::unexpected(okser::error_type::malformed_input);
+            }
+
+            uint8_t clear_byte = *byte & 0b0111'1111;
+
+            if (std::bit_width(clear_byte) + i * 7 > std::numeric_limits<V>::digits) {
+                return std::unexpected(okser::error_type::overflow);
+            }
+
+            value |= static_cast<V>(clear_byte) << (7 * i);
+
+            if (!(*byte & 0b1000'0000)) {
+                break;
+            }
+        }
+
+        return value;
+    }
+};
+
+/**
  * Enumeration value
  *
  * This class provides a convenient translation from an enum to an integer, without the need to
@@ -164,6 +244,7 @@ using doublep = floatp<8, Endianness>;
  * The enumeration value is first converted to its scalar underlying type, and then serialized as
  * a normal number.
  *
+ * @ingroup simple_types
  * @todo Check what happens with negative enum values
  * @todo Check what happens when bytes < sizeof(Enum)
  *
@@ -174,7 +255,7 @@ using doublep = floatp<8, Endianness>;
  */
 template<typename Enum, int Bytes = sizeof(std::underlying_type<Enum>), end Endianness = end::be> requires (Bytes > 0 &&
                                                                                                             Bytes <=
-                                                                                                            8 &&
+                                                                                                                    8 &&
                                                                                                             std::is_enum_v<Enum>)
 struct enumv : public internal::type {
 protected:
@@ -198,6 +279,7 @@ public:
 
 /**
  * A null-terminated string
+ * @ingroup simple_types
  * @tparam Terminator Allows overriding the default terminator character, which is `\0`
  */
 template<uint8_t Terminator = 0>
