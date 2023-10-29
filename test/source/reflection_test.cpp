@@ -6,6 +6,7 @@
 #include "ok-serializer/reflection.h"
 
 using Catch::Matchers::Equals;
+using namespace std::string_literals;
 
 struct ThreeByteStructure { 
     uint8_t a; 
@@ -35,9 +36,17 @@ TEST_CASE("struct decoding") {
     }
 }
 
+struct my_configuration : public okser::configuration<okser::end::le> {
+    template<class T>
+    struct default_serializers {
+        using ser = okser::uint<4>;
+        using deser = okser::uint<4>;
+    };
+};
+
 TEST_CASE("configuration") {
     SECTION("big endian") {
-        constexpr struct { okser::end endianness = okser::end::be; } config;
+        constexpr auto config = okser::configuration<okser::end::be>();
 
         auto result = okser::serialize_struct_to_string<ThreeByteStructure, config>({119, -9153});
 
@@ -47,13 +56,25 @@ TEST_CASE("configuration") {
     }
 
     SECTION("little endian") {
-        constexpr struct { okser::end endianness = okser::end::le; } config;
+        constexpr auto config = okser::configuration<okser::end::le>();
 
         auto result = okser::serialize_struct_to_string<ThreeByteStructure, config>({119, -9153});
 
         CHECK(result[0] == 119);
         CHECK(result[1] == 63);
         CHECK(result[2] == -36);
+    }
+
+    SECTION("overriding serialisers") {
+        constexpr auto config = my_configuration();
+
+        auto result = okser::serialize_struct_to_string<ThreeByteStructure, config>({1, 1});
+        CHECK_THAT(result, Equals("\x00\x00\x00\x01\x00\x00\x00\x01"s));
+
+        auto original = okser::deserialize_struct<ThreeByteStructure, std::string, config>(
+                "\x00\x00\x00\x01\x00\x00\x00\x01"s);
+        CHECK(original.a == 1);
+        CHECK(original.b == 1);
     }
 }
 
