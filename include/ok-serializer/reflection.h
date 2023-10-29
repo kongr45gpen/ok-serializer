@@ -1,6 +1,5 @@
 #pragma once
 
-#if __cpp_reflection >= 201902L || DOXYGEN
 
 #include <experimental/reflect>
 #include "../example/mirror.hpp"
@@ -58,6 +57,8 @@ struct configuration {
     };
 };
 
+#if __cpp_reflection >= 201902L || DOXYGEN
+
 template<class T, Output Out, auto config = configuration()>
 constexpr void serialize_struct(Out &&output, const T &object) {
     auto mirrored_struct = mirror(T);
@@ -69,7 +70,7 @@ constexpr void serialize_struct(Out &&output, const T &object) {
 
         using serializer = decltype(config)::template default_serializers<type>::ser;
 
-        serialize<serializer>(output, value);
+        auto result = serialize<serializer>(output, value);
     });
 }
 
@@ -112,6 +113,6 @@ constexpr T deserialize_struct(In &&input) {
     return result;
 }
 
-} // namespace okser
-
 #endif
+
+} // namespace okser

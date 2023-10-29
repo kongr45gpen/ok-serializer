@@ -4,6 +4,7 @@
 #include <catch2/matchers/catch_matchers_string.hpp>
 #include "ok-serializer/ok-serializer.hpp"
 #include "ok-serializer/reflection.h"
+#include "ok-serializer/types_json.h"
 
 using Catch::Matchers::Equals;
 using namespace std::string_literals;
@@ -75,6 +76,41 @@ TEST_CASE("configuration") {
                 "\x00\x00\x00\x01\x00\x00\x00\x01"s);
         CHECK(original.a == 1);
         CHECK(original.b == 1);
+    }
+}
+
+TEST_CASE("json types") {
+    SECTION("number") {
+        auto result = okser::serialize_to_string<okser::json::number>(289);
+        CHECK_THAT(result, Equals("289"s));
+
+        result = okser::serialize_to_string<okser::json::number>(-1234567890);
+        CHECK_THAT(result, Equals("-1234567890"s));
+    }
+
+    SECTION("string") {
+        auto result = okser::serialize_to_string<okser::json::string>("toast"s);
+        CHECK_THAT(result, Equals("\"toast\""s));
+
+        result = okser::serialize_to_string<okser::json::string>("nikola\ntesla"s);
+        CHECK_THAT(result, Equals(R"("nikola\ntesla")"s));
+
+        result = okser::serialize_to_string<okser::json::string>("\"boop\\toast\":\t\r"s);
+        CHECK_THAT(result, Equals(R"("\"boop\\toast\":\t\r")"s));
+
+        result = okser::serialize_to_string<okser::json::string>("\x7F\x32\x00\x01\xFE"s);
+        CHECK_THAT(result, Equals(R"("\x7F2\x00\x01\xFE")"s));
+    }
+
+    SECTION("array") {
+        auto result = okser::serialize_to_string<okser::json::array<>>(std::vector<int>{1, 2, 3});
+        CHECK_THAT(result, Equals("[1, 2, 3]"s));
+
+        result = okser::serialize_to_string<okser::json::array<>>(std::vector<bool>{true, false, true, false});
+        CHECK_THAT(result, Equals("[true, false, true, false]"s));
+
+        result = okser::serialize_to_string<okser::json::array<>>(std::vector<std::string>{"toast"s, "is"s, "nice"s});
+        CHECK_THAT(result, Equals(R"(["toast", "is", "nice"])"s));
     }
 }
 
