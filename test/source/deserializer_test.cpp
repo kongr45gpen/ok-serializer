@@ -117,6 +117,33 @@ TEST_CASE("varint decoding") {
         REQUIRE_FALSE(number);
         CHECK(number.error().type == okser::error_type::malformed_input);
     }
+
+    SECTION("signed varint") {
+        std::string str = "\xFE\xFF\xFF\xFF\xFF\xFF\xFF\xFF\xFF\x01";
+        auto number = okser::deserialize<okser::signed_varint<>>(str);
+        CHECK(number == -2);
+
+        str = "\xFE\xFF\xFF\xFF\x0F";
+        number = okser::deserialize<okser::signed_varint<4>>(str);
+        CHECK(number == -2);
+    }
+
+    SECTION("zigzag varint") {
+        auto deserialization_of = [](std::string_view s) {
+            auto value = okser::deserialize<okser::zig_varint>(s);
+            REQUIRE(value);
+            return *value;
+        };
+
+        CHECK(deserialization_of("\x00"s) == 0);
+        CHECK(deserialization_of("\x01"s) == -1);
+        CHECK(deserialization_of("\x02"s) == 1);
+        CHECK(deserialization_of("\x03"s) == -2);
+        CHECK(deserialization_of("\xFE\xFF\xFF\xFF\x0F"s) == 0x7fffffff);
+        CHECK(deserialization_of("\xFF\xFF\xFF\xFF\x0F"s) == -(0x80000000L));
+        CHECK(deserialization_of("\xFE\xFF\xFF\xFF\xFF\xFF\xFF\xFF\xFF\x01"s) == 0x7fffffffffffffffL);
+        CHECK(deserialization_of("\xFF\xFF\xFF\xFF\xFF\xFF\xFF\xFF\xFF\x01"s) == -(0x8000000000000000L));
+    }
 }
 
 TEST_CASE("null-terminated string decoding") {

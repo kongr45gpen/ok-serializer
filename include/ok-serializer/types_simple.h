@@ -117,9 +117,7 @@ struct sint : public internal::type {
         using Unsigned = std::make_unsigned_t<V>;
 
         auto value = uint<Bytes, Endianness>::template deserialize<Unsigned>(context);
-        value.transform(std::bit_cast<V, Unsigned>);
-
-        return value;
+        return value.transform(std::bit_cast<V, Unsigned>);
     }
 };
 
@@ -130,6 +128,7 @@ struct sint : public internal::type {
  *               either 4 (single-precision, equivalent to C's `float`), or 8
  *               (double-precision, equivalent to C's `double`)
  * @tparam Endianness
+ * @see doublep
  */
 template<int Bytes = 4, end Endianness = end::be> requires (Bytes == 4 || Bytes == 8)
 struct floatp : public internal::type {
@@ -158,6 +157,7 @@ struct floatp : public internal::type {
 
 /**
  * Shortcut to a double-precision floating point number
+ * @ingroup simple_types
  */
 template<end Endianness = end::be>
 using doublep = floatp<8, Endianness>;
@@ -172,8 +172,9 @@ using doublep = floatp<8, Endianness>;
  *
  * Varints are always encoded with big endianness.
  *
+ * @see signed_varint
+ * @see zig_varint
  * @ingroup simple_types
- * @todo Implement signed protobuf implementation
  */
 struct varint : public internal::type {
     using DefaultType = uint64_t;
@@ -232,6 +233,94 @@ struct varint : public internal::type {
         }
 
         return value;
+    }
+};
+
+/**
+ * Implementation of a two's complement signed varint.
+ *
+ * See https://protobuf.dev/programming-guides/encoding/#signed-ints
+ *
+ * @note Large signed varints are not visually distinguishable from unsigned varints.
+ * This is why you need to explicitly specify this type.
+ *
+ * @note This is a quite wasteful type, as even small negative numbers (e.g. -2) will expand to multiple bytes.
+ * Consider using zig_varint instead.
+ *
+ * @see varint
+ * @see zig_varint
+ * @ingroup simple_types
+ * @tparam Bytes The maximum number of bytes of the input type. This is NOT the amount of output bytes.
+ */
+template<int Bytes = 8> requires (Bytes > 0 && Bytes <= 8)
+struct signed_varint : public internal::type {
+    using DefaultType = std::make_signed_t<internal::uint_bytes_to_type<Bytes>>;
+
+    template<typename V, OutputContext Context>
+    requires(std::is_integral_v<V> && sizeof(V) <= Bytes)
+    static constexpr empty_result serialize(Context &&out, V v) {
+        using Unsigned = std::make_unsigned_t<V>;
+
+        return varint::serialize(out, std::bit_cast<Unsigned>(v));
+    }
+
+    template<typename V = DefaultType, InputContext Context>
+    requires(std::is_integral_v<V> && sizeof(V) <= Bytes)
+    static constexpr okser::result<V> deserialize(Context &context) {
+        using Unsigned = std::make_unsigned_t<V>;
+
+        auto value = varint::template deserialize<Unsigned>(context);
+        return value.transform(std::bit_cast<V, Unsigned>);
+    }
+};
+
+/**
+ * Implementation of a zig-zag signed varint.
+ *
+ * This implements numbers using the zig-zag encoding, meaning that -1 gets encoded to 1, 1, to 2, -2 to 3, 2, to 4, etc.
+ *
+ * See https://protobuf.dev/programming-guides/encoding/#signed-ints
+ *
+ * @note Zig-zag varints are not visually distinguishable from unsigned varints. This is why you need to explicitly
+ * specify this type.
+ *
+ * @see varint
+ * @see signed_varint
+ * @ingroup simple_types
+ */
+struct zig_varint : public internal::type {
+    using DefaultType = int64_t;
+
+    template<typename V, OutputContext Context>
+    requires(std::is_integral_v<V> && sizeof(V) <= 8)
+    static constexpr empty_result serialize(Context &&out, V v) {
+        using Unsigned = std::make_unsigned_t<V>;
+
+        Unsigned u;
+
+        if (v >= 0) {
+            u = 2 * static_cast<Unsigned>(v);
+        } else if (v == std::numeric_limits<V>::min()) {
+            u = std::numeric_limits<Unsigned>::max();
+        } else {
+            u = 2 * static_cast<Unsigned>(-v) - 1;
+        }
+
+        return varint::serialize(out, u);
+    }
+
+    template<typename V = DefaultType, InputContext Context>
+    requires(std::is_integral_v<V> && std::is_signed_v<V> && sizeof(V) <= 8)
+    static constexpr okser::result<V> deserialize(Context &context) {
+        using Unsigned = std::make_unsigned_t<V>;
+        auto value = varint::template deserialize<Unsigned>(context);
+        return value.transform([](const auto u) {
+            if (u % 2 == 0) {
+                return static_cast<V>(u / 2);
+            } else {
+                return -static_cast<V>(u / 2) - 1;
+            }
+        });
     }
 };
 

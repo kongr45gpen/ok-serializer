@@ -118,6 +118,30 @@ TEST_CASE("varint encoding") {
         auto out = okser::serialize_to_string<okser::varint>(13183555200652522417U);
         CHECK_THAT(out, Equals("\xB1\xE7\x96\x9D\xB0\xB3\xD9\xFA\xB6\x01"));
     }
+
+    SECTION("signed_varint") {
+        // protobuf.dev example
+        auto out = okser::serialize_to_string<okser::signed_varint<>>(int64_t{-2});
+        CHECK_THAT(out, Equals("\xFE\xFF\xFF\xFF\xFF\xFF\xFF\xFF\xFF\x01"));
+
+        out = okser::serialize_to_string<okser::signed_varint<4>>(-2);
+        CHECK_THAT(out, Equals("\xFE\xFF\xFF\xFF\x0F"));
+    }
+
+    SECTION("zigzag varint") {
+        auto serialization_of = [](int64_t i) {
+            return okser::serialize_to_string<okser::zig_varint>(i);
+        };
+
+        CHECK_THAT(serialization_of(0), Equals("\x00"s));
+        CHECK_THAT(serialization_of(-1), Equals("\x01"s));
+        CHECK_THAT(serialization_of(1), Equals("\x02"s));
+        CHECK_THAT(serialization_of(-2), Equals("\x03"s));
+        CHECK_THAT(serialization_of(0x7fffffff), Equals("\xFE\xFF\xFF\xFF\x0F"s));
+        CHECK_THAT(serialization_of(-(0x80000000L)), Equals("\xFF\xFF\xFF\xFF\x0F"s));
+        CHECK_THAT(serialization_of(0x7fffffffffffffffL), Equals("\xFE\xFF\xFF\xFF\xFF\xFF\xFF\xFF\xFF\x01"s));
+        CHECK_THAT(serialization_of(-(0x8000000000000000L)), Equals("\xFF\xFF\xFF\xFF\xFF\xFF\xFF\xFF\xFF\x01"s));
+    }
 }
 
 TEST_CASE("null-terminated string encoding") {

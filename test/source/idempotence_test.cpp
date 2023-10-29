@@ -71,4 +71,13 @@ TEST_CASE("varint idempotence") {
 
         CHECK(i == *result);
     }
+
+    SECTION("varint and signed_varint equivalence") {
+        auto i = GENERATE(take(100, random < uint32_t > (0, std::numeric_limits<int32_t>::max())));
+
+        auto str1 = serialize_to_string<okser::varint>(i);
+        auto str2 = serialize_to_string<okser::signed_varint<>>(i);
+
+        CHECK(str1 == str2);
+    }
 }
