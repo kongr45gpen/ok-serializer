@@ -197,6 +197,57 @@ TEST_CASE("null-terminated string decoding") {
     }
 }
 
+TEST_CASE("pascal string decoding") {
+    std::string small_string = "\x04tiny"s;
+    std::string large_string = "The earth, the fire, the water and the majestic buffalo gathered around a table to discuss their laments. First of all, who would have thought that such a petty and mischievous achievement could overcome their joy? The Earth, a massive globe covered in lush forests and shimmering oceans, spoke first. \"I thought I'd been summoned for a grand geological council. You know, to discuss tectonic plate fashion trends or perhaps the latest in volcanic eruptions.\"";
+    std::string large_string_u2 = "\x01\xCB"s + large_string;
+    std::string large_string_varint = "\xCB\x03"s + large_string;
+
+    SECTION("small string to dynamic string") {
+        auto result = okser::deserialize<okser::pascal_string<>, std::string>(small_string);
+
+        REQUIRE(result);
+        CHECK_THAT(*result, Equals("tiny"));
+    }
+
+    SECTION("large string to dynamic string") {
+        auto result = okser::deserialize<okser::pascal_string<okser::uint<2>>, std::string>(large_string_u2);
+
+        REQUIRE(result);
+        CHECK_THAT(*result, Equals(large_string));
+    }
+
+    SECTION("varint string to dynamic string") {
+        auto result = okser::deserialize<okser::pascal_string<okser::varint>, std::string>(large_string_varint);
+
+        REQUIRE(result);
+        CHECK_THAT(*result, Equals(large_string));
+    }
+
+    SECTION("incorrect string size") {
+        auto result = okser::deserialize<okser::pascal_string<>, std::string>("\x05tiny"s);
+
+        REQUIRE_FALSE(result);
+        CHECK(result.error().type == okser::error_type::not_enough_input_bytes);
+    }
+
+    SECTION("pascal string to fixed string") {
+        std::array<uint8_t, 7> expected_result = {'t', 'i', 'n', 'y', 0, 0, 0};
+
+        auto result = okser::deserialize<okser::pascal_string<>, std::array<uint8_t, 7>>(small_string);
+
+        CHECK_THAT(*result, RangeEquals(expected_result));
+    }
+
+    SECTION("large string to small fixed string") {
+        auto result = okser::deserialize<okser::pascal_string<okser::uint<2>>, std::array<uint8_t, 257>>(
+                large_string_u2);
+
+        REQUIRE_FALSE(result);
+        CHECK(result.error().type == okser::error_type::not_enough_output_bytes);
+    }
+}
+
 TEST_CASE("bundle decoding") {
     SECTION("Explicit bundle specification, 1 element") {
         std::string str = "\xB8\x7B\x05";

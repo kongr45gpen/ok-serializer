@@ -80,4 +80,22 @@ TEST_CASE("varint idempotence") {
 
         CHECK(str1 == str2);
     }
+
+    SECTION("signed_varint equivalence") {
+        auto i = GENERATE(take(1000, random(std::numeric_limits<int64_t>::min(), std::numeric_limits<int64_t>::max())));
+
+        auto str = serialize_to_string<okser::signed_varint<8>>(i);
+        auto result = deserialize<okser::signed_varint<8>>(str);
+
+        CHECK(i == *result);
+    }
+
+    SECTION("zig_varint equivalence") {
+        auto i = GENERATE(take(1000, random(std::numeric_limits<int64_t>::min(), std::numeric_limits<int64_t>::max())));
+
+        auto str = serialize_to_string<okser::zig_varint>(i);
+        auto result = deserialize<okser::zig_varint>(str);
+
+        CHECK(i == *result);
+    }
 }

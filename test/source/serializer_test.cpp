@@ -170,6 +170,31 @@ TEST_CASE("null-terminated string encoding") {
     }
 }
 
+TEST_CASE("pascal string encoding") {
+    std::string small_string = "small";
+    std::string large_string = "The earth, the fire, the water and the majestic buffalo gathered around a table to discuss their laments. First of all, who would have thought that such a petty and mischievous achievement could overcome their joy? The Earth, a massive globe covered in lush forests and shimmering oceans, spoke first. \"I thought I'd been summoned for a grand geological council. You know, to discuss tectonic plate fashion trends or perhaps the latest in volcanic eruptions.\"";
+
+    SECTION("small string") {
+        auto out = okser::serialize_to_string<okser::pascal_string<okser::uint<1>>>(small_string);
+        CHECK_THAT(out, Equals("\x05small"s));
+    }
+
+    SECTION("large string doesn't fit") {
+        auto out = okser::serialize_to_string<okser::pascal_string<okser::uint<1>>>(large_string);
+        CHECK_THAT(out, Equals(""s));
+    }
+
+    SECTION("large string") {
+        auto out = okser::serialize_to_string<okser::pascal_string<okser::uint<2>>>(large_string);
+        CHECK_THAT(out, Equals("\x01\xCB"s + large_string));
+    }
+
+    SECTION("large string with varint size") {
+        auto out = okser::serialize_to_string<okser::pascal_string<okser::varint>>(large_string);
+        CHECK_THAT(out, Equals("\xCB\x03"s + large_string));
+    }
+}
+
 TEST_CASE("redundant encoding") {
     SECTION("Triple modular redundancy") {
         auto out = okser::serialize_to_string<okser::redundant<okser::uint<1>, 3>>(0x01);
