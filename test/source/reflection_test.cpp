@@ -2,16 +2,31 @@
 
 #include <catch2/catch_test_macros.hpp>
 #include <catch2/matchers/catch_matchers_string.hpp>
+#include <catch2/matchers/catch_matchers_range_equals.hpp>
 #include "ok-serializer/ok-serializer.hpp"
 #include "ok-serializer/reflection.h"
 #include "ok-serializer/types_json.h"
 
 using Catch::Matchers::Equals;
+using Catch::Matchers::RangeEquals;
 using namespace std::string_literals;
 
 struct ThreeByteStructure { 
     uint8_t a; 
     int16_t b; 
+};
+
+struct ComplexStructure {
+    float number;
+    std::string text;
+    std::vector<int> numbers;
+    ThreeByteStructure structure;
+};
+
+struct AlmostComplexStructure {
+    float number;
+    std::array<int, 3> numbers;
+    ThreeByteStructure structure;
 };
 
 TEST_CASE("struct encoding") {
@@ -120,6 +135,40 @@ TEST_CASE("json types") {
         ThreeByteStructure object{119, 86};
         auto result = okser::serialize_to_string<okser::json::object<>>(object);
         CHECK_THAT(result, Equals(R"({"a": 119, "b": 86})"s));
+
+        ComplexStructure complex{1.4f, "toast", {1, 2, 3}, {119, 86}};
+        result = okser::serialize_to_string<okser::json::object<>>(complex);
+        CHECK_THAT(result,
+                   Equals(R"({"number": 1.40, "text": "toast", "numbers": [1, 2, 3], "structure": {"a": 119, "b": 86}})"s));
+    }
+
+    SECTION("json at compile-time") {
+        using namespace std::string_view_literals;
+
+        constexpr auto number = okser::serialize_one_fixed<okser::json::number, uint16_t, std::array<uint8_t, 3>>(289);
+        CHECK_THAT(number, RangeEquals("289"s));
+
+        constexpr auto floating_point = okser::serialize_one_fixed<okser::json::number, float, std::array<uint8_t, 6>>(
+                289.3);
+        CHECK_THAT(floating_point, RangeEquals("289.30"s));
+
+        constexpr auto string = okser::serialize_one_fixed<okser::json::string, std::string_view, std::array<uint8_t, 6>>(
+                "hola"sv);
+        CHECK_THAT(string, RangeEquals("\"hola\""s));
+
+        constexpr auto array = okser::serialize_one_fixed<okser::json::array<>, std::vector<int>, std::array<uint8_t, 9>>(
+                std::vector<int>{1, 2, 3});
+        CHECK_THAT(array, RangeEquals("[1, 2, 3]"s));
+
+        constexpr auto object = okser::serialize_one_fixed<okser::json::object<>, ThreeByteStructure, std::array<uint8_t, 19>>(
+                {119, 86});
+        CHECK_THAT(object, RangeEquals(R"({"a": 119, "b": 86})"s));
+
+        constexpr AlmostComplexStructure complex_structure{1.4f, {1, 2, 3}, {119, 86}};
+        constexpr auto complex = okser::serialize_one_fixed<okser::json::object<>, AlmostComplexStructure, std::array<uint8_t, 72>>(
+                complex_structure);
+        CHECK_THAT(complex,
+                   RangeEquals(R"({"number": 1.40, "numbers": [1, 2, 3], "structure": {"a": 119, "b": 86}})"s));
     }
 }
 

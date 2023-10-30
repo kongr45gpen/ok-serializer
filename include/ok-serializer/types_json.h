@@ -3,6 +3,7 @@
 #include <cstdint>
 #include <array>
 #include <string>
+#include <cmath>
 #include "types_simple.h"
 #include "reflection.h"
 
@@ -40,7 +41,7 @@ struct null : public okser::internal::type {
 struct number : public okser::internal::type {
     using DefaultType = int64_t;
 
-    template<typename V, OutputContext Context>
+    template<std::integral V, OutputContext Context>
     constexpr static empty_result serialize(Context &&output, V value) {
         // A 64-bit integer can be represented in 20 characters max (hopefully)
         std::array<char, 20> buffer{'\0'};
@@ -53,6 +54,40 @@ struct number : public okser::internal::type {
 
         return output->add(std::string_view(buffer.data(), result.ptr));
     }
+
+    /**
+     * Unfortunately C++'s std::to_chars is not constexpr for floating point numbers, so we have to implement the
+     * conversion ourselves.
+     *
+     * This is a barebones, wildly incorrect, double decimal digit approximation. There are many implementations online
+     * to convert a floating point number to a string in a constexpr way.
+     *
+     * @todo Error handling
+     */
+    template<std::floating_point V, OutputContext Context>
+    constexpr static empty_result serialize(Context &&output, V value) {
+        constexpr int precision = 2;
+
+        value *= 1.0000001f; // Fixes some rounding errors
+
+        if (auto result = number::serialize(output, static_cast<int64_t>(value)); !result) {
+            return result;
+        }
+
+        if (auto result = output->add('.'); !result) {
+            return result;
+        }
+
+        for (int i = 0; i < precision; i++) {
+            value -= static_cast<int64_t>(value);
+            value *= 10;
+            if (auto result = number::serialize(output, static_cast<int64_t>(value)); !result) {
+                return result;
+            }
+        }
+
+        return {};
+    }
 };
 
 struct string : public okser::internal::type {
@@ -60,7 +95,7 @@ struct string : public okser::internal::type {
 
     template<std::ranges::range S, OutputContext Context>
     constexpr static empty_result serialize(Context &&output, const S &string) {
-        using namespace std::string_literals;
+        using namespace std::string_view_literals;
 
         if (auto result = output->add('"'); !result) {
             return result;
@@ -69,15 +104,15 @@ struct string : public okser::internal::type {
         for (auto it: string) {
             empty_result result;
             if (it == '"') {
-                result = output->add("\\\"");
+                result = output->add("\\\""sv);
             } else if (it == '\\') {
-                result = output->add("\\\\");
+                result = output->add("\\\\"sv);
             } else if (it == '\t') {
-                result = output->add("\\t");
+                result = output->add("\\t"sv);
             } else if (it == '\r') {
-                result = output->add("\\r");
+                result = output->add("\\r"sv);
             } else if (it == '\n') {
-                result = output->add("\\n");
+                result = output->add("\\n"sv);
             } else if (it < ' ' || it > '~') {
                 constexpr char hex[] = "0123456789ABCDEF";
                 std::array<char, 4> buffer{
@@ -233,9 +268,14 @@ struct object : public okser::internal::type {
 #endif
 };
 
+/**
+ * @todo Add tuples and pairs
+ */
 struct json_configuration : okser::configuration<> {
     template<class T>
-    struct default_serializers;
+    struct default_serializers {
+        using ser = object<>;
+    };
 
     template<>
     struct default_serializers<bool> {
@@ -260,6 +300,11 @@ struct json_configuration : okser::configuration<> {
     template<std::derived_from<std::string> T>
     struct default_serializers<T> {
         using ser = string;
+    };
+
+    template<std::ranges::range T> requires (!std::derived_from<std::string, T>)
+    struct default_serializers<T> {
+        using ser = array<>;
     };
 };
 

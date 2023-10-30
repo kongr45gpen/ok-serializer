@@ -220,6 +220,20 @@ public:
 
         return {};
     }
+
+    /**
+     * Add more bytes to the output
+     */
+    template<std::ranges::input_range R>
+    constexpr empty_result add(const R &value) {
+        if (current + std::ranges::size(value) > last) {
+            return std::unexpected(error_type::not_enough_output_bytes);
+        }
+        std::copy(value.cbegin(), value.cend(), current);
+        current += std::ranges::size(value);
+
+        return {};
+    }
 };
 
 /**
