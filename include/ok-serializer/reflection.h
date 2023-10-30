@@ -63,8 +63,6 @@ template<class T, Output Out, auto config = configuration()>
 constexpr void serialize_struct(Out &&output, const T &object) {
     auto mirrored_struct = mirror(T);
     for_each(get_data_members(mirrored_struct), [&](auto member) {
-        std::cerr << "Member:" << get_name(member) << "\t Type: " << get_name(get_type(member)) << std::endl;
-
         const auto &value = get_value(member, object);
         using type = std::remove_cvref_t<decltype(value)>;
 
@@ -104,10 +102,6 @@ constexpr T deserialize_struct(In &&input) {
         // TODO: Error handling
         auto deserialized_result = deserializer::template deserialize<type>(*context);
         reference = deserialized_result.value();
-
-        std::cout << "Member:" << get_name(member) << "\t Type: " << get_name(get_type(member))
-                  << " \t Value: "
-                  << get_value(member, result) << std::endl;
     });
 
     return result;
