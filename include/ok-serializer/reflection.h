@@ -68,7 +68,7 @@ constexpr void serialize_struct(Out &&output, const T &object) {
 
         using serializer = decltype(config)::template default_serializers<type>::ser;
 
-        auto result = serialize<serializer>(output, value);
+        auto result = serialize<serializer>(std::forward<Out>(output), value);
     });
 }
 

@@ -34,12 +34,10 @@ namespace in {
 template<std::ranges::input_range R = std::string>
 class range {
 private:
-    using Const_Iterator = decltype(std::ranges::cbegin(std::declval<R&>()));
+    R::const_iterator begin;
+    R::const_iterator end;
 
-    Const_Iterator begin;
-    Const_Iterator end;
-
-    constexpr range(Const_Iterator begin, Const_Iterator end) : begin(begin), end(end) {}
+    constexpr range(R::const_iterator begin, R::const_iterator end) : begin(begin), end(end) {}
 
 public:
     using ContainedType = R;
@@ -49,7 +47,7 @@ public:
      *
      * You can use std::span to control the range of the container to be used more accurately.
      */
-    constexpr range(const R &_range) : begin(_range.begin()), end(_range.end()) {}
+    constexpr range(const R &_range) : begin(_range.cbegin()), end(_range.cend()) {}
 
     /**
      * Get a single byte from the input.
@@ -201,7 +199,7 @@ template<std::ranges::output_range<uint8_t> C> requires (std::ranges::forward_ra
 class fixed_container {
 private:
     typename C::iterator current;
-    typename C::const_iterator last;
+    typename C::iterator last;
 public:
     explicit constexpr fixed_container(C &container) : current(container.begin()), last(container.end()) {}
 

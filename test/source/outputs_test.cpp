@@ -10,10 +10,10 @@ TEST_CASE("stdstring output") {
         okser::out::dynamic out(string);
 
         out.add(uint8_t{0x70});
-    out.add(uint8_t{0xAF});
+        out.add(uint8_t{0xAF});
 
-    CHECK_THAT(string, Equals("\x70\xAF"));
-  }
+        CHECK_THAT(string, Equals("\x70\xAF"));
+    }
 }
 
 TEST_CASE("fixed-size output") {

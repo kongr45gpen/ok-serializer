@@ -28,6 +28,7 @@ auto main() -> int {
 
     std::cout << "Result: " << result << std::endl;
     std::cout << "Result (faster): " << okser::serialize_struct_to_string(s) << std::endl;
+    // Result: hi!
 
     okser::deserialize_struct<Structure>(okser::in::range(result));
 }
