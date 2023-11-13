@@ -175,6 +175,29 @@
       ]
     },
     {
+      "name": "ci-reflection",
+      "generator": "Unix Makefiles",
+      "inherits": [
+        "ci-build",
+        "ci-unix",
+        "flags-reflection",
+        "dev-mode",
+        "testing"
+      ]
+    },
+    {
+      "name": "ci-reflection-static",
+      "generator": "Unix Makefiles",
+      "inherits": [
+        "ci-build",
+        "ci-unix",
+        "flags-reflection",
+        "flags-clang-static-libc",
+        "dev-mode",
+        "testing"
+      ]
+    },
+    {
       "name": "reflection",
       "generator": "Unix Makefiles",
       "inherits": [

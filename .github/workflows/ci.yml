@@ -104,7 +104,7 @@ jobs:
     - name: Update build tools
       if: matrix.os == 'ubuntu-22.04'
       run: >-
-        sudo apt-get install catch2 gcc-12 -y -q
+        sudo apt-get install catch2 -y -q
 
 
     - name: Setup MultiToolTask
@@ -115,7 +115,7 @@ jobs:
 
     - name: Configure
       shell: pwsh
-      run: cmake "--preset=ci-$("${{ matrix.os }}".split("-")[0])" -DCMAKE_C_COMPILER=gcc-12 -DCMAKE_CXX_COMPILER=g++-12
+      run: cmake "--preset=ci-reflection-static" -DCMAKE_C_COMPILER=clang -DCMAKE_CXX_COMPILER=clang++
 
     - name: Build
       run: cmake --build build --config Release -j 2
