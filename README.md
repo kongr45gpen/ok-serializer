@@ -126,6 +126,14 @@ Alternatively, you can link the standard library statically to the generated exe
 cmake -DCMAKE_CXX_COMPILER="/path/to/llvm-project/build/bin/clang++" --preset reflection-static ..
 ```
 
+### Docker container
+
+You can run all the above steps in a docker container that should include a compiled version of LLVM with reflection:
+
+```shell
+docker run -it kongr45gpen/llvm-reflection bash
+```
+
 ## Contributing
 
 See the [CONTRIBUTING](CONTRIBUTING.md) document.
